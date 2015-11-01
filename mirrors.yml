@@ -35,6 +35,7 @@ mirror:
     architectures: [ "amd64", "i386" ]
     distribution: "stable"
     archive: "http://dl.google.com/linux/chrome/deb/"
+    gpg: "https://dl.google.com/linux/linux_signing_key.pub"
 snapshot:
   trusty-latest:
     mirror: "trusty"
