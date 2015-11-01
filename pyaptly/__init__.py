@@ -148,6 +148,15 @@ def mirror(cfg, args):
 
 def cmd_mirror(mirror_name, mirror_config):
     """Call the aptly mirror command"""
+    if 'gpg-url' in mirror_config:
+        key_command = (
+            "wget -q -O - %s | "
+            "gpg --no-default-keyring --keyring trustedkeys.gpg --import"
+        ) % mirror_config['gpg-url']
+        subprocess.check_call(['bash', '-c', key_command])
+    if 'gpg-key' in mirror_config:
+        key_command = ["gpg", "--recv-keys", mirror_config['gpg-key']]
+        subprocess.check_call(key_command)
     aptly_cmd = ['aptly', 'mirror', 'create']
     if 'sources' in mirror_config and mirror_config['sources']:
         aptly_cmd.append('-with-sources')
