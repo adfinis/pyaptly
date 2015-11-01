@@ -1,0 +1,31 @@
+mirror:
+  trusty:
+    components: [ "main", "multiverse", "restricted", "universe" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+  trusty-updates:
+    components: [ "main", "multiverse", "restricted", "universe" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-updates"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+  trusty-backports:
+    components: [ "main", "multiverse", "restricted", "universe" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-backports"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+snapshot:
+  trusty-latest:
+    mirror: "trusty"
+  trusty-latest:
+    mirror: "trusty-updates"
+  trusty-backports-latest:
+    mirror: "trusty-backports"
+  my-repo-latest:
+    repo: "my-repo"

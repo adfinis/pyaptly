@@ -1,0 +1,91 @@
+mirror:
+  # Defines the upstream mirrors.
+  #
+  # The key denotes the internal mirror name within aptly.
+  trusty:
+    components: [ "main", "multiverse", "restricted", "universe" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+  trusty-security:
+    components: [ "main", "multiverse", "restricted", "universe" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-security"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+  trusty-updates:
+    components: [ "main", "multiverse", "restricted", "universe" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-updates"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+  trusty-backports:
+    components: [ "main", "multiverse", "restricted", "universe" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-backports"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+  google-chrome:
+    components: [ "main" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "stable"
+    archive: "http://dl.google.com/linux/chrome/deb/"
+snapshot:
+  trusty-latest:
+    mirror: "trusty"
+  trusty-security-latest:
+    mirror: "trusty-security"
+  trusty-updates-latest:
+    mirror: "trusty-updates"
+  trusty-backports-latest:
+    mirror: "trusty-backports"
+  roche-keyring-latest:
+    repo: "roche-keyring"
+  trusty_roche-keyring-latest:
+    merge: [ "trusty-latest", "roche-keyring-latest" ]
+  google-chrome-latest:
+    mirror: "google-chrome"
+  google-chrome-stable:
+    filter: { "source": "google-chrome-latest", "query": "google-chrome-stable" }
+  icaclient-latest:
+    repo: "icaclient"
+publish:
+  # Defines the publishing endpoints.
+  #
+  # The key denotes the target, for example: 'ubuntu/latest' will create an
+  # endpoint at http://<server>/ubuntu/latest/
+  ubuntu/latest:
+    -
+      distribution: "trusty"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshots: [ "trusty-latest" ]
+    -
+      distribution: "trusty-updates"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshots: [ "trusty-updates-latest" ]
+    -
+      distribution: "trusty-backports"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      components: [ "main", "multiverse", "restricted", "universe" ]
+      backports: True
+      snapshots: [ "trusty-backports-latest" ]
+  google-chrome:
+    -
+      distribution: "latest"
+      architectures: [ "amd64", "i386" ]
+      components: [ "main" ]
+  icaclient:
+    -
+      distribution: "latest"
+      architectures: [ "amd64", "i386" ]
+      components: [ "main" ]

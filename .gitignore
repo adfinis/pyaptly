@@ -1,0 +1,8 @@
+/pyaptly.egg-info
+*.swp
+*.pyc
+__pycache__
+/.cache
+/.hypothesis
+/.coverage
+/.vagrant
