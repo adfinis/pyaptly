@@ -93,6 +93,8 @@ class Command(object):
                         # it's already otherwise fulfilled
                         if not has_dependency_cb(req):
                             can_schedule = False
+                            # Break out of the requirements loop, as the
+                            # command cannot be scheduled anyway.
                             break
 
                 if can_schedule:
