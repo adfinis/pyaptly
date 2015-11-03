@@ -2,7 +2,6 @@
 import argparse
 import logging
 import subprocess
-import collections
 import sys
 
 import yaml
@@ -64,7 +63,7 @@ class Command(object):
     def order_commands(commands, has_dependency_cb=lambda: False):
         # Filter out any invalid entries.. TODO: Should be done
         # somewhere else...
-        commands = [c for c in commands if c.__class__ == Command]
+        commands = [c for c in commands if c]
 
         # use simple object id for identification.
         commands_by_id = {}
@@ -74,19 +73,6 @@ class Command(object):
         lg.debug('Ordering commands: %s', [
             str(cmd) for cmd in commands
         ])
-
-        provided_by_id = collections.defaultdict(set)
-        required_by_id = collections.defaultdict(set)
-
-        # collect everything provided by all the commands
-        for cmd in commands:
-            for provides in cmd._provides:
-                provided_by_id[provides].add(id(cmd))
-
-        # collect everything required by the commands
-        for cmd in commands:
-            for require in cmd._requires:
-                required_by_id[require].add(id(cmd))
 
         have_requirements = set()
         scheduled_cmdids  = []
