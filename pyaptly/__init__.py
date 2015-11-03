@@ -35,9 +35,11 @@ def call_output(args, input_=None):
 class SystemStateReader(object):
     def __init__(self):
         self.gpg_keys = set()
+        self.mirrors  = set()
 
     def read(self):
         self.read_gpg()
+        self.read_mirror()
 
     def read_gpg(self):
         self.gpg_keys = set()
@@ -55,6 +57,15 @@ class SystemStateReader(object):
                 key_short = key[8:]
                 self.gpg_keys.add(key)
                 self.gpg_keys.add(key_short)
+
+    def read_mirror(self):
+        self.mirrors = set()
+        data = call_output([
+            "aptly", "mirror", "list", "-raw"
+        ])
+        for line in data.split("\n"):
+            self.mirrors.add(line.strip())
+
 
 state = SystemStateReader()
 
@@ -235,6 +246,8 @@ def add_gpg_keys(mirror_config):
 
 def cmd_mirror(mirror_name, mirror_config):
     """Call the aptly mirror command"""
+    if mirror_name in state.mirrors:
+        return
     add_gpg_keys(mirror_config)
     aptly_cmd = ['aptly', 'mirror', 'create']
     if 'sources' in mirror_config and mirror_config['sources']:
