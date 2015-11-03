@@ -16,6 +16,49 @@ def get_logger():
 lg = get_logger()
 
 
+def call_output(args, input_=None):
+    p = subprocess.Popen(
+        args,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    output, err = p.communicate(input_)
+    if p.returncode != 0:
+        raise subprocess.CalledProcessError(
+            p.returncode,
+            args,
+        )
+    return output
+
+
+class SystemStateReader(object):
+    def __init__(self):
+        self.gpg_keys = set()
+
+    def read(self):
+        self.read_gpg()
+
+    def read_gpg(self):
+        self.gpg_keys = set()
+        data = call_output([
+            "gpg",
+            "--no-default-keyring",
+            "--keyring", "trustedkeys.gpg",
+            "--list-keys",
+            "--with-colons"
+        ])
+        for line in data.split("\n"):
+            field = line.split(":")
+            if field[0] == "pub":
+                key = field[4]
+                key_short = key[8:]
+                self.gpg_keys.add(key)
+                self.gpg_keys.add(key_short)
+
+state = SystemStateReader()
+
+
 def main(argv=None):
     """Called by command-line, defines parsers and executes commands"""
     if not argv:  # pragma: no cover
@@ -83,6 +126,7 @@ def main(argv=None):
 
     with open(args.config, 'r') as cfgfile:
         cfg = yaml.load(cfgfile)
+    state.read()
 
     # run function for selected subparser
     args.func(cfg, args)
@@ -146,8 +190,7 @@ def mirror(cfg, args):
             )
 
 
-def cmd_mirror(mirror_name, mirror_config):
-    """Call the aptly mirror command"""
+def add_gpg_keys(mirror_config):
     if 'gpg-keys' in mirror_config:
         keys = mirror_config['gpg-keys']
         keys_urls = {}
@@ -165,6 +208,8 @@ def cmd_mirror(mirror_name, mirror_config):
                 keys_urls[key] = None
 
     for key in keys_urls.keys():
+        if key in state.gpg_keys:
+            continue
         try:
             key_command = [
                 "gpg",
@@ -177,7 +222,7 @@ def cmd_mirror(mirror_name, mirror_config):
                 key
             ]
             subprocess.check_call(key_command)
-        except OSError:
+        except subprocess.CalledProcessError:
             url = keys_urls[key]
             if url:
                 key_command = (
@@ -186,6 +231,11 @@ def cmd_mirror(mirror_name, mirror_config):
                     "--keyring trustedkeys.gpg --import"
                 ) % url
                 subprocess.check_call(['bash', '-c', key_command])
+
+
+def cmd_mirror(mirror_name, mirror_config):
+    """Call the aptly mirror command"""
+    add_gpg_keys(mirror_config)
     aptly_cmd = ['aptly', 'mirror', 'create']
     if 'sources' in mirror_config and mirror_config['sources']:
         aptly_cmd.append('-with-sources')
