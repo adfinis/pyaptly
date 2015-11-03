@@ -181,13 +181,32 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
     """Call the aptly snapshot command"""
     if snapshot_name in state.snapshots:
         return
-    aptly_cmd = ['aptly', 'snapshot', 'create']
-    aptly_cmd.append(snapshot_name)
-    aptly_cmd.append('from')
+    default_aptly_cmd = ['aptly', 'snapshot', 'create']
+    default_aptly_cmd.append(snapshot_name)
+    default_aptly_cmd.append('from')
+
     if 'mirror' in snapshot_config:
-        aptly_cmd.extend(['mirror', snapshot_config['mirror']])
+        aptly_cmd = default_aptly_cmd + ['mirror', snapshot_config['mirror']]
+
     elif 'repo' in snapshot_config:
-        aptly_cmd.extend(['repo', snapshot_config['repo']])
+        aptly_cmd = default_aptly_cmd + ['repo', snapshot_config['repo']]
+
+    elif 'filter' in snapshot_config:
+        aptly_cmd = [
+            'aptly',
+            'snapshot',
+            'filter',
+            snapshot_config['filter']['source'],
+            snapshot_name,
+            snapshot_config['filter']['query'],
+        ]
+    else:
+        raise ValueError(
+            "Don't know how to handle snapshot config" % (
+                snapshot_config
+            )
+        )
+
     lg.debug('Running command: %s', ' '.join(aptly_cmd))
     subprocess.check_call(aptly_cmd)
 
