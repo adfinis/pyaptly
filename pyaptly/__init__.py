@@ -52,6 +52,7 @@ class SystemStateReader(object):
             "--list-keys",
             "--with-colons"
         ])
+        lg.debug('GPG returned: %s', data)
         for line in data.split("\n"):
             field = line.split(":")
             if field[0] == "pub":
@@ -72,6 +73,7 @@ class SystemStateReader(object):
         data = call_output([
             "aptly", type_, "list", "-raw"
         ])
+        lg.debug('Aptly returned %s: %s', type_, data)
         for line in data.split("\n"):
             list_.add(line.strip())
 
