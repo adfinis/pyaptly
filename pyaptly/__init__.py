@@ -254,6 +254,8 @@ def add_gpg_keys(mirror_config):
                     "--keyring trustedkeys.gpg --import"
                 ) % url
                 subprocess.check_call(['bash', '-c', key_command])
+            else:
+                raise
 
 
 def cmd_mirror_create(mirror_name, mirror_config):
