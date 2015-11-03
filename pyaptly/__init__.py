@@ -34,12 +34,14 @@ def call_output(args, input_=None):
 
 class SystemStateReader(object):
     def __init__(self):
-        self.gpg_keys = set()
-        self.mirrors  = set()
+        self.gpg_keys  = set()
+        self.mirrors   = set()
+        self.snapshots = set()
 
     def read(self):
         self.read_gpg()
         self.read_mirror()
+        self.read_snapshot()
 
     def read_gpg(self):
         self.gpg_keys = set()
@@ -60,11 +62,18 @@ class SystemStateReader(object):
 
     def read_mirror(self):
         self.mirrors = set()
+        self.read_aptly_list("mirror", self.mirrors)
+
+    def read_snapshot(self):
+        self.snapshots = set()
+        self.read_aptly_list("snapshot", self.snapshots)
+
+    def read_aptly_list(self, type_, list_):
         data = call_output([
-            "aptly", "mirror", "list", "-raw"
+            "aptly", type_, "list", "-raw"
         ])
         for line in data.split("\n"):
-            self.mirrors.add(line.strip())
+            list_.add(line.strip())
 
 
 state = SystemStateReader()
@@ -147,6 +156,8 @@ def snapshot(cfg, args):
     """Creates snapshots"""
     lg.debug("Snapshots to create: %s", (cfg['snapshot']))
 
+    cmd_snapshot = snapshot_cmds[args.task]
+
     if args.snapshot_name == "all":
         for snapshot_name, snapshot_config in cfg['snapshot'].items():
             cmd_snapshot(snapshot_name, snapshot_config)
@@ -164,8 +175,10 @@ def snapshot(cfg, args):
             )
 
 
-def cmd_snapshot(snapshot_name, snapshot_config):
+def cmd_snapshot_create(snapshot_name, snapshot_config):
     """Call the aptly snapshot command"""
+    if snapshot_name in state.snapshots:
+        return
     aptly_cmd = ['aptly', 'snapshot', 'create']
     aptly_cmd.append(snapshot_name)
     aptly_cmd.append('from')
@@ -173,16 +186,15 @@ def cmd_snapshot(snapshot_name, snapshot_config):
         aptly_cmd.extend(['mirror', snapshot_config['mirror']])
     elif 'repo' in snapshot_config:
         aptly_cmd.extend(['repo', snapshot_config['repo']])
-    try:
-        lg.debug('Running command: %s', ' '.join(aptly_cmd))
-        subprocess.check_call(aptly_cmd)
-    except subprocess.CalledProcessError:  # pragma: no cover
-        lg.exception("Subprocess raised error")
+    lg.debug('Running command: %s', ' '.join(aptly_cmd))
+    subprocess.check_call(aptly_cmd)
 
 
 def mirror(cfg, args):
     """Creates mirrors"""
     lg.debug("Mirrors to create: %s", cfg['mirror'])
+
+    cmd_mirror = mirror_cmds[args.task]
 
     if args.mirror_name == "all":
         for mirror_name, mirror_config in cfg['mirror'].items():
@@ -244,7 +256,7 @@ def add_gpg_keys(mirror_config):
                 subprocess.check_call(['bash', '-c', key_command])
 
 
-def cmd_mirror(mirror_name, mirror_config):
+def cmd_mirror_create(mirror_name, mirror_config):
     """Call the aptly mirror command"""
     if mirror_name in state.mirrors:
         return
@@ -263,11 +275,28 @@ def cmd_mirror(mirror_name, mirror_config):
     aptly_cmd.append(mirror_config['distribution'])
     for component in mirror_config['components']:
         aptly_cmd.append(component)
-    try:
-        lg.debug('Running command: %s', ' '.join(aptly_cmd))
-        subprocess.check_call(aptly_cmd)
-    except subprocess.CalledProcessError:  # pragma: no cover
-        lg.exception("Subprocess raised error")
+    lg.debug('Running command: %s', ' '.join(aptly_cmd))
+    subprocess.check_call(aptly_cmd)
+
+
+def cmd_mirror_update(mirror_name, mirror_config):
+    """Call the aptly mirror command"""
+    if mirror_name not in state.mirrors:
+        raise Exception("Mirror not created yet")
+    add_gpg_keys(mirror_config)
+    aptly_cmd = ['aptly', 'mirror', 'update']
+    aptly_cmd.append(mirror_name)
+    lg.debug('Running command: %s', ' '.join(aptly_cmd))
+    subprocess.check_call(aptly_cmd)
+
+mirror_cmds = {
+    'create': cmd_mirror_create,
+    'update': cmd_mirror_update,
+}
+
+snapshot_cmds = {
+    'create': cmd_snapshot_create,
+}
 
 if __name__ == '__main__':  # pragma: no cover
     main()

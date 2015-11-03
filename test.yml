@@ -1,0 +1,26 @@
+mirror:
+  # Defines the upstream mirrors.
+  #
+  # The key denotes the internal mirror name within aptly.
+  google-chrome:
+    components: [ "main" ]
+    architectures: [ "amd64", "i386" ]
+    distribution: "stable"
+    archive: "http://dl.google.com/linux/chrome/deb/"
+    gpg-keys: ["7FAC5991"]
+    gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
+snapshot:
+  google-chrome-latest:
+    mirror: "google-chrome"
+  google-chrome-stable:
+    filter: { "source": "google-chrome-latest", "query": "google-chrome-stable" }
+publish:
+  # Defines the publishing endpoints.
+  #
+  # The key denotes the target, for example: 'ubuntu/latest' will create an
+  # endpoint at http://<server>/ubuntu/latest/
+  google-chrome:
+    -
+      distribution: "latest"
+      architectures: [ "amd64", "i386" ]
+      components: [ "main" ]
