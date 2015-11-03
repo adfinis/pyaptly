@@ -298,11 +298,13 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
             default_aptly_cmd + ['mirror', snapshot_config['mirror']]
         )
         cmd.provide('snapshot', snapshot_name)
+        cmd.require('mirror',  snapshot_config['mirror'])
         return cmd
 
     elif 'repo' in snapshot_config:
         cmd = Command(default_aptly_cmd + ['repo', snapshot_config['repo']])
         cmd.provide('snapshot', snapshot_name)
+        cmd.require('repo',     snapshot_config['repo'])
         return cmd
 
     elif 'filter' in snapshot_config:
