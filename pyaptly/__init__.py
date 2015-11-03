@@ -2,6 +2,7 @@
 import argparse
 import logging
 import subprocess
+import collections
 import sys
 
 import yaml
@@ -30,6 +31,115 @@ def call_output(args, input_=None):
             args,
         )
     return output
+
+
+class Command(object):
+    def __init__(self, cmd):
+        self.cmd = cmd
+        self._requires = set()
+        self._provides = set()
+        self._finished = None
+
+    def require(self, type_, identifier):
+        assert type_ in ('snapshot', 'mirror', 'repo', 'any')
+        self._requires.add((type_, identifier))
+
+    def provide(self, type_, identifier):
+        assert type_ in ('snapshot', 'mirror', 'repo', 'publish')
+        self._provides.add((type_, identifier))
+
+    def execute(self):
+        if self._finished is not None:
+            return self._finished
+
+        lg.debug('Running command: %s', ' '.join(self.cmd))
+        self._finished = subprocess.check_call(self.cmd)
+
+        return self._finished
+
+    def __str__(self):
+        return " ".join(self.cmd)
+
+    @staticmethod
+    def order_commands(commands, has_dependency_cb=lambda: False):
+        # Filter out any invalid entries.. TODO: Should be done
+        # somewhere else...
+        commands = [c for c in commands if c.__class__ == Command]
+
+        # use simple object id for identification.
+        commands_by_id = {}
+        for c in commands:
+            commands_by_id[id(c)] = c
+
+        lg.debug('Ordering commands: %s', [
+            str(cmd) for cmd in commands
+        ])
+
+        provided_by_id = collections.defaultdict(set)
+        required_by_id = collections.defaultdict(set)
+
+        # collect everything provided by all the commands
+        for cmd in commands:
+            for provides in cmd._provides:
+                provided_by_id[provides].add(id(cmd))
+
+        # collect everything required by the commands
+        for cmd in commands:
+            for require in cmd._requires:
+                required_by_id[require].add(id(cmd))
+
+        have_requirements = set()
+        scheduled_cmdids  = []
+
+        something_changed = True
+        while something_changed:
+            something_changed = False
+
+            for cmd in commands:
+                cmdid = id(cmd)
+                if cmdid in scheduled_cmdids:
+                    continue
+
+                can_schedule = True
+                for req in cmd._requires:
+                    if req not in have_requirements:
+                        # No command providing our dependency.. Let's see if
+                        # it's already otherwise fulfilled
+                        if not has_dependency_cb(req):
+                            can_schedule = False
+                            break
+
+                if can_schedule:
+                    scheduled_cmdids.append(cmdid)
+                    have_requirements = have_requirements.union(cmd._provides)
+                    something_changed = True
+
+        planned_commands = [
+            commands_by_id[cmdid]
+            for cmdid in scheduled_cmdids
+        ]
+
+        unresolved = [
+            commands_by_id[cmdid]
+            for cmdid in scheduled_cmdids
+            if cmdid not in scheduled_cmdids
+        ]
+
+        if len(unresolved) > 0:
+            raise ValueError('Commands with unresolved deps: %s', [
+                str(cmd) for cmd in unresolved
+            ])
+
+        # Just one last verification before we commence
+        scheduled_set = set([id(cmd) for cmd in planned_commands])
+        incoming_set  = set([id(cmd) for cmd in commands])
+        assert incoming_set == scheduled_set
+
+        lg.info('Reordered commands: %s', [
+            str(cmd) for cmd in planned_commands
+        ])
+
+        return planned_commands
 
 
 class SystemStateReader(object):
@@ -76,6 +186,18 @@ class SystemStateReader(object):
         lg.debug('Aptly returned %s: %s', type_, data)
         for line in data.split("\n"):
             list_.add(line.strip())
+
+    def has_dependency(self, dependency):
+        type_, name = dependency
+
+        if type_ == 'mirror':
+            return name in self.mirrors
+        elif type_ == 'snapshot':
+            return name in self.snapshots
+        elif type_ == 'gpg_key':
+            return name in self.gpg_keys
+        else:
+            raise ValueError("Unknown dependency to resolve: %s" % dependency)
 
 
 state = SystemStateReader()
@@ -161,14 +283,23 @@ def snapshot(cfg, args):
     cmd_snapshot = snapshot_cmds[args.task]
 
     if args.snapshot_name == "all":
-        for snapshot_name, snapshot_config in cfg['snapshot'].items():
+        commands = [
             cmd_snapshot(snapshot_name, snapshot_config)
+            for snapshot_name, snapshot_config
+            in cfg['snapshot'].items()
+        ]
+
+        for cmd in Command.order_commands(commands, state.has_dependency):
+            cmd.execute()
+
     else:
         if args.snapshot_name in cfg['snapshot']:
-            cmd_snapshot(
+            cmd = cmd_snapshot(
                 args.snapshot_name,
                 cfg['snapshot'][args.snapshot_name]
             )
+            if cmd is not None:
+                cmd.execute()
         else:
             raise ValueError(
                 "Requested snapshot is not defined in config file: %s" % (
@@ -186,29 +317,35 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
     default_aptly_cmd.append('from')
 
     if 'mirror' in snapshot_config:
-        aptly_cmd = default_aptly_cmd + ['mirror', snapshot_config['mirror']]
+        cmd = Command(
+            default_aptly_cmd + ['mirror', snapshot_config['mirror']]
+        )
+        cmd.provide('snapshot', snapshot_name)
+        return cmd
 
     elif 'repo' in snapshot_config:
-        aptly_cmd = default_aptly_cmd + ['repo', snapshot_config['repo']]
+        cmd = Command(default_aptly_cmd + ['repo', snapshot_config['repo']])
+        cmd.provide('snapshot', snapshot_name)
+        return cmd
 
     elif 'filter' in snapshot_config:
-        aptly_cmd = [
+        cmd = Command([
             'aptly',
             'snapshot',
             'filter',
             snapshot_config['filter']['source'],
             snapshot_name,
             snapshot_config['filter']['query'],
-        ]
+        ])
+        cmd.provide('snapshot', snapshot_name)
+        cmd.require('snapshot', snapshot_config['filter']['source'])
+        return cmd
     else:
         raise ValueError(
             "Don't know how to handle snapshot config" % (
                 snapshot_config
             )
         )
-
-    lg.debug('Running command: %s', ' '.join(aptly_cmd))
-    subprocess.check_call(aptly_cmd)
 
 
 def mirror(cfg, args):
