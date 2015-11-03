@@ -9,7 +9,7 @@ mirror:
     sources: True
     udeb: True
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
-    gpg-key: "40976EAF437D05B5"
+    gpg-keys: ["437D05B5", "C0B21F32"]
   trusty-security:
     components: [ "main", "multiverse", "restricted", "universe" ]
     architectures: [ "amd64", "i386" ]
@@ -17,7 +17,7 @@ mirror:
     sources: True
     udeb: True
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
-    gpg-key: "40976EAF437D05B5"
+    gpg-keys: ["437D05B5", "C0B21F32"]
   trusty-updates:
     components: [ "main", "multiverse", "restricted", "universe" ]
     architectures: [ "amd64", "i386" ]
@@ -25,7 +25,7 @@ mirror:
     sources: True
     udeb: True
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
-    gpg-key: "40976EAF437D05B5"
+    gpg-keys: ["437D05B5", "C0B21F32"]
   trusty-backports:
     components: [ "main", "multiverse", "restricted", "universe" ]
     architectures: [ "amd64", "i386" ]
@@ -33,13 +33,14 @@ mirror:
     sources: True
     udeb: True
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
-    gpg-key: "40976EAF437D05B5"
+    gpg-keys: ["437D05B5", "C0B21F32"]
   google-chrome:
     components: [ "main" ]
     architectures: [ "amd64", "i386" ]
     distribution: "stable"
     archive: "http://dl.google.com/linux/chrome/deb/"
-    gpg-url: "https://dl.google.com/linux/linux_signing_key.pub"
+    gpg-keys: ["7FAC5991"]
+    gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
 snapshot:
   trusty-latest:
     mirror: "trusty"

@@ -148,15 +148,44 @@ def mirror(cfg, args):
 
 def cmd_mirror(mirror_name, mirror_config):
     """Call the aptly mirror command"""
-    if 'gpg-url' in mirror_config:
-        key_command = (
-            "wget -q -O - %s | "
-            "gpg --no-default-keyring --keyring trustedkeys.gpg --import"
-        ) % mirror_config['gpg-url']
-        subprocess.check_call(['bash', '-c', key_command])
-    if 'gpg-key' in mirror_config:
-        key_command = ["gpg", "--recv-keys", mirror_config['gpg-key']]
-        subprocess.check_call(key_command)
+    if 'gpg-keys' in mirror_config:
+        keys = mirror_config['gpg-keys']
+        keys_urls = {}
+        if 'gpg-urls' in mirror_config:
+            urls = mirror_config['gpg-urls']
+            urls_len = len(urls)
+            for x in range(len(keys)):
+                if x < urls_len:
+                    url = urls[x]
+                else:
+                    url = None
+                keys_urls[keys[x]] = url
+        else:
+            for key in keys:
+                keys_urls[key] = None
+
+    for key in keys_urls.keys():
+        try:
+            key_command = [
+                "gpg",
+                "--no-default-keyring",
+                "--keyring",
+                "trustedkeys.gpg",
+                "--keyserver",
+                "pool.sks-keyservers.net",
+                "--recv-keys",
+                key
+            ]
+            subprocess.check_call(key_command)
+        except OSError:
+            url = keys_urls[key]
+            if url:
+                key_command = (
+                    "wget -q -O - %s | "
+                    "gpg --no-default-keyring "
+                    "--keyring trustedkeys.gpg --import"
+                ) % url
+                subprocess.check_call(['bash', '-c', key_command])
     aptly_cmd = ['aptly', 'mirror', 'create']
     if 'sources' in mirror_config and mirror_config['sources']:
         aptly_cmd.append('-with-sources')
