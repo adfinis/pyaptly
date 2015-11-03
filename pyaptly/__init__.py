@@ -65,25 +65,19 @@ class Command(object):
         # somewhere else...
         commands = [c for c in commands if c]
 
-        # use simple object id for identification.
-        commands_by_id = {}
-        for c in commands:
-            commands_by_id[id(c)] = c
-
         lg.debug('Ordering commands: %s', [
             str(cmd) for cmd in commands
         ])
 
         have_requirements = set()
-        scheduled_cmdids  = []
+        scheduled  = []
 
         something_changed = True
         while something_changed:
             something_changed = False
 
             for cmd in commands:
-                cmdid = id(cmd)
-                if cmdid in scheduled_cmdids:
+                if cmd in scheduled:
                     continue
 
                 can_schedule = True
@@ -98,19 +92,14 @@ class Command(object):
                             break
 
                 if can_schedule:
-                    scheduled_cmdids.append(cmdid)
+                    scheduled.append(cmd)
                     have_requirements = have_requirements.union(cmd._provides)
                     something_changed = True
 
-        planned_commands = [
-            commands_by_id[cmdid]
-            for cmdid in scheduled_cmdids
-        ]
-
         unresolved = [
-            commands_by_id[cmdid]
-            for cmdid in scheduled_cmdids
-            if cmdid not in scheduled_cmdids
+            cmd
+            for cmd in commands
+            if cmd not in scheduled
         ]
 
         if len(unresolved) > 0:
@@ -119,15 +108,15 @@ class Command(object):
             ])
 
         # Just one last verification before we commence
-        scheduled_set = set([id(cmd) for cmd in planned_commands])
-        incoming_set  = set([id(cmd) for cmd in commands])
+        scheduled_set = set([cmd for cmd in scheduled])
+        incoming_set  = set([cmd for cmd in commands])
         assert incoming_set == scheduled_set
 
         lg.info('Reordered commands: %s', [
-            str(cmd) for cmd in planned_commands
+            str(cmd) for cmd in scheduled
         ])
 
-        return planned_commands
+        return scheduled
 
 
 class SystemStateReader(object):
