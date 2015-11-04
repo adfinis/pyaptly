@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 """Aptly mirror/snapshot managment automation."""
 import argparse
 import datetime
