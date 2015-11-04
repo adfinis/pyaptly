@@ -140,10 +140,6 @@ def date_round_daily(date, time=None):
     return rounded_date + delta
 
 
-def date_round_weekly(date, weekday, time):
-    pass
-
-
 def call_output(args, input_=None):
     p = subprocess.Popen(
         args,
