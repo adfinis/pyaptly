@@ -1,10 +1,24 @@
 """Aptly mirror/snapshot managment automation."""
 import argparse
+import datetime
 import logging
 import subprocess
 import sys
 
 import yaml
+
+
+def init_hypothesis():
+    try:  # pragma: no cover:w
+        import os
+        if 'HYPOTHESIS_PROFILE' in os.environ:
+            from hypothesis import Settings
+            Settings.register_profile("ci", Settings(
+                max_examples=10000
+            ))
+            Settings.load_profile(os.getenv(u'HYPOTHESIS_PROFILE', 'default'))
+    except (ImportError, AttributeError):  # pragma: no cover
+        pass
 
 
 def get_logger():
@@ -14,6 +28,75 @@ def get_logger():
     return logging.getLogger("pyaptly")
 
 lg = get_logger()
+init_hypothesis()
+
+
+def time_remove_tz(time):
+    """Convert a :py:class`datetime.time` to :py:class`datetime.time` to
+    without tzinfo.
+
+    :param time: Time to convert
+    :type  time: :py:class:`datetime.time`
+    :rtype:      :py:class:`datetime.time`
+    """
+    return datetime.time(
+        hour        = time.hour,
+        minute      = time.minute,
+        second      = time.second,
+        microsecond = time.microsecond,
+    )
+
+
+def time_delta_helper(time):
+    """Convert a :py:class`datetime.time` to :py:class`datetime.datetime` to
+    calculate deltas
+
+    :param time: Time to convert
+    :type  time: :py:class:`datetime.time`
+    :rtype:      :py:class:`datetime.datetime`
+    """
+    return datetime.datetime(
+        year        = 2000,
+        month       = 1,
+        day         = 1,
+        hour        = time.hour,
+        minute      = time.minute,
+        second      = time.second,
+        microsecond = time.microsecond,
+        tzinfo      = time.tzinfo,
+    )
+
+
+def date_round_daily(date, time):
+    """Round datetime to day where the roundpoint in the day is time.
+
+    THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
+    the date.
+
+    :param date: Datetime object to round
+    :type  date: :py:class:`datetime.datetime`
+    :param time: Roundpoint in the day (tzinfo ignored)
+    :type  time: :py:class:`datetime.time`
+    :rtype:      :py:class:`datetime.datetime`"""
+    time             = time_remove_tz(time)
+    delta            = datetime.timedelta(
+        hours        = time.hour,
+        minutes      = time.minute,
+        seconds      = time.second,
+        microseconds = time.microsecond,
+    )
+    raster_date  = date - delta
+    rounded_date = datetime.datetime(
+        year     = raster_date.year,
+        month    = raster_date.month,
+        day      = raster_date.day,
+        tzinfo   = raster_date.tzinfo
+    )
+    return rounded_date + delta
+
+
+def date_round_weekly(date, weekday, time):
+    pass
 
 
 def call_output(args, input_=None):
