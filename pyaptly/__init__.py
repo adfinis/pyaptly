@@ -92,21 +92,24 @@ def time_delta_helper(time):
         tzinfo      = time.tzinfo,
     )
 
+
 def date_round_weekly(date, day_of_week, time):
     """Round datetime back (floor) to a given the of the week.
 
     THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
     the date.
 
-    :param date: Datetime object to round
-    :type  date: :py:class:`datetime.datetime`
-    :param time: Roundpoint in the day (tzinfo ignored)
-    :type  time: :py:class:`datetime.time`
-    :rtype:      :py:class:`datetime.datetime`"""
-    time             = time_remove_tz(time)
+    :param        date: Datetime object to round
+    :type         date: :py:class:`datetime.datetime`
+    :param day_of_week: ISO day of week: monday is 1 and sunday is 7
+    :type  day_of_week: int
+    :param        time: Roundpoint in the day (tzinfo ignored)
+    :type         time: :py:class:`datetime.time`
+    :rtype:             :py:class:`datetime.datetime`"""
+    time = time_remove_tz(time)
 
 
-def date_round_daily(date, time):
+def date_round_daily(date, time=None):
     """Round datetime to day back (floor) to the roundpoint (time) in the day
 
     THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
@@ -117,7 +120,10 @@ def date_round_daily(date, time):
     :param time: Roundpoint in the day (tzinfo ignored)
     :type  time: :py:class:`datetime.time`
     :rtype:      :py:class:`datetime.datetime`"""
-    time             = time_remove_tz(time)
+    if time:
+        time         = time_remove_tz(time)
+    else:
+        time         = datetime.time(hour=0, minute=0)
     delta            = datetime.timedelta(
         hours        = time.hour,
         minutes      = time.minute,
