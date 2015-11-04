@@ -109,6 +109,13 @@ def date_round_weekly(date, day_of_week, time):
     :rtype:             :py:class:`datetime.datetime`"""
     time = time_remove_tz(time)
 
+    # Fallback to daily until this is actually implemented!
+    lg.warning(
+        "date_round_weekly() not implemented yet, returning "
+        "value of  date_round_daily()!"
+    )
+    return date_round_daily(date, time)
+
 
 def date_round_daily(date, time=None):
     """Round datetime to day back (floor) to the roundpoint (time) in the day
