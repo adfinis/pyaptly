@@ -22,7 +22,7 @@ snapshot:
       # to set the time of day when the snapshot "rolls over".
       #
       # Weekdays are denoted in english 3-letter abbreviations. Time is denoted
-      # in 24 hour HH:MM format.
+      # in 24 hour HH:MM format and assumed to be UTC.
       #
       # Example:
       #   - repeat-weekly set to monday, time set to 00:00:
