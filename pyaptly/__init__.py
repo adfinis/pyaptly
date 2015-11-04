@@ -92,9 +92,22 @@ def time_delta_helper(time):
         tzinfo      = time.tzinfo,
     )
 
+def date_round_weekly(date, day_of_week, time):
+    """Round datetime back (floor) to a given the of the week.
+
+    THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
+    the date.
+
+    :param date: Datetime object to round
+    :type  date: :py:class:`datetime.datetime`
+    :param time: Roundpoint in the day (tzinfo ignored)
+    :type  time: :py:class:`datetime.time`
+    :rtype:      :py:class:`datetime.datetime`"""
+    time             = time_remove_tz(time)
+
 
 def date_round_daily(date, time):
-    """Round datetime to day where the roundpoint in the day is time.
+    """Round datetime to day back (floor) to the roundpoint (time) in the day
 
     THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
     the date.
