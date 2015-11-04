@@ -287,6 +287,10 @@ def snapshot(cfg, args):
 
 def cmd_snapshot_create(snapshot_name, snapshot_config):
     """Call the aptly snapshot command"""
+
+    # TODO: extract possible timestamp component
+    # and generate *actual* snapshot name
+
     if snapshot_name in state.snapshots:
         return
     default_aptly_cmd = ['aptly', 'snapshot', 'create']
