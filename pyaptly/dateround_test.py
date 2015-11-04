@@ -1,9 +1,20 @@
 """Dateround tests"""
 
 import datetime
-from . import date_round_daily, time_remove_tz, time_delta_helper
+from . import (
+    date_round_daily, time_remove_tz, time_delta_helper, iso_to_gregorian
+)
 from hypothesis import given
 from hypothesis.extra.datetime import datetimes, times
+
+
+@given(datetimes())
+def test_is_to_gregorian(date):
+    iso_tuple = date.isocalendar()
+    new_date  = iso_to_gregorian(*iso_tuple)
+    assert date.year  == new_date.year
+    assert date.month == new_date.month
+    assert date.day   == new_date.day
 
 
 @given(datetimes(), times())

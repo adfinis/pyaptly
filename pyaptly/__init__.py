@@ -31,6 +31,32 @@ lg = get_logger()
 init_hypothesis()
 
 
+def iso_first_week_start(iso_year):
+    """The gregorian calendar date of the first day of the given ISO year
+
+    :param iso_year: Year to find the date of the first week.
+    :type  iso_year: int"""
+    fourth_jan = datetime.date(iso_year, 1, 4)
+    delta = datetime.timedelta(fourth_jan.isoweekday() - 1)
+    return fourth_jan - delta
+
+
+def iso_to_gregorian(iso_year, iso_week, iso_day):
+    """Gregorian calendar date for the given ISO year, week and day
+
+    :param iso_year: ISO year
+    :type  iso_year: int
+    :param iso_week: ISO week
+    :type  iso_week: int
+    :param  iso_day: ISO day
+    :type   iso_day: int"""
+    year_start = iso_first_week_start(iso_year)
+    return year_start + datetime.timedelta(
+        days=iso_day - 1,
+        weeks=iso_week - 1
+    )
+
+
 def time_remove_tz(time):
     """Convert a :py:class`datetime.time` to :py:class`datetime.time` to
     without tzinfo.
