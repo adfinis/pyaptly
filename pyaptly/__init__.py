@@ -385,6 +385,91 @@ def main(argv=None):
     args.func(cfg, args)
 
 
+def expand_timestamped_name(name, timestamp_config, date=None):
+    """Expands the given name by adding a timestamp.
+
+    The contents of the timestamp is configured by the given timestamp_config
+    dict, which MUST contain a "time" key, and MAY contain a "repeat-weekly"
+    key.
+
+    If the key "repeat-weekly" is given, it is expected to contain a
+    three-letter weekday name (mon, tue, thu, ...). The "time" key is expected
+    to be a 24 hour HH:MM time specification.
+
+    Timestamps are rounded down to the nearest time as specified (which may be
+    on the previous day. If repeat-weekly is specified, it is rounded down
+    (back in time) to the given weekday.)
+
+    The name parameter may be a simple string. If it contains the marker "%T",
+    then this placeholder will be replaced by the timestamp. If it does NOT
+    contain that marker, then nothing happens (and the timestamp_config is not
+    evaluated at all)
+
+    If a datetime object is given as third parameter, then it is used to
+    generate the timestamp. If it is omitted, the current date/time is used.
+
+    Example:
+    >>> expand_timestamped_name(
+    ...     'foo-%T',
+    ...     {'timestamp': {'time': '00:00'}},
+    ...     datetime.datetime(2015,10,7, 15,30)  # A Wednesday
+    ... )
+    foo-20151007T0000Z
+
+    >>> expand_timestamped_name(
+    ...     'foo-%T',
+    ...     {'timestamp': {'time': '00:00', 'repeat-weekly': 'mon'}},
+    ...     datetime.datetime(2015,10,8, 15,30)  # A Thursday
+    ... )
+    foo-20151005T0000Z
+
+    >>> expand_timestamped_name(
+    ...     'foo',  # No %T placeholder, timestamp info is ignored
+    ...     {'timestamp': {'time': '00:00', 'repeat-weekly': 'mon'}},
+    ...     datetime.datetime(2015,10,8, 15,30)
+    ... )
+    foo
+    """
+
+    if '%T' not in name:
+        return name
+
+    timestamp_info = timestamp_config.get('timestamp', {})
+    config_time    = timestamp_info.get('time', 'FAIL')
+    if config_time == 'FAIL':
+        raise ValueError("Timestamp config has no valid time entry")
+
+    config_repeat_weekly = timestamp_info.get('repeat-weekly', None)
+
+    hour, minute = [int(x) for x in config_time.split(':')][:2]
+
+    if date is None:
+        date = datetime.datetime.now()
+
+    if config_repeat_weekly is not None:
+        day_of_week = {
+            'mon': 1,
+            'tue': 2,
+            'wed': 3,
+            'thu': 4,
+            'fri': 5,
+            'sat': 6,
+            'sun': 7,
+        }.get(config_repeat_weekly.lower())
+
+        timestamp = date_round_weekly(
+            date,
+            day_of_week,
+            datetime.time(hour=hour, minute=minute)
+        )
+    else:
+        timestamp = date_round_daily(
+            date,
+            datetime.time(hour=hour, minute=minute)
+        )
+    return name.replace('%T', timestamp.strftime('%Y%m%dT%H%MZ'))
+
+
 def snapshot(cfg, args):
     """Creates snapshots"""
     lg.debug("Snapshots to create: %s", (cfg['snapshot']))
@@ -417,11 +502,41 @@ def snapshot(cfg, args):
             )
 
 
+def snapshot_spec_to_name(snapshot):
+    """Converts a given snapshot short spec to a name.
+
+    A short spec is a value that may either be a string or a dict.
+
+    If it's a string, everything is fine and we just use that as
+    a snapshot name.
+
+    However if it's a dict, we assume it has the following keys:
+
+     * name: template for the snapshot
+     * timestamp: information on how to generate the timestamp.
+
+     For further information regarding the timestamp's data structure,
+     consult the documentation of expand_timestamped_name().
+    """
+
+    if hasattr(snapshot, 'items'):
+        name      = snapshot['name']
+        ts_config = snapshot['timestamp']
+
+        return expand_timestamped_name(name, ts_config)
+    else:
+        return snapshot
+
+
 def cmd_snapshot_create(snapshot_name, snapshot_config):
     """Call the aptly snapshot command"""
 
     # TODO: extract possible timestamp component
     # and generate *actual* snapshot name
+
+    snapshot_name = expand_timestamped_name(
+        snapshot_name, snapshot_config
+    )
 
     if snapshot_name in state.snapshots:
         return
@@ -448,12 +563,15 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
             'aptly',
             'snapshot',
             'filter',
-            snapshot_config['filter']['source'],
+            snapshot_spec_to_name(snapshot_config['filter']['source']),
             snapshot_name,
             snapshot_config['filter']['query'],
         ])
         cmd.provide('snapshot', snapshot_name)
-        cmd.require('snapshot', snapshot_config['filter']['source'])
+        cmd.require(
+            'snapshot',
+            snapshot_spec_to_name(snapshot_config['filter']['source'])
+        )
         return cmd
     else:
         raise ValueError(
