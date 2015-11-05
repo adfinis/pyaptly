@@ -3,6 +3,7 @@
 import argparse
 import datetime
 import logging
+import re
 import subprocess
 import sys
 
@@ -285,12 +286,14 @@ class SystemStateReader(object):
         self.mirrors   = set()
         self.snapshots = set()
         self.publishes = set()
+        self.publish_map = {}
 
     def read(self):
         self.read_gpg()
         self.read_mirror()
         self.read_snapshot()
         self.read_publishes()
+        self.read_publish_map()
 
     def read_gpg(self):
         self.gpg_keys = set()
@@ -310,6 +313,19 @@ class SystemStateReader(object):
                 self.gpg_keys.add(key)
                 self.gpg_keys.add(key_short)
 
+    def read_publish_map(self):
+        self.publish_map = {}
+        data = call_output([
+            "aptly", "publish", "list"
+        ])
+        for publish in self.publishes:
+            for line in data.split("\n"):
+                if re.match(".*%s/%s" % tuple(publish.split(" ")), line):
+                    for snapshot in self.snapshots:
+                        if re.match(".*\[%s\]" % snapshot, line):
+                            self.publish_map[publish] = snapshot
+        lg.debug('Joined snapshots and publishes: %s', self.publish_map)
+
     def read_publishes(self):
         self.publishes = set()
         self.read_aptly_list("publish", self.publishes)
@@ -328,7 +344,9 @@ class SystemStateReader(object):
         ])
         lg.debug('Aptly returned %s: %s', type_, data)
         for line in data.split("\n"):
-            list_.add(line.strip())
+            clean_line = line.strip()
+            if clean_line:
+                list_.add(clean_line)
 
     def has_dependency(self, dependency):
         type_, name = dependency
