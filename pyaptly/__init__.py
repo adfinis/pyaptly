@@ -537,11 +537,13 @@ def publish_cmd_create(cfg, publish_name, publish_config):
 
     publish_cmd   = ['aptly', 'publish']
     options       = []
+    source_args   = []
     endpoint_args = [
         publish_name
     ]
 
     has_source = False
+    has_key    = False
 
     for conf, conf_value in publish_config.items():
 
@@ -550,14 +552,26 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                 '-architectures=%s' %
                 join_list_or_string(',', conf_value)
             )
-        if conf == 'components':
+        elif conf == 'components':
             options.append(
-                '-components=%s' %
-                join_list_or_string(',', conf_value)
+                '-component=%s' % join_list_or_string(',', conf_value)
             )
+        elif conf == 'label':
+            options.append(
+                '-label=%s' % conf_value
+            )
+        elif conf == 'origin':
+            options.append('-origin=%s' % conf_value)
+
         elif conf == 'distribution':
             options.append('-distribution=%s' % conf_value)
 
+        elif conf == 'gpg-key':
+            has_key = True
+            options.append('-gpg-key=%s' % conf_value)
+        elif conf == 'automatic-update':
+            # Ignored here
+            pass
         elif conf == 'snapshot':
             if has_source:
                 raise ValueError(
@@ -567,10 +581,10 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                     )
                 )
             has_source = True
-            publish_cmd.append(
+            source_args = [
                 'snapshot',
                 snapshot_spec_to_name(cfg, conf_value)
-            )
+            ]
 
         elif conf == 'repo':
             if has_source:
@@ -581,19 +595,21 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                     )
                 )
             has_source = True
-            publish_cmd.append(
+            source_args = [
                 'repo',
                 conf_value
-            )
+            ]
 
         else:
             raise ValueError(
-                "Don't know how to handle publish config" % (
-                    publish_config
+                "Don't know how to handle publish config entry %s in %s" % (
+                    conf,
+                    publish_name,
                 )
             )
+    assert has_source and has_key
 
-    return Command(publish_cmd + options + endpoint_args)
+    return Command(publish_cmd + options + source_args + endpoint_args)
 
 
 def publish_cmd_update(cfg, publish_name, publish_config):
@@ -680,6 +696,12 @@ def snapshot(cfg, args):
                     args.snapshot_name
                 )
             )
+
+
+def format_timestamp(timestamp):
+    "Wrapper for strftime, to ensure we're all using the same format"
+    return timestamp.strftime('%Y%m%dT%H%MZ')
+
 
 back_reference_map = {
     "current"  : 0,
