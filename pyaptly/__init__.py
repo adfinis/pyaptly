@@ -320,10 +320,11 @@ class SystemStateReader(object):
         ])
         for publish in self.publishes:
             for line in data.split("\n"):
-                if re.match(".*%s/%s" % tuple(publish.split(" ")), line):
+                if re.match(".*%s/%s " % tuple(publish.split(" ")), line):
                     for snapshot in self.snapshots:
                         if re.match(".*\[%s\]" % snapshot, line):
                             self.publish_map[publish] = snapshot
+                            break
         lg.debug('Joined snapshots and publishes: %s', self.publish_map)
 
     def read_publishes(self):
