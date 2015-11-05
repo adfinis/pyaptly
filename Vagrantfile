@@ -72,7 +72,14 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: <<-SHELL
     yum -y install python-argparse python-yaml wget
     cd /usr/local/bin
-    wget https://dl.bintray.com/smira/aptly/0.9.5/centos-6.5-x64/aptly
-    chmod 755 aptly
+    wget -q https://dl.bintray.com/smira/aptly/0.9.5/centos-6.5-x64/aptly
+    sha256sum -c <<EOF
+9f36902eab9994bce32356dc22d2317f0939b899591f3262379a9af1301ad1da  aptly
+EOF
+    if [ "$?" = "0" ]; then
+      chmod 755 aptly
+    else
+      rm aptly
+    fi
   SHELL
 end
