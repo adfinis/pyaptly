@@ -596,7 +596,6 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
         cmd.provide('snapshot', snapshot_name)
 
         for source in snapshot_config['merge']:
-            import pdb; pdb.set_trace()
             source_name = snapshot_spec_to_name(source)
             cmd.append(source_name)
             cmd.require('snapshot', source_name)
