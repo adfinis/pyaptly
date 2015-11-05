@@ -268,11 +268,13 @@ class SystemStateReader(object):
         self.gpg_keys  = set()
         self.mirrors   = set()
         self.snapshots = set()
+        self.publishes = set()
 
     def read(self):
         self.read_gpg()
         self.read_mirror()
         self.read_snapshot()
+        self.read_publishes()
 
     def read_gpg(self):
         self.gpg_keys = set()
@@ -291,6 +293,10 @@ class SystemStateReader(object):
                 key_short = key[8:]
                 self.gpg_keys.add(key)
                 self.gpg_keys.add(key_short)
+
+    def read_publishes(self):
+        self.mirrors = set()
+        self.read_aptly_list("publish", self.publishes)
 
     def read_mirror(self):
         self.mirrors = set()
