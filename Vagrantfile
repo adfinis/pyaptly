@@ -81,5 +81,8 @@ EOF
     else
       rm aptly
     fi
+    gpg --import < /vagrant/vagrant/key.pub
+    gpg --import < /vagrant/vagrant/key.sec
+    true
   SHELL
 end
