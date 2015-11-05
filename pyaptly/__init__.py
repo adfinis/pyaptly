@@ -171,6 +171,10 @@ class Command(object):
         self._provides = set()
         self._finished = None
 
+    def append(self, argument):
+        assert str(argument) == argument
+        self.cmd.append(argument)
+
     def require(self, type_, identifier):
         assert type_ in ('snapshot', 'mirror', 'repo', 'any')
         self._requires.add((type_, identifier))
