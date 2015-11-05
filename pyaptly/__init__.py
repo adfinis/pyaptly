@@ -372,7 +372,7 @@ def main(argv=None):
     mirror_parser.add_argument(
         'task',
         type=str,
-        choices=['create', 'drop', 'update']
+        choices=['create', 'update']
     )
     mirror_parser.add_argument(
         'mirror_name',
@@ -385,7 +385,7 @@ def main(argv=None):
         help='manage aptly snapshots'
     )
     snapshot_parser.set_defaults(func=snapshot)
-    snapshot_parser.add_argument('task', type=str, choices=['create', 'drop'])
+    snapshot_parser.add_argument('task', type=str, choices=['create'])
     snapshot_parser.add_argument(
         'snapshot_name',
         type=str,
