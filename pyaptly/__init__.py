@@ -531,7 +531,8 @@ def join_list_or_string(separator, inputdata):
 def publish_cmd_create(cfg, publish_name, publish_config):
     """Call the aptly publish command"""
 
-    if publish_name in state.publishes:
+    publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
+    if publish_fullname in state.publishes:
         # Nothing to do, publish already created
         return
 
