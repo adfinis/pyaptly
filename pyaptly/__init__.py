@@ -653,6 +653,7 @@ def publish(cfg, args):
             cmd_publish(cfg, publish_name, publish_conf_entry)
             for publish_name, publish_conf in cfg['publish'].items()
             for publish_conf_entry in publish_conf
+            if publish_conf_entry.get('automatic-update', 'false') == 'true'
         ]
 
         for cmd in Command.order_commands(commands, state.has_dependency):
