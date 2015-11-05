@@ -438,10 +438,10 @@ def expand_timestamped_name(name, timestamp_config, date=None):
     if '%T' not in name:
         return name
 
-    timestamp_info = timestamp_config.get('timestamp', {})
+    timestamp_info = timestamp_config.get('timestamp', timestamp_config)
     config_time    = timestamp_info.get('time', 'FAIL')
     if config_time == 'FAIL':
-        raise ValueError("Timestamp config has no valid time entry")
+        raise ValueError("Timestamp config has no valid time entry: %s" % str(timestamp_config))
 
     config_repeat_weekly = timestamp_info.get('repeat-weekly', None)
 
