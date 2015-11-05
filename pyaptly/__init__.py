@@ -613,7 +613,25 @@ def publish_cmd_create(cfg, publish_name, publish_config):
 
 
 def publish_cmd_update(cfg, publish_name, publish_config):
-    pass
+    if 'repo' in publish_config:
+        # Nothing to do, repos are automatically up to date
+        return
+
+    snapshot_config = publish_config['snapshot']
+
+    archive = snapshot_config.get('archive-on-update', None)
+
+    if archive:
+        # Replace any timestamp placeholder with the current date/time.
+        # Note that this is NOT rounded, as we want to know exactly
+        # when the archival happened.
+        archive = archive.replace(
+            '%T',
+            format_timestamp(datetime.datetime.now())
+        )
+
+        #current_snapshot = snapshot_of_publish(publish_name)
+        #clone_snapshot(current_snapshot, archive)
 
 
 def publish(cfg, args):
