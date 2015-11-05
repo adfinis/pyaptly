@@ -42,24 +42,31 @@ mirror:
     gpg-keys: ["7FAC5991"]
     gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
 snapshot:
-  trusty-latest:
+  trusty-%T:
     mirror: "trusty"
-  trusty-security-latest:
+    timestamp: {"time": "00:00"}
+  trusty-security-%T:
     mirror: "trusty-security"
-  trusty-updates-latest:
+    timestamp: {"time": "00:00"}
+  trusty-updates-%T:
     mirror: "trusty-updates"
-  trusty-backports-latest:
+    timestamp: {"time": "00:00"}
+  trusty-backports-%T:
     mirror: "trusty-backports"
+    timestamp: {"time": "00:00"}
+  # Repo roche-keyring must be created manually
   roche-keyring-latest:
     repo: "roche-keyring"
   trusty_roche-keyring-latest:
     merge: [ "trusty-latest", "roche-keyring-latest" ]
-  google-chrome-latest:
+  google-chrome-%T:
     mirror: "google-chrome"
-  google-chrome-stable:
-    filter: { "source": "google-chrome-latest", "query": "google-chrome-stable" }
-  icaclient-latest:
-    repo: "icaclient"
+    timestamp: {"time": "00:00"}
+  google-chrome-stable-%T:
+    timestamp: {"time": "00:00"}
+    filter:
+      source: { "name": "google-daily-%T", "timestamp": "current" }
+      query: "google-chrome-stable"
 publish:
   # Defines the publishing endpoints.
   #
@@ -72,12 +79,14 @@ publish:
       architectures: [ "amd64", "i386", "source" ]
       components: [ "main", "multiverse", "restricted", "universe" ]
       snapshots: [ "trusty-latest" ]
+      automatic-update: true
     -
       distribution: "trusty-updates"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
       components: [ "main", "multiverse", "restricted", "universe" ]
       snapshots: [ "trusty-updates-latest" ]
+      automatic-update: true
     -
       distribution: "trusty-backports"
       origin: "Ubuntu"
@@ -85,6 +94,7 @@ publish:
       components: [ "main", "multiverse", "restricted", "universe" ]
       backports: True
       snapshots: [ "trusty-backports-latest" ]
+      automatic-update: true
   google-chrome:
     -
       distribution: "latest"
@@ -95,3 +105,4 @@ publish:
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: [ "main" ]
+      automatic-update: true
