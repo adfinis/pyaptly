@@ -627,11 +627,15 @@ def snapshot(cfg, args):
     """Creates snapshots"""
     lg.debug("Snapshots to create: %s", (cfg['snapshot']))
 
+    snapshot_cmds = {
+        'create': cmd_snapshot_create,
+    }
+
     cmd_snapshot = snapshot_cmds[args.task]
 
     if args.snapshot_name == "all":
         commands = [
-            cmd_snapshot(snapshot_name, snapshot_config)
+            cmd_snapshot(cfg, snapshot_name, snapshot_config)
             for snapshot_name, snapshot_config
             in cfg['snapshot'].items()
         ]
@@ -642,6 +646,7 @@ def snapshot(cfg, args):
     else:
         if args.snapshot_name in cfg['snapshot']:
             cmd = cmd_snapshot(
+                cfg,
                 args.snapshot_name,
                 cfg['snapshot'][args.snapshot_name]
             )
@@ -655,7 +660,7 @@ def snapshot(cfg, args):
             )
 
 
-def snapshot_spec_to_name(snapshot):
+def snapshot_spec_to_name(cfg, snapshot):
     """Converts a given snapshot short spec to a name.
 
     A short spec is a value that may either be a string or a dict.
@@ -681,7 +686,7 @@ def snapshot_spec_to_name(snapshot):
         return snapshot
 
 
-def cmd_snapshot_create(snapshot_name, snapshot_config):
+def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
     """Call the aptly snapshot command"""
 
     # TODO: extract possible timestamp component
@@ -716,7 +721,7 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
             'aptly',
             'snapshot',
             'filter',
-            snapshot_spec_to_name(snapshot_config['filter']['source']),
+            snapshot_spec_to_name(cfg, snapshot_config['filter']['source']),
             snapshot_name,
             snapshot_config['filter']['query'],
         ])
@@ -754,6 +759,11 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
 def mirror(cfg, args):
     """Creates mirrors"""
     lg.debug("Mirrors to create: %s", cfg['mirror'])
+
+    mirror_cmds = {
+        'create': cmd_mirror_create,
+        'update': cmd_mirror_update,
+    }
 
     cmd_mirror = mirror_cmds[args.task]
 
@@ -851,15 +861,6 @@ def cmd_mirror_update(mirror_name, mirror_config):
     aptly_cmd.append(mirror_name)
     lg.debug('Running command: %s', ' '.join(aptly_cmd))
     subprocess.check_call(aptly_cmd)
-
-mirror_cmds = {
-    'create': cmd_mirror_create,
-    'update': cmd_mirror_update,
-}
-
-snapshot_cmds = {
-    'create': cmd_snapshot_create,
-}
 
 if __name__ == '__main__':  # pragma: no cover
     main()
