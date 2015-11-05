@@ -311,7 +311,7 @@ class SystemStateReader(object):
                 self.gpg_keys.add(key_short)
 
     def read_publishes(self):
-        self.mirrors = set()
+        self.publishes = set()
         self.read_aptly_list("publish", self.publishes)
 
     def read_mirror(self):
