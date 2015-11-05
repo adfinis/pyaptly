@@ -631,26 +631,58 @@ def publish_cmd_create(cfg, publish_name, publish_config):
     return Command(publish_cmd + options + source_args + endpoint_args)
 
 
+def clone_snapshot(origin, destination):
+    cmd = Command([
+        'aptly',
+        'snapshot',
+        'merge',
+        destination,
+        origin
+    ])
+    cmd.provide('snapshot', destination)
+    cmd.require('snapshot', origin)
+    return cmd
+
+
 def publish_cmd_update(cfg, publish_name, publish_config):
     if 'repo' in publish_config:
         # Nothing to do, repos are automatically up to date
         return
 
+    publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
+
     snapshot_config = publish_config['snapshot']
 
-    archive = snapshot_config.get('archive-on-update', None)
+    # snapshot_config may be a plain name or a dict..
 
-    if archive:
-        # Replace any timestamp placeholder with the current date/time.
-        # Note that this is NOT rounded, as we want to know exactly
-        # when the archival happened.
-        archive = archive.replace(
-            '%T',
-            format_timestamp(datetime.datetime.now())
-        )
+    if hasattr(snapshot_config, 'items'):
+        # Dict mode - only here can we even have an archive option
+        archive = snapshot_config.get('archive-on-update', None)
 
-        #current_snapshot = snapshot_of_publish(publish_name)
-        #clone_snapshot(current_snapshot, archive)
+        if archive:
+            # Replace any timestamp placeholder with the current date/time.
+            # Note that this is NOT rounded, as we want to know exactly
+            # when the archival happened.
+            archive = archive.replace(
+                '%T',
+                format_timestamp(datetime.datetime.now())
+            )
+
+            current_snapshot = state.publish_map[publish_fullname]
+            clone_snapshot(current_snapshot, archive).execute()
+
+    new_snapshot = snapshot_spec_to_name(cfg, snapshot_config)
+
+    switch_cmd = Command([
+        'aptly',
+        'publish',
+        'switch',
+        publish_config['distribution'],
+        publish_name,
+        new_snapshot
+    ])
+
+    switch_cmd.execute()
 
 
 def publish(cfg, args):
