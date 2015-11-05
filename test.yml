@@ -30,12 +30,12 @@ snapshot:
       #        with the timestamp of monday (ex. 20151102T0000Z).
       #      - executed on tuesday, 02:00: nothing happens, as there is already
       #        a snapshot matching the "last" repeat date
-      repeat-weekly: mon
-      time: 00:00
+      repeat-weekly: "mon"
+      time: "00:00"
   google-daily-%T:
     mirror: "google-chrome"
     timestamp:
-      time: 00:00
+      time: "00:00"
   foobar-%T:
     timestamp: {"time": "00:00"}
     merge:
@@ -47,8 +47,8 @@ snapshot:
       # to be referenced: 0 means the most current, 1 the previous one, etc.
       # Instead of 0, you may also use the string "current", and instead of 1,
       # you may use the string "previous".
-      - { "name": "google-daily-%T", "timestamp": 0         }
-      - google-chrome-latest
+      - { "name": "google-daily-%T", "timestamp": 0 }
+      - "google-chrome-latest"
 
 publish:
   # Defines the publishing endpoints.
