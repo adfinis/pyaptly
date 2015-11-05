@@ -60,5 +60,4 @@ publish:
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: [ "main" ]
-      snapshots:
-        - { "name": "foobar-%T", "timestamp": "current" }
+      snapshot: { "name": "foobar-%T", "timestamp": "current" }
