@@ -754,14 +754,14 @@ def snapshot_spec_to_name(cfg, snapshot):
         name      = snapshot['name']
         ts        = snapshot['timestamp']
         back_ref  = back_reference_map.get(ts)
-        if not back_ref:
+        if back_ref is None:
             back_ref = int(ts)
         reference = cfg['snapshot'][name]
         for _ in range(back_ref + 1):
             cur_timestamp = round_timestamp(reference["timestamp"])
             cur_timestamp -= delta
         cur_timestamp += delta
-        return name.replace('%T', cur_timestamp.strftime('%Y%m%dT%H%MZ'))
+        return name.replace('%T', format_timestamp(cur_timestamp))
     else:
         return snapshot
 
