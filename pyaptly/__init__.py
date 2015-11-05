@@ -577,6 +577,24 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
             snapshot_spec_to_name(snapshot_config['filter']['source'])
         )
         return cmd
+
+    elif 'merge' in snapshot_config:
+        cmd = Command([
+            'aptly',
+            'snapshot',
+            'merge',
+            snapshot_name,
+        ])
+        cmd.provide('snapshot', snapshot_name)
+
+        for source in snapshot_config['merge']:
+            import pdb; pdb.set_trace()
+            source_name = snapshot_spec_to_name(source)
+            cmd.append(source_name)
+            cmd.require('snapshot', source_name)
+
+        return cmd
+
     else:
         raise ValueError(
             "Don't know how to handle snapshot config" % (
