@@ -32,17 +32,17 @@ lg = get_logger()
 init_hypothesis()
 
 
-def iso_first_week_start(iso_year):
+def iso_first_week_start(iso_year, tzinfo=None):
     """The gregorian calendar date of the first day of the given ISO year
 
     :param iso_year: Year to find the date of the first week.
     :type  iso_year: int"""
-    fourth_jan = datetime.date(iso_year, 1, 4)
+    fourth_jan = datetime.datetime(iso_year, 1, 4, tzinfo=tzinfo)
     delta = datetime.timedelta(fourth_jan.isoweekday() - 1)
     return fourth_jan - delta
 
 
-def iso_to_gregorian(iso_year, iso_week, iso_day):
+def iso_to_gregorian(iso_year, iso_week, iso_day, tzinfo=None):
     """Gregorian calendar date for the given ISO year, week and day
 
     :param iso_year: ISO year
@@ -51,7 +51,7 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
     :type  iso_week: int
     :param  iso_day: ISO day
     :type   iso_day: int"""
-    year_start = iso_first_week_start(iso_year)
+    year_start = iso_first_week_start(iso_year, tzinfo)
     return year_start + datetime.timedelta(
         days=iso_day - 1,
         weeks=iso_week - 1
@@ -94,7 +94,7 @@ def time_delta_helper(time):
     )
 
 
-def date_round_weekly(date, day_of_week, time):
+def date_round_weekly(date, day_of_week=1, time=None):
     """Round datetime back (floor) to a given the of the week.
 
     THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
@@ -107,14 +107,22 @@ def date_round_weekly(date, day_of_week, time):
     :param        time: Roundpoint in the day (tzinfo ignored)
     :type         time: :py:class:`datetime.time`
     :rtype:             :py:class:`datetime.datetime`"""
-    time = time_remove_tz(time)
+    if time:
+        time         = time_remove_tz(time)
+    else:
+        time         = datetime.time(hour=0, minute=0)
 
-    # Fallback to daily until this is actually implemented!
-    lg.warning(
-        "date_round_weekly() not implemented yet, returning "
-        "value of  date_round_daily()!"
+    delta            = datetime.timedelta(
+        days         = day_of_week - 1,
+        hours        = time.hour,
+        minutes      = time.minute,
+        seconds      = time.second,
+        microseconds = time.microsecond,
     )
-    return date_round_daily(date, time)
+    raster_date  = date - delta
+    iso = raster_date.isocalendar()
+    rounded_date = iso_to_gregorian(iso[0], iso[1], 1, date.tzinfo)
+    return rounded_date + delta
 
 
 def date_round_daily(date, time=None):

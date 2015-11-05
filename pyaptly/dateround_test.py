@@ -1,11 +1,13 @@
 """Dateround tests"""
 
 import datetime
-from . import (
-    date_round_daily, time_remove_tz, time_delta_helper, iso_to_gregorian
-)
+
 from hypothesis import given
 from hypothesis.extra.datetime import datetimes, times
+from hypothesis.strategies import integers
+
+from . import (date_round_daily, date_round_weekly, iso_to_gregorian,
+               time_delta_helper, time_remove_tz)
 
 
 @given(datetimes())
@@ -15,6 +17,81 @@ def test_is_to_gregorian(date):
     assert date.year  == new_date.year
     assert date.month == new_date.month
     assert date.day   == new_date.day
+
+
+@given(
+    datetimes(min_year=2),
+    integers(min_value=1, max_value=7),
+    times())
+def test_round_weekly_diff(date, day_of_week, time):
+    time            = time_remove_tz(time)
+    round_date      = date_round_weekly(date, day_of_week, time)
+    date_time       = datetime.time(
+        hour        = date.hour,
+        minute      = date.minute,
+        second      = date.second,
+        microsecond = date.microsecond,
+    )
+    # double round
+    assert round_date == date_round_weekly(round_date, day_of_week, time)
+    if round_date == date:
+        # Find tz problems
+        assert date_time == time
+        assert round_date.isoweekday() == day_of_week
+    else:
+        # Always round down
+        assert round_date < date
+        # Never round more than 7 days
+        assert date - round_date < datetime.timedelta(days=7)
+        # Check if rounded on given time and day
+        assert round_date.hour         == time.hour
+        assert round_date.minute       == time.minute
+        assert round_date.second       == time.second
+        assert round_date.microsecond  == time.microsecond
+        assert round_date.isoweekday() == day_of_week
+        # Expected delta
+        date_delta = date - round_date
+        date_day_time_delta = (
+            time_delta_helper(date_time) +
+            datetime.timedelta(days=date.weekday())
+        )
+        given_day_time_delta = (
+            time_delta_helper(time) +
+            datetime.timedelta(days=day_of_week - 1)
+        )
+        delta = date_day_time_delta - given_day_time_delta
+        if date_day_time_delta > given_day_time_delta:
+            assert date_delta == delta
+        else:
+            # Wrap the week
+            delta += datetime.timedelta(days=7)
+            assert date_delta == delta
+
+
+def test_weekly_examples():
+    date        = datetime.datetime(
+        year    = 2015,
+        month   = 11,
+        day     = 3,
+        hour    = 22,
+        minute  = 59,
+    )
+    time        = datetime.time(
+        hour    = 23,
+        minute  = 00
+    )
+    day_of_week = 2
+    rounded = date_round_weekly(date, day_of_week, time)
+    assert datetime.datetime(2015, 10, 27, 23, 0) == rounded
+    date        = datetime.datetime(
+        year    = 2015,
+        month   = 11,
+        day     = 3,
+        hour    = 23,
+        minute  = 01,
+    )
+    rounded = date_round_weekly(date, day_of_week, time)
+    assert datetime.datetime(2015, 11, 03, 23, 0) == rounded
 
 
 @given(datetimes(), times())
@@ -27,6 +104,8 @@ def test_round_daily_diff(date, time):
         second      = date.second,
         microsecond = date.microsecond,
     )
+    # double round
+    assert round_date == date_round_daily(round_date, time)
     if round_date == date:
         # Find tz problems
         assert date_time == time
@@ -51,7 +130,7 @@ def test_round_daily_diff(date, time):
             assert date_delta == time_delta
 
 
-def test_examples():
+def test_daily_examples():
     date       = datetime.datetime(
         year   = 2015,
         month  = 10,
@@ -68,6 +147,24 @@ def test_examples():
     time       = datetime.time(
         hour   = 11,
         minute = 00
+    )
+    rounded = date_round_daily(date, time)
+    assert datetime.datetime(2015, 10, 1, 11, 0) == rounded
+    date       = datetime.datetime(
+        year   = 2015,
+        month  = 10,
+        day    = 1,
+        hour   = 10,
+        minute = 59,
+    )
+    rounded = date_round_daily(date, time)
+    assert datetime.datetime(2015, 9, 30, 11, 0) == rounded
+    date       = datetime.datetime(
+        year   = 2015,
+        month  = 10,
+        day    = 1,
+        hour   = 11,
+        minute = 1,
     )
     rounded = date_round_daily(date, time)
     assert datetime.datetime(2015, 10, 1, 11, 0) == rounded
