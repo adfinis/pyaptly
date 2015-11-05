@@ -376,11 +376,18 @@ def main(argv=None):
         nargs='?',
         default='all'
     )
-    # TODO implement this
-    # publish_parser = subparsers.add_parser(
-    #     'publish',
-    #     help='manage aptly publish endpoints'
-    # )
+    publish_parser = subparsers.add_parser(
+        'publish',
+        help='manage aptly publish endpoints'
+    )
+    publish_parser.set_defaults(func=publish)
+    publish_parser.add_argument('task', type=str, choices=['create', 'update'])
+    publish_parser.add_argument(
+        'publish_name',
+        type=str,
+        nargs='?',
+        default='all'
+    )
 
     args = parser.parse_args(argv)
     root = logging.getLogger()
@@ -489,6 +496,131 @@ def expand_timestamped_name(name, timestamp_config, date=None):
             datetime.time(hour=hour, minute=minute)
         )
     return name.replace('%T', timestamp.strftime('%Y%m%dT%H%MZ'))
+
+
+def join_list_or_string(separator, inputdata):
+    if isinstance(inputdata, list) or isinstance(inputdata, tuple):
+        return separator.join(inputdata)
+
+    # Strings should not be "joined". We assume a single value
+    return inputdata
+
+
+def publish_cmd_create(cfg, publish_name, publish_config):
+    """Call the aptly publish command"""
+
+    if publish_name in state.publishes:
+        # Nothing to do, publish already created
+        return
+
+    publish_cmd   = ['aptly', 'publish']
+    options       = []
+    endpoint_args = [
+        publish_name
+    ]
+
+    has_source = False
+
+    for conf, conf_value in publish_config.items():
+
+        if conf == 'architectures':
+            options.append(
+                '-architectures=%s' %
+                join_list_or_string(',', conf_value)
+            )
+        if conf == 'components':
+            options.append(
+                '-components=%s' %
+                join_list_or_string(',', conf_value)
+            )
+        elif conf == 'distribution':
+            options.append('-distribution=%s' % conf_value)
+
+        elif conf == 'snapshot':
+            if has_source:
+                raise ValueError(
+                    "Multiple sources for publish %s %s" % (
+                        publish_name,
+                        publish_config
+                    )
+                )
+            has_source = True
+            publish_cmd.append(
+                'snapshot',
+                snapshot_spec_to_name(cfg, conf_value)
+            )
+
+        elif conf == 'repo':
+            if has_source:
+                raise ValueError(
+                    "Multiple sources for publish %s %s" % (
+                        publish_name,
+                        publish_config
+                    )
+                )
+            has_source = True
+            publish_cmd.append(
+                'repo',
+                conf_value
+            )
+
+        else:
+            raise ValueError(
+                "Don't know how to handle publish config" % (
+                    publish_config
+                )
+            )
+
+    return Command(publish_cmd + options + endpoint_args)
+
+
+def publish_cmd_update(cfg, publish_name, publish_config):
+    pass
+
+
+def publish(cfg, args):
+    """Creates snapshots"""
+    lg.debug("Publishes to create / update: %s", (cfg['publish']))
+
+    # aptly publish snapshot -components ... -architectures ... -distribution
+    # ... -origin Ubuntu trusty-stable ubuntu/stable
+
+    publish_cmds = {
+        'create': publish_cmd_create,
+        'update': publish_cmd_update,
+    }
+
+    cmd_publish = publish_cmds[args.task]
+
+    if args.publish_name == "all":
+        commands = [
+            cmd_publish(cfg, publish_name, publish_conf_entry)
+            for publish_name, publish_conf in cfg['publish'].items()
+            for publish_conf_entry in publish_conf
+        ]
+
+        for cmd in Command.order_commands(commands, state.has_dependency):
+            cmd.execute()
+
+    else:
+        if args.publish_name in cfg['publish']:
+            commands = [
+                cmd_publish(
+                    cfg,
+                    args.publish_name,
+                    publish_conf_entry
+                )
+                for publish_conf_entry
+                in cfg['publish'][args.publish_name]
+            ]
+            for cmd in Command.order_commands(commands, state.has_dependency):
+                cmd.execute()
+        else:
+            raise ValueError(
+                "Requested publish is not defined in config file: %s" % (
+                    args.publish_name
+                )
+            )
 
 
 def snapshot(cfg, args):
