@@ -59,5 +59,11 @@ publish:
     -
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
-      components: [ "main" ]
-      snapshot: { "name": "foobar-%T", "timestamp": "current" }
+      components: "main"
+      snapshot:
+        name: "foobar-%T"
+        timestamp: "current"
+        archive-on-update: "archived-chrome-%T"
+      gpg-key: "650FE755"
+      origin: "yeah whatever"
+      automatic-update: true
