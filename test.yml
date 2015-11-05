@@ -39,7 +39,15 @@ snapshot:
   foobar-%T:
     timestamp: {"time": "00:00"}
     merge:
-      - { "name": "google-daily-%T", "timestamp": { "time": "00:00" } }
+      # References to snapshots can be either a single name, or a dict
+      # describing a timestamped snapshot. That dict must have two keys,
+      # "name" and "timestamp". "name" is the timestamp placeholder and
+      # must match a corresponding placeholder name in the snapshots spec.
+      # The "timestamp" key is a number that references the "age" of timestamp
+      # to be referenced: 0 means the most current, 1 the previous one, etc.
+      # Instead of 0, you may also use the string "current", and instead of 1,
+      # you may use the string "previous".
+      - { "name": "google-daily-%T", "timestamp": 0         }
       - google-chrome-latest
 
 publish:
@@ -52,3 +60,5 @@ publish:
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: [ "main" ]
+      snapshots:
+        - { "name": "foobar-%T", "timestamp": "current" }
