@@ -12,6 +12,7 @@ from . import (date_round_daily, date_round_weekly, iso_to_gregorian,
 
 @given(datetimes())
 def test_is_to_gregorian(date):
+    """Test if a roundtrip of isoclander() -> iso_to_gregorian() is correct"""
     iso_tuple = date.isocalendar()
     new_date  = iso_to_gregorian(*iso_tuple)
     assert date.year  == new_date.year
@@ -23,7 +24,8 @@ def test_is_to_gregorian(date):
     datetimes(min_year=2),
     integers(min_value=1, max_value=7),
     times())
-def test_round_weekly_diff(date, day_of_week, time):
+def test_round_weekly(date, day_of_week, time):
+    """Test if the round function rounds the expected delta"""
     time            = time_remove_tz(time)
     round_date      = date_round_weekly(date, day_of_week, time)
     date_time       = datetime.time(
@@ -69,6 +71,7 @@ def test_round_weekly_diff(date, day_of_week, time):
 
 
 def test_weekly_examples():
+    """Test if the round function rounds at the given day and time"""
     date        = datetime.datetime(
         year    = 2015,
         month   = 11,
@@ -95,7 +98,8 @@ def test_weekly_examples():
 
 
 @given(datetimes(), times())
-def test_round_daily_diff(date, time):
+def test_round_daily(date, time):
+    """Test if the round function rounds the expected delta"""
     time            = time_remove_tz(time)
     round_date      = date_round_daily(date, time)
     date_time       = datetime.time(
@@ -131,6 +135,7 @@ def test_round_daily_diff(date, time):
 
 
 def test_daily_examples():
+    """Test if the round function rounds at the given time"""
     date       = datetime.datetime(
         year   = 2015,
         month  = 10,
