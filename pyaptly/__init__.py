@@ -200,8 +200,13 @@ class Command(object):
 
         return self._finished
 
-    def __str__(self):
-        return " ".join(self.cmd)
+    def __repr__(self):
+        return "Command<%s>" % (" ".join(self.cmd))
+        return "Command<%s \n\trequires %s,\n\tprovides %s>" % (
+            repr(self.cmd),
+            ", ".join([repr(x) for x in self._requires]),
+            ", ".join([repr(x) for x in self._provides]),
+        )
 
     @staticmethod
     def order_commands(commands, has_dependency_cb=lambda: False):
@@ -227,15 +232,26 @@ class Command(object):
                 can_schedule = True
                 for req in cmd._requires:
                     if req not in have_requirements:
+                        lg.debug(
+                            "%s: dependency %s not fulfilled, "
+                            "checking aptly state" % (cmd, req)
+                        )
                         # No command providing our dependency.. Let's see if
                         # it's already otherwise fulfilled
                         if not has_dependency_cb(req):
+                            lg.debug(
+                                "%s: dependency %s not "
+                                "in aptly state either" % (cmd, req)
+                            )
                             can_schedule = False
                             # Break out of the requirements loop, as the
                             # command cannot be scheduled anyway.
                             break
 
                 if can_schedule:
+                    lg.debug(
+                        "%s: all dependencies fulfilled" % cmd
+                    )
                     scheduled.append(cmd)
                     have_requirements = have_requirements.union(cmd._provides)
                     something_changed = True
@@ -631,7 +647,7 @@ def publish(cfg, args):
 
 def snapshot(cfg, args):
     """Creates snapshots"""
-    lg.debug("Snapshots to create: %s", (cfg['snapshot']))
+    lg.debug("Snapshots to create: %s", (cfg['snapshot'].keys()))
 
     snapshot_cmds = {
         'create': cmd_snapshot_create,
