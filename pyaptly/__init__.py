@@ -396,9 +396,27 @@ def main(argv=None):
     # run function for selected subparser
     args.func(cfg, args)
 
+day_of_week_map = {
+    'mon': 1,
+    'tue': 2,
+    'wed': 3,
+    'thu': 4,
+    'fri': 5,
+    'sat': 6,
+    'sun': 7,
+}
+
 
 def expand_timestamped_name(name, timestamp_config, date=None):
-    """Expands the given name by adding a timestamp.
+    """Expand a timestamped name using round_timestamp"""
+    if '%T' not in name:
+        return name
+    timestamp = round_timestamp(timestamp_config, date)
+    return name.replace('%T', timestamp.strftime('%Y%m%dT%H%MZ'))
+
+
+def round_timestamp(timestamp_config, date=None):
+    """Round the given name by adding a timestamp.
 
     The contents of the timestamp is configured by the given timestamp_config
     dict, which MUST contain a "time" key, and MAY contain a "repeat-weekly"
@@ -442,10 +460,6 @@ def expand_timestamped_name(name, timestamp_config, date=None):
     ... )
     foo
     """
-
-    if '%T' not in name:
-        return name
-
     timestamp_info = timestamp_config.get('timestamp', timestamp_config)
     config_time    = timestamp_info.get('time', 'FAIL')
     if config_time == 'FAIL':
@@ -462,15 +476,7 @@ def expand_timestamped_name(name, timestamp_config, date=None):
         date = datetime.datetime.now()
 
     if config_repeat_weekly is not None:
-        day_of_week = {
-            'mon': 1,
-            'tue': 2,
-            'wed': 3,
-            'thu': 4,
-            'fri': 5,
-            'sat': 6,
-            'sun': 7,
-        }.get(config_repeat_weekly.lower())
+        day_of_week = day_of_week_map.get(config_repeat_weekly.lower())
 
         timestamp = date_round_weekly(
             date,
@@ -482,7 +488,7 @@ def expand_timestamped_name(name, timestamp_config, date=None):
             date,
             datetime.time(hour=hour, minute=minute)
         )
-    return name.replace('%T', timestamp.strftime('%Y%m%dT%H%MZ'))
+    return timestamp
 
 
 def snapshot(cfg, args):
@@ -493,7 +499,7 @@ def snapshot(cfg, args):
 
     if args.snapshot_name == "all":
         commands = [
-            cmd_snapshot(snapshot_name, snapshot_config)
+            cmd_snapshot(cfg, snapshot_name, snapshot_config)
             for snapshot_name, snapshot_config
             in cfg['snapshot'].items()
         ]
@@ -504,6 +510,7 @@ def snapshot(cfg, args):
     else:
         if args.snapshot_name in cfg['snapshot']:
             cmd = cmd_snapshot(
+                cfg,
                 args.snapshot_name,
                 cfg['snapshot'][args.snapshot_name]
             )
@@ -516,8 +523,13 @@ def snapshot(cfg, args):
                 )
             )
 
+back_reference_map = {
+    "current"  : 0,
+    "previous" : 1,
+}
 
-def snapshot_spec_to_name(snapshot):
+
+def snapshot_spec_to_name(cfg, snapshot):
     """Converts a given snapshot short spec to a name.
 
     A short spec is a value that may either be a string or a dict.
@@ -532,18 +544,30 @@ def snapshot_spec_to_name(snapshot):
 
      For further information regarding the timestamp's data structure,
      consult the documentation of expand_timestamped_name().
-    """
 
+    :param      cfg: Complete yaml config
+    :type       cfg: dict
+    :param snapshot: Config of the snapshot
+    :type  snapshot: dict
+    """
+    delta = datetime.timedelta(seconds=1)
     if hasattr(snapshot, 'items'):
         name      = snapshot['name']
-        ts_config = snapshot['timestamp']
-
-        return expand_timestamped_name(name, ts_config)
+        ts        = snapshot['timestamp']
+        back_ref  = back_reference_map.get(ts)
+        if not back_ref:
+            back_ref = int(ts)
+        reference = cfg['snapshot'][name]
+        for _ in range(back_ref + 1):
+            cur_timestamp = round_timestamp(reference["timestamp"])
+            cur_timestamp -= delta
+        cur_timestamp += delta
+        return name.replace('%T', cur_timestamp.strftime('%Y%m%dT%H%MZ'))
     else:
         return snapshot
 
 
-def cmd_snapshot_create(snapshot_name, snapshot_config):
+def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
     """Call the aptly snapshot command"""
 
     # TODO: extract possible timestamp component
@@ -578,14 +602,14 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
             'aptly',
             'snapshot',
             'filter',
-            snapshot_spec_to_name(snapshot_config['filter']['source']),
+            snapshot_spec_to_name(cfg, snapshot_config['filter']['source']),
             snapshot_name,
             snapshot_config['filter']['query'],
         ])
         cmd.provide('snapshot', snapshot_name)
         cmd.require(
             'snapshot',
-            snapshot_spec_to_name(snapshot_config['filter']['source'])
+            snapshot_spec_to_name(cfg, snapshot_config['filter']['source'])
         )
         return cmd
 
@@ -599,7 +623,7 @@ def cmd_snapshot_create(snapshot_name, snapshot_config):
         cmd.provide('snapshot', snapshot_name)
 
         for source in snapshot_config['merge']:
-            source_name = snapshot_spec_to_name(source)
+            source_name = snapshot_spec_to_name(cfg, source)
             cmd.append(source_name)
             cmd.require('snapshot', source_name)
 
@@ -621,10 +645,11 @@ def mirror(cfg, args):
 
     if args.mirror_name == "all":
         for mirror_name, mirror_config in cfg['mirror'].items():
-            cmd_mirror(mirror_name, mirror_config)
+            cmd_mirror(cfg, mirror_name, mirror_config)
     else:
         if args.mirror_name in cfg['mirror']:
             cmd_mirror(
+                cfg,
                 args.mirror_name,
                 cfg['mirror'][args.mirror_name]
             )
@@ -681,7 +706,7 @@ def add_gpg_keys(mirror_config):
                 raise
 
 
-def cmd_mirror_create(mirror_name, mirror_config):
+def cmd_mirror_create(cfg, mirror_name, mirror_config):
     """Call the aptly mirror command"""
     if mirror_name in state.mirrors:
         return
@@ -704,7 +729,7 @@ def cmd_mirror_create(mirror_name, mirror_config):
     subprocess.check_call(aptly_cmd)
 
 
-def cmd_mirror_update(mirror_name, mirror_config):
+def cmd_mirror_update(cfg, mirror_name, mirror_config):
     """Call the aptly mirror command"""
     if mirror_name not in state.mirrors:
         raise Exception("Mirror not created yet")
