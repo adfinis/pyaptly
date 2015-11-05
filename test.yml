@@ -36,6 +36,12 @@ snapshot:
     mirror: "google-chrome"
     timestamp:
       time: 00:00
+  foobar-%T:
+    timestamp: {"time": "00:00"}
+    merge:
+      - { "name": "google-daily-%T", "timestamp": { "time": "00:00" } }
+      - google-chrome-latest
+
 publish:
   # Defines the publishing endpoints.
   #
