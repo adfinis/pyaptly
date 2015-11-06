@@ -323,8 +323,12 @@ class SystemStateReader(object):
 
         for publish in self.publishes:
             self.publish_map[publish] = set()
+            re_snap = re.compile(
+                r"^\s*\*\s+%s/%s " %
+                tuple(publish.split(" "))
+            )
             for line in data.split("\n"):
-                if re.match(r"^\s*\*\s+%s/%s " % tuple(publish.split(" ")), line):
+                if re_snap.match(line):
                     for snapshot in self.snapshots:
                         if re.match(".*\[%s\]" % snapshot, line):
                             self.publish_map[publish].add(snapshot)
@@ -741,7 +745,7 @@ def publish(cfg, args):
             cmd_publish(cfg, publish_name, publish_conf_entry)
             for publish_name, publish_conf in cfg['publish'].items()
             for publish_conf_entry in publish_conf
-            if publish_conf_entry.get('automatic-update', 'false') == True
+            if publish_conf_entry.get('automatic-update', 'false') is True
         ]
 
         for cmd in Command.order_commands(commands, state.has_dependency):
