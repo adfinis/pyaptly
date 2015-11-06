@@ -2,32 +2,128 @@ mirror:
   # Defines the upstream mirrors.
   #
   # The key denotes the internal mirror name within aptly.
-  trusty:
-    components: [ "main", "multiverse", "restricted", "universe" ]
+  trusty-main:
+    components: "main"
     architectures: [ "amd64", "i386" ]
     distribution: "trusty"
     sources: True
     udeb: True
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
     gpg-keys: ["437D05B5", "C0B21F32"]
-  trusty-security:
-    components: [ "main", "multiverse", "restricted", "universe" ]
+  trusty-restricted:
+    components: "restricted"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-universe:
+    components: "universe"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-multiverse:
+    components: "multiverse"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-security-main:
+    components: "main"
     architectures: [ "amd64", "i386" ]
     distribution: "trusty-security"
     sources: True
     udeb: True
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
     gpg-keys: ["437D05B5", "C0B21F32"]
-  trusty-updates:
-    components: [ "main", "multiverse", "restricted", "universe" ]
+  trusty-security-restricted:
+    components: "restricted"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-security"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-security-universe:
+    components: "universe"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-security"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-security-multiverse:
+    components: "multiverse"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-security"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-updates-main:
+    components: "main"
     architectures: [ "amd64", "i386" ]
     distribution: "trusty-updates"
     sources: True
     udeb: True
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
     gpg-keys: ["437D05B5", "C0B21F32"]
-  trusty-backports:
-    components: [ "main", "multiverse", "restricted", "universe" ]
+  trusty-updates-restricted:
+    components: "restricted"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-updates"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-updates-universe:
+    components: "universe"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-updates"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-updates-multiverse:
+    components: "multiverse"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-updates"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-backports-main:
+    components: "main"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-backports"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-backports-restricted:
+    components: "restricted"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-backports"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-backports-universe:
+    components: "universe"
+    architectures: [ "amd64", "i386" ]
+    distribution: "trusty-backports"
+    sources: True
+    udeb: True
+    archive: "http://ch.archive.ubuntu.com/ubuntu/"
+    gpg-keys: ["437D05B5", "C0B21F32"]
+  trusty-backports-multiverse:
+    components: "multiverse"
     architectures: [ "amd64", "i386" ]
     distribution: "trusty-backports"
     sources: True
@@ -35,50 +131,121 @@ mirror:
     archive: "http://ch.archive.ubuntu.com/ubuntu/"
     gpg-keys: ["437D05B5", "C0B21F32"]
   google-chrome:
-    components: [ "main" ]
+    components: "main"
     architectures: [ "amd64", "i386" ]
     distribution: "stable"
     archive: "http://dl.google.com/linux/chrome/deb/"
     gpg-keys: ["7FAC5991"]
     gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
 snapshot:
-  trusty-stable-%T:
-    mirror: "trusty"
+  trusty-main-stable-%T:
+    mirror: "trusty-main"
     timestamp: {"time": "00:00", "repeat-weekly": "sat"}
-  trusty-security-stable-%T:
-    mirror: "trusty-security"
+  trusty-restricted-stable-%T:
+    mirror: "trusty-restricted"
     timestamp: {"time": "00:00", "repeat-weekly": "sat"}
-  trusty-updates-stable-%T:
-    mirror: "trusty-updates"
+  trusty-universe-stable-%T:
+    mirror: "trusty-universe"
     timestamp: {"time": "00:00", "repeat-weekly": "sat"}
-  trusty-backports-stable-%T:
-    mirror: "trusty-backports"
+  trusty-multiverse-stable-%T:
+    mirror: "trusty-multiverse"
     timestamp: {"time": "00:00", "repeat-weekly": "sat"}
-  trusty_roche-keyring-stable-%T:
-    timestamp: {"time": "00:00"}
+  trusty-security-main-stable-%T:
+    mirror: "trusty-security-main"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-security-restricted-stable-%T:
+    mirror: "trusty-security-restricted"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-security-universe-stable-%T:
+    mirror: "trusty-security-universe"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-security-multiverse-stable-%T:
+    mirror: "trusty-security-multiverse"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-updates-main-stable-%T:
+    mirror: "trusty-updates-main"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-updates-restricted-stable-%T:
+    mirror: "trusty-updates-restricted"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-updates-universe-stable-%T:
+    mirror: "trusty-updates-universe"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-updates-multiverse-stable-%T:
+    mirror: "trusty-updates-multiverse"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-backports-main-stable-%T:
+    mirror: "trusty-backports-main"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-backports-restricted-stable-%T:
+    mirror: "trusty-backports-restricted"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-backports-universe-stable-%T:
+    mirror: "trusty-backports-universe"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-backports-multiverse-stable-%T:
+    mirror: "trusty-backports-multiverse"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-main_roche-keyring-stable-%T:
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
     merge:
-      - {"name": "trusty-stable-%T", "timestamp": "current"}
+      - {"name": "trusty-main-stable-%T", "timestamp": "current"}
       - "roche-keyring-latest"
-
-  trusty-%T:
-    mirror: "trusty"
+  trusty-main-%T:
+    mirror: "trusty-main"
     timestamp: {"time": "00:00"}
-  trusty-security-%T:
-    mirror: "trusty-security"
+  trusty-restricted-%T:
+    mirror: "trusty-restricted"
     timestamp: {"time": "00:00"}
-  trusty-updates-%T:
-    mirror: "trusty-updates"
+  trusty-universe-%T:
+    mirror: "trusty-universe"
     timestamp: {"time": "00:00"}
-  trusty-backports-%T:
-    mirror: "trusty-backports"
+  trusty-multiverse-%T:
+    mirror: "trusty-multiverse"
+    timestamp: {"time": "00:00"}
+  trusty-security-main-%T:
+    mirror: "trusty-security-main"
+    timestamp: {"time": "00:00"}
+  trusty-security-restricted-%T:
+    mirror: "trusty-security-restricted"
+    timestamp: {"time": "00:00"}
+  trusty-security-universe-%T:
+    mirror: "trusty-security-universe"
+    timestamp: {"time": "00:00"}
+  trusty-security-multiverse-%T:
+    mirror: "trusty-security-multiverse"
+    timestamp: {"time": "00:00"}
+  trusty-updates-main-%T:
+    mirror: "trusty-updates-main"
+    timestamp: {"time": "00:00"}
+  trusty-updates-restricted-%T:
+    mirror: "trusty-updates-restricted"
+    timestamp: {"time": "00:00"}
+  trusty-updates-universe-%T:
+    mirror: "trusty-updates-universe"
+    timestamp: {"time": "00:00"}
+  trusty-updates-multiverse-%T:
+    mirror: "trusty-updates-multiverse"
+    timestamp: {"time": "00:00"}
+  trusty-backports-main-%T:
+    mirror: "trusty-backports-main"
+    timestamp: {"time": "00:00"}
+  trusty-backports-restricted-%T:
+    mirror: "trusty-backports-restricted"
+    timestamp: {"time": "00:00"}
+  trusty-backports-universe-%T:
+    mirror: "trusty-backports-universe"
+    timestamp: {"time": "00:00"}
+  trusty-backports-multiverse-%T:
+    mirror: "trusty-backports-multiverse"
     timestamp: {"time": "00:00"}
   # Repo roche-keyring must be created manually
   roche-keyring-latest:
     repo: "roche-keyring"
-  trusty_roche-keyring-%T:
+  trusty-main_roche-keyring-%T:
     timestamp: {"time": "00:00"}
     merge:
-      - {"name": "trusty-%T", "timestamp": "current"}
+      - {"name": "trusty-main-%T", "timestamp": "current"}
       - "roche-keyring-latest"
   google-chrome-%T:
     mirror: "google-chrome"
@@ -98,91 +265,140 @@ publish:
       distribution: "trusty"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot:
-        name: "trusty_roche-keyring-stable-%T"
-        timestamp: "current"
-        archive-on-update: "archived-trusty_roche-keyring-stable-%T"
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - name: "trusty-main_roche-keyring-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-main_roche-keyring-stable-%T"
+        - name: "trusty-restricted-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-restricted-stable-%T"
+        - name: "trusty-universe-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-universe-stable-%T"
+        - name: "trusty-multiverse-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-multiverse-stable-%T"
       automatic-update: false
     -
       distribution: "trusty-updates"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot:
-        name: "trusty-updates-stable-%T"
-        timestamp: "current"
-        archive-on-update: "archived-trusty-updates-stable-%T"
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - name: "trusty-updates-main-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-updates-main-stable-%T"
+        - name: "trusty-updates-restricted-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-updates-restricted-stable-%T"
+        - name: "trusty-updates-universe-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-updates-universe-stable-%T"
+        - name: "trusty-updates-multiverse-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-updates-multiverse-stable-%T"
       automatic-update: false
     -
       distribution: "trusty-backports"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot:
-        name: "trusty-backports-stable-%T"
-        timestamp: "current"
-        archive-on-update: "archived-trusty-backports-stable-%T"
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - name: "trusty-backports-main-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-backports-main-stable-%T"
+        - name: "trusty-backports-restricted-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-backports-restricted-stable-%T"
+        - name: "trusty-backports-universe-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-backports-universe-stable-%T"
+        - name: "trusty-backports-multiverse-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-backports-multiverse-stable-%T"
       automatic-update: false
     -
       distribution: "trusty-security"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot:
-        name: "trusty-security-stable-%T"
-        timestamp: "current"
-        archive-on-update: "archived-trusty-security-stable-%T"
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - name: "trusty-security-main-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-security-main-stable-%T"
+        - name: "trusty-security-restricted-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-security-restricted-stable-%T"
+        - name: "trusty-security-universe-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-security-universe-stable-%T"
+        - name: "trusty-security-multiverse-stable-%T"
+          timestamp: "current"
+          archive-on-update: "archived-trusty-security-multiverse-stable-%T"
       automatic-update: false
-  ubunku/latest:
+  ubuntu/latest:
     -
       distribution: "trusty"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot: { "name": "trusty_roche-keyring-%T", "timestamp": "current" }
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - { "name": "trusty-main_roche-keyring-%T",       "timestamp": "current" }
+        - { "name": "trusty-restricted-%T", "timestamp": "current" }
+        - { "name": "trusty-universe-%T",   "timestamp": "current" }
+        - { "name": "trusty-multiverse-%T", "timestamp": "current" }
       automatic-update: true
     -
       distribution: "trusty-updates"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot: { "name": "trusty-updates-%T", "timestamp": "current" }
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - { "name": "trusty-updates-main-%T",       "timestamp": "current" }
+        - { "name": "trusty-updates-restricted-%T", "timestamp": "current" }
+        - { "name": "trusty-updates-universe-%T",   "timestamp": "current" }
+        - { "name": "trusty-updates-multiverse-%T", "timestamp": "current" }
       automatic-update: true
     -
       distribution: "trusty-backports"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot: { "name": "trusty-backports-%T", "timestamp": "current" }
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - { "name": "trusty-backports-main-%T",       "timestamp": "current" }
+        - { "name": "trusty-backports-restricted-%T", "timestamp": "current" }
+        - { "name": "trusty-backports-universe-%T",   "timestamp": "current" }
+        - { "name": "trusty-backports-multiverse-%T", "timestamp": "current" }
       automatic-update: true
     -
       distribution: "trusty-security"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      #components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshot:
-        name: "trusty-security-%T"
-        timestamp: "current"
-        archive-on-update: "archived-trusty-security-%T"
-      automatic-update: false
+      components: [ "main", "restricted", "universe", "multiverse" ]
+      snapshots:
+        - { "name": "trusty-security-main-%T",       "timestamp": "current" }
+        - { "name": "trusty-security-restricted-%T", "timestamp": "current" }
+        - { "name": "trusty-security-universe-%T",   "timestamp": "current" }
+        - { "name": "trusty-security-multiverse-%T", "timestamp": "current" }
+      automatic-update: true
 
   google-chrome:
     -
       distribution: "stable"
       architectures: [ "amd64", "i386" ]
-      components: [ "main" ]
+      components: "main"
       snapshot: { "name": "google-chrome-stable-%T", "timestamp": "current" }
       automatic-update: false
     -
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
-      components: [ "main" ]
+      components: "main"
       snapshot: { "name": "google-chrome-%T", "timestamp": "current" }
       automatic-update: true
   icaclient:
     -
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
-      components: [ "main" ]
-      repo: 'icaclient'
+      components: "main"
+      repo: "icaclient"
