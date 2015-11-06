@@ -367,7 +367,9 @@ class SystemStateReader(object):
         elif type_ == 'gpg_key':
             return name in self.gpg_keys
         else:
-            raise ValueError("Unknown dependency to resolve: %s" % dependency)
+            raise ValueError(
+                "Unknown dependency to resolve: %s" % str(dependency)
+            )
 
 
 state = SystemStateReader()
