@@ -284,12 +284,14 @@ class SystemStateReader(object):
     def __init__(self):
         self.gpg_keys  = set()
         self.mirrors   = set()
+        self.repos     = set()
         self.snapshots = set()
         self.publishes = set()
         self.publish_map = {}
 
     def read(self):
         self.read_gpg()
+        self.read_repos()
         self.read_mirror()
         self.read_snapshot()
         self.read_publishes()
@@ -331,6 +333,10 @@ class SystemStateReader(object):
         self.publishes = set()
         self.read_aptly_list("publish", self.publishes)
 
+    def read_repos(self):
+        self.repos = set()
+        self.read_aptly_list("repo", self.repos)
+
     def read_mirror(self):
         self.mirrors = set()
         self.read_aptly_list("mirror", self.mirrors)
@@ -352,6 +358,8 @@ class SystemStateReader(object):
     def has_dependency(self, dependency):
         type_, name = dependency
 
+        if type_ == 'repo':
+            return name in self.repos
         if type_ == 'mirror':
             return name in self.mirrors
         elif type_ == 'snapshot':
