@@ -42,6 +42,24 @@ mirror:
     gpg-keys: ["7FAC5991"]
     gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
 snapshot:
+  trusty-stable-%T:
+    mirror: "trusty"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-security-stable-%T:
+    mirror: "trusty-security"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-updates-stable-%T:
+    mirror: "trusty-updates"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty-backports-stable-%T:
+    mirror: "trusty-backports"
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
+  trusty_roche-keyring-stable-%T:
+    timestamp: {"time": "00:00"}
+    merge:
+      - {"name": "trusty-stable-%T", "timestamp": "current"}
+      - "roche-keyring-latest"
+
   trusty-%T:
     mirror: "trusty"
     timestamp: {"time": "00:00"}
@@ -57,52 +75,114 @@ snapshot:
   # Repo roche-keyring must be created manually
   roche-keyring-latest:
     repo: "roche-keyring"
-  trusty_roche-keyring-latest:
-    merge: [ "trusty-latest", "roche-keyring-latest" ]
+  trusty_roche-keyring-%T:
+    timestamp: {"time": "00:00"}
+    merge:
+      - {"name": "trusty-%T", "timestamp": "current"}
+      - "roche-keyring-latest"
   google-chrome-%T:
     mirror: "google-chrome"
     timestamp: {"time": "00:00"}
   google-chrome-stable-%T:
     timestamp: {"time": "00:00"}
     filter:
-      source: { "name": "google-daily-%T", "timestamp": "current" }
+      source: { "name": "google-chrome-%T", "timestamp": "current" }
       query: "google-chrome-stable"
 publish:
   # Defines the publishing endpoints.
   #
   # The key denotes the target, for example: 'ubuntu/latest' will create an
   # endpoint at http://<server>/ubuntu/latest/
-  ubuntu/latest:
+  ubuntu/stable:
     -
       distribution: "trusty"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshots: [ "trusty-latest" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot:
+        name: "trusty_roche-keyring-stable-%T"
+        timestamp: "current"
+        archive-on-update: "archived-trusty_roche-keyring-stable-%T"
+      automatic-update: false
+    -
+      distribution: "trusty-updates"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot:
+        name: "trusty-updates-stable-%T"
+        timestamp: "current"
+        archive-on-update: "archived-trusty-updates-stable-%T"
+      automatic-update: false
+    -
+      distribution: "trusty-backports"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot:
+        name: "trusty-backports-stable-%T"
+        timestamp: "current"
+        archive-on-update: "archived-trusty-backports-stable-%T"
+      automatic-update: false
+    -
+      distribution: "trusty-security"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot:
+        name: "trusty-security-stable-%T"
+        timestamp: "current"
+        archive-on-update: "archived-trusty-security-stable-%T"
+      automatic-update: false
+  ubunku/latest:
+    -
+      distribution: "trusty"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot: { "name": "trusty_roche-keyring-%T", "timestamp": "current" }
       automatic-update: true
     -
       distribution: "trusty-updates"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      components: [ "main", "multiverse", "restricted", "universe" ]
-      snapshots: [ "trusty-updates-latest" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot: { "name": "trusty-updates-%T", "timestamp": "current" }
       automatic-update: true
     -
       distribution: "trusty-backports"
       origin: "Ubuntu"
       architectures: [ "amd64", "i386", "source" ]
-      components: [ "main", "multiverse", "restricted", "universe" ]
-      backports: True
-      snapshots: [ "trusty-backports-latest" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot: { "name": "trusty-backports-%T", "timestamp": "current" }
       automatic-update: true
+    -
+      distribution: "trusty-security"
+      origin: "Ubuntu"
+      architectures: [ "amd64", "i386", "source" ]
+      #components: [ "main", "multiverse", "restricted", "universe" ]
+      snapshot:
+        name: "trusty-security-%T"
+        timestamp: "current"
+        archive-on-update: "archived-trusty-security-%T"
+      automatic-update: false
+
   google-chrome:
+    -
+      distribution: "stable"
+      architectures: [ "amd64", "i386" ]
+      components: [ "main" ]
+      snapshot: { "name": "google-chrome-stable-%T", "timestamp": "current" }
+      automatic-update: false
     -
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: [ "main" ]
+      snapshot: { "name": "google-chrome-%T", "timestamp": "current" }
+      automatic-update: true
   icaclient:
     -
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: [ "main" ]
-      automatic-update: true
+      repo: 'icaclient'
