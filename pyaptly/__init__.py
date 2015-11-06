@@ -320,13 +320,14 @@ class SystemStateReader(object):
         data = call_output([
             "aptly", "publish", "list"
         ])
+
         for publish in self.publishes:
+            self.publish_map[publish] = set()
             for line in data.split("\n"):
-                if re.match(".*%s/%s " % tuple(publish.split(" ")), line):
+                if re.match(r"^\s*\*\s+%s/%s " % tuple(publish.split(" ")), line):
                     for snapshot in self.snapshots:
                         if re.match(".*\[%s\]" % snapshot, line):
-                            self.publish_map[publish] = snapshot
-                            break
+                            self.publish_map[publish].add(snapshot)
         lg.debug('Joined snapshots and publishes: %s', self.publish_map)
 
     def read_publishes(self):
@@ -550,12 +551,11 @@ def round_timestamp(timestamp_config, date=None):
     return timestamp
 
 
-def join_list_or_string(separator, inputdata):
-    if isinstance(inputdata, list) or isinstance(inputdata, tuple):
-        return separator.join(inputdata)
-
-    # Strings should not be "joined". We assume a single value
-    return inputdata
+def unit_or_list_to_list(thingy):
+    if isinstance(thingy, list) or isinstance(thingy, tuple):
+        return list(thingy)
+    else:
+        return [thingy]
 
 
 def publish_cmd_create(cfg, publish_name, publish_config):
@@ -574,17 +574,19 @@ def publish_cmd_create(cfg, publish_name, publish_config):
     ]
 
     has_source = False
+    num_sources = 0
 
     for conf, conf_value in publish_config.items():
 
         if conf == 'architectures':
             options.append(
                 '-architectures=%s' %
-                join_list_or_string(',', conf_value)
+                ','.join(unit_or_list_to_list(conf_value))
             )
         elif conf == 'components':
+            components = unit_or_list_to_list(conf_value)
             options.append(
-                '-component=%s' % join_list_or_string(',', conf_value)
+                '-component=%s' % ','.join(components)
             )
         elif conf == 'label':
             options.append(
@@ -601,7 +603,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
         elif conf == 'automatic-update':
             # Ignored here
             pass
-        elif conf == 'snapshot':
+        elif conf == 'snapshots':
             if has_source:
                 raise ValueError(
                     "Multiple sources for publish %s %s" % (
@@ -610,10 +612,15 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                     )
                 )
             has_source = True
-            source_args = [
-                'snapshot',
+            snapshots = unit_or_list_to_list(conf_value)
+            source_args.append('snapshot')
+            source_args.extend([
                 snapshot_spec_to_name(cfg, conf_value)
-            ]
+                for conf_value
+                in snapshots
+            ])
+
+            num_sources = len(snapshots)
 
         elif conf == 'repo':
             if has_source:
@@ -628,6 +635,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                 'repo',
                 conf_value
             ]
+            num_sources = 1
 
         else:
             raise ValueError(
@@ -637,6 +645,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                 )
             )
     assert has_source
+    assert len(components) == num_sources
 
     return Command(publish_cmd + options + source_args + endpoint_args)
 
@@ -661,39 +670,54 @@ def publish_cmd_update(cfg, publish_name, publish_config):
 
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
 
-    snapshot_config  = publish_config['snapshot']
-    current_snapshot = state.publish_map[publish_fullname]
-    new_snapshot     = snapshot_spec_to_name(cfg, snapshot_config)
+    snapshots_config  = publish_config['snapshots']
+    current_snapshots = state.publish_map[publish_fullname]
+    new_snapshots     = [
+        snapshot_spec_to_name(cfg, snap)
+        for snap
+        in snapshots_config
+    ]
 
-    if new_snapshot == current_snapshot:
+    if set(new_snapshots) == set(current_snapshots):
         # Already pointing to the newest snapshot, nothing to do
         return
 
-    # snapshot_config may be a plain name or a dict..
+    for snap in snapshots_config:
+        # snap may be a plain name or a dict..
+        if hasattr(snap, 'items'):
+            # Dict mode - only here can we even have an archive option
+            archive = snap.get('archive-on-update', None)
 
-    if hasattr(snapshot_config, 'items'):
-        # Dict mode - only here can we even have an archive option
-        archive = snapshot_config.get('archive-on-update', None)
+            if archive:
+                # Replace any timestamp placeholder with the current date/time.
+                # Note that this is NOT rounded, as we want to know exactly
+                # when the archival happened.
+                archive = archive.replace(
+                    '%T',
+                    format_timestamp(datetime.datetime.now())
+                )
 
-        if archive:
-            # Replace any timestamp placeholder with the current date/time.
-            # Note that this is NOT rounded, as we want to know exactly
-            # when the archival happened.
-            archive = archive.replace(
-                '%T',
-                format_timestamp(datetime.datetime.now())
-            )
+                prefix_to_search = re.sub('%T$', '', snap['name'])
 
-            clone_snapshot(current_snapshot, archive).execute()
+                current_snapshot = [
+                    snap_name
+                    for snap_name
+                    in sorted(current_snapshots, key=lambda x: -len(x))
+                    if snap_name.startswith(prefix_to_search)
+                ][0]
+
+                clone_snapshot(current_snapshot, archive).execute()
+
+    components = unit_or_list_to_list(publish_config['components'])
 
     switch_cmd = Command([
         'aptly',
         'publish',
         'switch',
+        '-component=%s' % ','.join(components),
         publish_config['distribution'],
         publish_name,
-        new_snapshot
-    ])
+    ] + new_snapshots)
 
     switch_cmd.execute()
 
@@ -976,23 +1000,29 @@ def add_gpg_keys(mirror_config):
 
 def cmd_mirror_create(cfg, mirror_name, mirror_config):
     """Call the aptly mirror command"""
+
     if mirror_name in state.mirrors:
         return
+
     add_gpg_keys(mirror_config)
     aptly_cmd = ['aptly', 'mirror', 'create']
+
     if 'sources' in mirror_config and mirror_config['sources']:
         aptly_cmd.append('-with-sources')
+
     if 'udeb' in mirror_config and mirror_config['udeb']:
         aptly_cmd.append('-with-udebs')
+
     if 'architectures' in mirror_config:
         aptly_cmd.append('-architectures={0}'.format(
-            ','.join(mirror_config['architectures'])
+            ','.join(unit_or_list_to_list(mirror_config['architectures']))
         ))
+
     aptly_cmd.append(mirror_name)
     aptly_cmd.append(mirror_config['archive'])
     aptly_cmd.append(mirror_config['distribution'])
-    for component in mirror_config['components']:
-        aptly_cmd.append(component)
+    aptly_cmd.extend(unit_or_list_to_list(mirror_config['components']))
+
     lg.debug('Running command: %s', ' '.join(aptly_cmd))
     subprocess.check_call(aptly_cmd)
 
