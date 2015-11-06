@@ -661,7 +661,13 @@ def publish_cmd_update(cfg, publish_name, publish_config):
 
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
 
-    snapshot_config = publish_config['snapshot']
+    snapshot_config  = publish_config['snapshot']
+    current_snapshot = state.publish_map[publish_fullname]
+    new_snapshot     = snapshot_spec_to_name(cfg, snapshot_config)
+
+    if new_snapshot == current_snapshot:
+        # Already pointing to the newest snapshot, nothing to do
+        return
 
     # snapshot_config may be a plain name or a dict..
 
@@ -678,10 +684,7 @@ def publish_cmd_update(cfg, publish_name, publish_config):
                 format_timestamp(datetime.datetime.now())
             )
 
-            current_snapshot = state.publish_map[publish_fullname]
             clone_snapshot(current_snapshot, archive).execute()
-
-    new_snapshot = snapshot_spec_to_name(cfg, snapshot_config)
 
     switch_cmd = Command([
         'aptly',
