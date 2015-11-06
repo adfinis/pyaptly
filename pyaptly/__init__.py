@@ -573,7 +573,6 @@ def publish_cmd_create(cfg, publish_name, publish_config):
     ]
 
     has_source = False
-    has_key    = False
 
     for conf, conf_value in publish_config.items():
 
@@ -597,7 +596,6 @@ def publish_cmd_create(cfg, publish_name, publish_config):
             options.append('-distribution=%s' % conf_value)
 
         elif conf == 'gpg-key':
-            has_key = True
             options.append('-gpg-key=%s' % conf_value)
         elif conf == 'automatic-update':
             # Ignored here
@@ -637,7 +635,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                     publish_name,
                 )
             )
-    assert has_source and has_key
+    assert has_source
 
     return Command(publish_cmd + options + source_args + endpoint_args)
 
