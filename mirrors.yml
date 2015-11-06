@@ -388,13 +388,15 @@ publish:
       distribution: "stable"
       architectures: [ "amd64", "i386" ]
       components: "main"
-      snapshot: { "name": "google-chrome-stable-%T", "timestamp": "current" }
+      snapshots:
+        - { "name": "google-chrome-stable-%T", "timestamp": "current" }
       automatic-update: false
     -
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: "main"
-      snapshot: { "name": "google-chrome-%T", "timestamp": "current" }
+      snapshots:
+        - { "name": "google-chrome-%T", "timestamp": "current" }
       automatic-update: true
   icaclient:
     -
