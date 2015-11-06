@@ -384,7 +384,8 @@ def main(argv=None):
         '--config',
         '-c',
         help='Yaml config file defining mirrors and snapshots',
-        type=str
+        type=str,
+        required=True
     )
     parser.add_argument(
         '--debug',
