@@ -251,7 +251,7 @@ snapshot:
     mirror: "google-chrome"
     timestamp: {"time": "00:00"}
   google-chrome-stable-%T:
-    timestamp: {"time": "00:00"}
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
     filter:
       source: {"name": "google-chrome-%T", "timestamp": "current"}
       query: "google-chrome-stable"
@@ -443,7 +443,7 @@ publish:
       architectures: ["amd64", "i386"]
       components: "main"
       snapshots:
-        - {"name": "google-chrome-stable-%T", "timestamp": "current"}
+        - {"name": "google-chrome-stable-%T", "timestamp": "previous"}
       automatic-update: false
     -
       distribution: "latest"
