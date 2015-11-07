@@ -260,7 +260,61 @@ publish:
   #
   # The key denotes the target, for example: 'ubuntu/latest' will create an
   # endpoint at http://<server>/ubuntu/latest/
+  ubuntu/next-stable:
+    # The publish endpoint ubuntu/next-stable denotes the publish endpoint
+    # against which the tests are run. It automatically publishes the current
+    # -stable snapshots that are created weekly.
+    -
+      distribution: "trusty"
+      origin: "Ubuntu"
+      architectures: ["amd64", "i386", "source"]
+      components: ["main", "restricted", "universe", "multiverse"]
+      snapshots:
+        - {"name": "trusty-main_roche-keyring-stable-%T", "timestamp": "current"}
+        - {"name": "trusty-restricted-stable-%T",         "timestamp": "current"}
+        - {"name": "trusty-universe-stable-%T",           "timestamp": "current"}
+        - {"name": "trusty-multiverse-stable-%T",         "timestamp": "current"}
+      automatic-update: true
+    -
+      distribution: "trusty-updates"
+      origin: "Ubuntu"
+      architectures: ["amd64", "i386", "source"]
+      components: ["main", "restricted", "universe", "multiverse"]
+      snapshots:
+        - {"name": "trusty-updates-main-stable-%T",       "timestamp": "current"}
+        - {"name": "trusty-updates-restricted-stable-%T", "timestamp": "current"}
+        - {"name": "trusty-updates-universe-stable-%T",   "timestamp": "current"}
+        - {"name": "trusty-updates-multiverse-stable-%T", "timestamp": "current"}
+      automatic-update: true
+    -
+      distribution: "trusty-backports"
+      origin: "Ubuntu"
+      architectures: ["amd64", "i386", "source"]
+      components: ["main", "restricted", "universe", "multiverse"]
+      snapshots:
+        - {"name": "trusty-backports-main-stable-%T",       "timestamp": "current"}
+        - {"name": "trusty-backports-restricted-stable-%T", "timestamp": "current"}
+        - {"name": "trusty-backports-universe-stable-%T",   "timestamp": "current"}
+        - {"name": "trusty-backports-multiverse-stable-%T", "timestamp": "current"}
+      automatic-update: true
+    -
+      distribution: "trusty-security"
+      origin: "Ubuntu"
+      architectures: ["amd64", "i386", "source"]
+      components: ["main", "restricted", "universe", "multiverse"]
+      snapshots:
+        - {"name": "trusty-security-main-stable-%T",       "timestamp": "current"}
+        - {"name": "trusty-security-restricted-stable-%T", "timestamp": "current"}
+        - {"name": "trusty-security-universe-stable-%T",   "timestamp": "current"}
+        - {"name": "trusty-security-multiverse-stable-%T", "timestamp": "current"}
+      automatic-update: true
   ubuntu/stable:
+    # The publish endpoint ubuntu/stable provides the stable packages that
+    # have passed the integration tests. It uses the -stable snapshots from the
+    # previous week (timestamp: "previous") that were used for testing. This
+    # publish endpoint is not automatically updated and needs to be passed
+    # explicitly on the CLI to be updated.
+    #     pyaptly publish update ubuntu/stable
     -
       distribution: "trusty"
       origin: "Ubuntu"
@@ -268,16 +322,16 @@ publish:
       components: ["main", "restricted", "universe", "multiverse"]
       snapshots:
         - name: "trusty-main_roche-keyring-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-main_roche-keyring-stable-%T"
         - name: "trusty-restricted-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-restricted-stable-%T"
         - name: "trusty-universe-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-universe-stable-%T"
         - name: "trusty-multiverse-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-multiverse-stable-%T"
       automatic-update: false
     -
@@ -287,16 +341,16 @@ publish:
       components: ["main", "restricted", "universe", "multiverse"]
       snapshots:
         - name: "trusty-updates-main-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-updates-main-stable-%T"
         - name: "trusty-updates-restricted-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-updates-restricted-stable-%T"
         - name: "trusty-updates-universe-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-updates-universe-stable-%T"
         - name: "trusty-updates-multiverse-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-updates-multiverse-stable-%T"
       automatic-update: false
     -
@@ -306,16 +360,16 @@ publish:
       components: ["main", "restricted", "universe", "multiverse"]
       snapshots:
         - name: "trusty-backports-main-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-backports-main-stable-%T"
         - name: "trusty-backports-restricted-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-backports-restricted-stable-%T"
         - name: "trusty-backports-universe-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-backports-universe-stable-%T"
         - name: "trusty-backports-multiverse-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-backports-multiverse-stable-%T"
       automatic-update: false
     -
@@ -325,16 +379,16 @@ publish:
       components: ["main", "restricted", "universe", "multiverse"]
       snapshots:
         - name: "trusty-security-main-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-security-main-stable-%T"
         - name: "trusty-security-restricted-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-security-restricted-stable-%T"
         - name: "trusty-security-universe-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-security-universe-stable-%T"
         - name: "trusty-security-multiverse-stable-%T"
-          timestamp: "current"
+          timestamp: "previous"
           archive-on-update: "archived-trusty-security-multiverse-stable-%T"
       automatic-update: false
   ubuntu/latest:
