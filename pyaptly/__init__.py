@@ -699,17 +699,32 @@ def publish_cmd_update(cfg, publish_name, publish_config):
 
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
 
-    snapshots_config  = publish_config['snapshots']
     current_snapshots = state.publish_map[publish_fullname]
-    new_snapshots     = [
-        snapshot_spec_to_name(cfg, snap)
-        for snap
-        in snapshots_config
-    ]
+    if 'snapshots' in publish_config:
+        snapshots_config  = publish_config['snapshots']
+        new_snapshots     = [
+            snapshot_spec_to_name(cfg, snap)
+            for snap
+            in snapshots_config
+        ]
+    elif 'publish' in publish_config:
+        conf_value       = publish_config['publish']
+        snapshots_config = []
+        ref_publish_name, distribution     = conf_value.split(" ")
+        for publish in cfg['publish'][ref_publish_name]:
+            if publish['distribution'] == distribution:
+                snapshots_config.extend(publish['snapshots'])
+                break
+        new_snapshots = list(state.publish_map[conf_value])
+    else:
+        raise ValueError(
+            "No snapshot references configured in publish %s" % publish_name
+        )
 
     if set(new_snapshots) == set(current_snapshots):
         # Already pointing to the newest snapshot, nothing to do
         return
+    components = unit_or_list_to_list(publish_config['components'])
 
     for snap in snapshots_config:
         # snap may be a plain name or a dict..
@@ -718,14 +733,15 @@ def publish_cmd_update(cfg, publish_name, publish_config):
             archive = snap.get('archive-on-update', None)
 
             if archive:
-                # Replace any timestamp placeholder with the current date/time.
-                # Note that this is NOT rounded, as we want to know exactly
-                # when the archival happened.
+                # Replace any timestamp placeholder with the current
+                # date/time.  Note that this is NOT rounded, as we want to
+                # know exactly when the archival happened.
                 archive = archive.replace(
                     '%T',
                     format_timestamp(datetime.datetime.now())
                 )
-
+                if archive in state.snapshots:
+                    continue
                 prefix_to_search = re.sub('%T$', '', snap['name'])
 
                 current_snapshot = [
@@ -736,8 +752,6 @@ def publish_cmd_update(cfg, publish_name, publish_config):
                 ][0]
 
                 clone_snapshot(current_snapshot, archive).execute()
-
-    components = unit_or_list_to_list(publish_config['components'])
 
     return Command([
         'aptly',

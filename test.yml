@@ -61,7 +61,7 @@ publish:
   #
   # The key denotes the target, for example: 'ubuntu/latest' will create an
   # endpoint at http://<server>/ubuntu/latest/
-  google-chrome/latest:
+  google-chrome:
     -
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
@@ -80,7 +80,7 @@ publish:
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: "main"
-      publish: "google-chrome/latest"
+      publish: "google-chrome latest"
       gpg-key: "650FE755"
       origin: "yeah whatever"
       automatic-update: false
