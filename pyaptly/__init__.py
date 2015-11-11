@@ -652,7 +652,20 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                 conf_value
             ]
             num_sources = 1
-
+        elif conf == 'publish':
+            if has_source:
+                raise ValueError(
+                    "Multiple sources for publish %s %s" % (
+                        publish_name,
+                        publish_config
+                    )
+                )
+            has_source = True
+            conf_value = " ".join(conf_value.split("/"))
+            source_args.append('snapshot')
+            sources = state.publish_map[conf_value]
+            source_args.extend(sources)
+            num_sources = len(sources)
         else:
             raise ValueError(
                 "Don't know how to handle publish config entry %s in %s" % (
