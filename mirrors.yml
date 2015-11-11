@@ -458,3 +458,16 @@ publish:
       architectures: ["amd64", "i386"]
       components: "main"
       repo: "icaclient"
+repo:
+    centrify:
+        architectures: [ "amd64", "i386" ]
+        distribution: "stable"
+        component: "main"
+    icaclient:
+        architectures: [ "amd64", "i386" ]
+        distribution: "stable"
+        component: "main"
+    roche-internal:
+        architectures: [ "amd64", "i386" ]
+        distribution: "stable"
+        component: "main"
