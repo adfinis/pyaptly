@@ -9,6 +9,12 @@ mirror:
     archive: "http://dl.google.com/linux/chrome/deb/"
     gpg-keys: ["7FAC5991"]
     gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
+repo:
+  symonitoring:
+    architectures: [ "amd64", "i386" ]
+    distribution: "stable"
+    component: "main"
+    comment: "yea baby"
 snapshot:
   google-chrome-latest:
     mirror: "google-chrome"
@@ -60,10 +66,11 @@ publish:
       distribution: "latest"
       architectures: [ "amd64", "i386" ]
       components: "main"
-      snapshot:
-        name: "foobar-%T"
-        timestamp: "current"
-        archive-on-update: "archived-chrome-%T"
+      snapshots:
+        -
+          name: "foobar-%T"
+          timestamp: "current"
+          archive-on-update: "archived-chrome-%T"
       gpg-key: "650FE755"
       origin: "yeah whatever"
       automatic-update: true

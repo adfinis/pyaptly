@@ -439,6 +439,18 @@ def main(argv=None):
         nargs='?',
         default='all'
     )
+    repo_parser = subparsers.add_parser(
+        'repo',
+        help='manage aptly repositories'
+    )
+    repo_parser.set_defaults(func=repo)
+    repo_parser.add_argument('task', type=str, choices=['create'])
+    repo_parser.add_argument(
+        'repo_name',
+        type=str,
+        nargs='?',
+        default='all'
+    )
 
     args = parser.parse_args(argv)
     root = logging.getLogger()
@@ -714,7 +726,7 @@ def publish_cmd_update(cfg, publish_name, publish_config):
 
     components = unit_or_list_to_list(publish_config['components'])
 
-    switch_cmd = Command([
+    return Command([
         'aptly',
         'publish',
         'switch',
@@ -723,7 +735,84 @@ def publish_cmd_update(cfg, publish_name, publish_config):
         publish_name,
     ] + new_snapshots)
 
-    switch_cmd.execute()
+
+def repo_cmd_create(cfg, repo_name, repo_config):
+    """Call the aptly repo command"""
+
+    if repo_name in state.repos:
+        # Nothing to do, repo already created
+        return
+
+    repo_cmd      = ['aptly', 'repo']
+    options       = []
+    endpoint_args = ['create', repo_name]
+
+    for conf, conf_value in repo_config.items():
+        if conf == 'architectures':
+            options.append(
+                '-architectures=%s' %
+                ','.join(unit_or_list_to_list(conf_value))
+            )
+        elif conf == 'component':
+            components = unit_or_list_to_list(conf_value)
+            options.append(
+                '-component=%s' % ','.join(components)
+            )
+        elif conf == 'comment':
+            options.append(
+                '-comment=%s' % conf_value
+            )
+        elif conf == 'distribution':
+            options.append('-distribution=%s' % conf_value)
+        else:
+            raise ValueError(
+                "Don't know how to handle repo config entry %s in %s" % (
+                    conf,
+                    repo_name,
+                )
+            )
+
+    return Command(repo_cmd + options + endpoint_args)
+
+
+def repo(cfg, args):
+    """Creates repositories"""
+    lg.debug("Repositories to create: %s", (cfg['repo']))
+
+    repo_cmds = {
+        'create': repo_cmd_create,
+    }
+
+    cmd_repo = repo_cmds[args.task]
+
+    if args.repo_name == "all":
+        commands = [
+            cmd_repo(cfg, repo_name, repo_conf)
+            for repo_name, repo_conf in cfg['repo'].items()
+        ]
+
+        for cmd in Command.order_commands(commands, state.has_dependency):
+            cmd.execute()
+
+    else:
+        if args.publish_name in cfg['repo']:
+            commands = [
+                cmd_repo(
+                    cfg,
+                    args.repo_name,
+                    repo_conf_entry
+                )
+                for repo_conf_entry
+                in cfg['repo'][args.repo_name]
+            ]
+            for cmd in Command.order_commands(commands, state.has_dependency):
+                cmd.execute()
+        else:
+            raise ValueError(
+                "Requested publish is not defined in config file: %s" % (
+                    args.repo_name
+                )
+            )
 
 
 def publish(cfg, args):
