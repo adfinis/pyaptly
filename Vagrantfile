@@ -81,6 +81,8 @@ EOF
     else
       rm aptly
     fi
+    gpg --import < /vagrant/vagrant/key.pub
+    gpg --import < /vagrant/vagrant/key.sec
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.pub
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.sec
     cd /vagrant/vagrant/libfaketime
@@ -89,8 +91,8 @@ EOF
     /usr/local/bin/aptly repo add fakerepo01 /vagrant/vagrant/*.deb
     /usr/local/bin/aptly repo create -architectures="amd64" fakerepo02
     /usr/local/bin/aptly repo add fakerepo02 /vagrant/vagrant/*.deb
-    /usr/local/bin/aptly publish repo -skip-signing=true -distribution="main" fakerepo01
-    /usr/local/bin/aptly publish repo -skip-signing=true -distribution="main" fakerepo02
+    /usr/local/bin/aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo01 fakerepo01
+    /usr/local/bin/aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo02 fakerepo02
     yum -y install epel-release
     yum -y install nginx
     cp /vagrant/vagrant/nginx.conf /etc/nginx/nginx.conf

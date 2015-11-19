@@ -40,3 +40,12 @@ Testing
 
    git submodule update --init --recursive
    make test
+
+Vagrant Box
+-----------
+
+The box provisions aptly, nginx and two repos which can be used for tests:
+
+.. code::
+   aptly mirror create mirro-fakerepo01 http://localhost/fakerepo01 main
+   aptly mirror create mirro-fakerepo02 http://localhost/fakerepo02 main
