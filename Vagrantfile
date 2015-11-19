@@ -85,6 +85,17 @@ EOF
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.sec
     cd /vagrant/vagrant/libfaketime
     make install
+    /usr/local/bin/aptly repo create -architectures="amd64" fakerepo01
+    /usr/local/bin/aptly repo add fakerepo01 /vagrant/vagrant/*.deb
+    /usr/local/bin/aptly repo create -architectures="amd64" fakerepo02
+    /usr/local/bin/aptly repo add fakerepo02 /vagrant/vagrant/*.deb
+    /usr/local/bin/aptly publish repo -skip-signing=true -distribution="main" fakerepo01
+    /usr/local/bin/aptly publish repo -skip-signing=true -distribution="main" fakerepo02
+    yum -y install epel-release
+    yum -y install nginx
+    cp /vagrant/vagrant/nginx.conf /etc/nginx/nginx.conf
+    cp /vagrant/vagrant/default.conf /etc/nginx/conf.d/default.conf
+    service nginx restart
     true
   SHELL
 end
