@@ -71,7 +71,7 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     set -e
-    yum -y wget
+    yum -y install wget
     cd /usr/local/bin
     wget -q https://dl.bintray.com/smira/aptly/0.9.5/centos-6.5-x64/aptly
     sha256sum -c <<EOF
@@ -82,12 +82,14 @@ EOF
     else
       rm aptly
     fi
+    set +e
     gpg --import < /vagrant/vagrant/key.pub
     gpg --import < /vagrant/vagrant/key.sec
     gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < /vagrant/vagrant/key.pub
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.pub
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.sec
     sudo -u vagrant gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < /vagrant/vagrant/key.pub
+    set -e
     cd /vagrant/vagrant/libfaketime
     make install
     /usr/local/bin/aptly repo create -architectures="amd64" fakerepo01
@@ -103,8 +105,8 @@ EOF
     service nginx restart
     python /vagrant/vagrant/get-pip.py
     pip install virtualenv
-    sudo -u vagrant virtualenv ~/.venv
-    echo ". ~/.venv/bin/activate" >> .bashrc
+    sudo -u vagrant virtualenv /home/vagrant/.venv
+    sudo -u vagrant bash -c "echo '. /home/vagrant/.venv/bin/activate' >> /home/vagrant/.bashrc"
     true
   SHELL
 end
