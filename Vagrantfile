@@ -70,7 +70,8 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    yum -y install python-argparse python-yaml wget
+    set -e
+    yum -y wget
     cd /usr/local/bin
     wget -q https://dl.bintray.com/smira/aptly/0.9.5/centos-6.5-x64/aptly
     sha256sum -c <<EOF
@@ -100,6 +101,10 @@ EOF
     cp /vagrant/vagrant/nginx.conf /etc/nginx/nginx.conf
     cp /vagrant/vagrant/default.conf /etc/nginx/conf.d/default.conf
     service nginx restart
+    python /vagrant/vagrant/get-pip.py
+    pip install virtualenv
+    sudo -u vagrant virtualenv ~/.venv
+    echo ". ~/.venv/bin/activate" >> .bashrc
     true
   SHELL
 end
