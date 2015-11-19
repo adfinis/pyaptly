@@ -83,8 +83,10 @@ EOF
     fi
     gpg --import < /vagrant/vagrant/key.pub
     gpg --import < /vagrant/vagrant/key.sec
+    gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < /vagrant/vagrant/key.pub
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.pub
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.sec
+    sudo -u vagrant gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < /vagrant/vagrant/key.pub
     cd /vagrant/vagrant/libfaketime
     make install
     /usr/local/bin/aptly repo create -architectures="amd64" fakerepo01
