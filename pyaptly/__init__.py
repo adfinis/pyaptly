@@ -694,11 +694,14 @@ def clone_snapshot(origin, destination):
 
 def publish_cmd_update(cfg, publish_name, publish_config):
     if 'repo' in publish_config:
-        # Nothing to do, repos are automatically up to date
-        return
-
+        return Command([
+            'aptly',
+            'publish',
+            'update',
+            publish_config['distribution'],
+            publish_name,
+        ])
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
-
     current_snapshots = state.publish_map[publish_fullname]
     if 'snapshots' in publish_config:
         snapshots_config  = publish_config['snapshots']
