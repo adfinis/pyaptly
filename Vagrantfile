@@ -83,6 +83,8 @@ EOF
     fi
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.pub
     sudo -u vagrant gpg --import < /vagrant/vagrant/key.sec
+    cd /vagrant/vagrant/libfaketime
+    make install
     true
   SHELL
 end

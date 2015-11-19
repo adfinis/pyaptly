@@ -1,3 +1,6 @@
 [submodule "pyproject"]
 	path = pyproject
 	url = https://github.com/adfinis-sygroup/pyproject.git
+[submodule "vagrant/libfaketime"]
+	path = vagrant/libfaketime
+	url = https://github.com/wolfcw/libfaketime.git
