@@ -1074,9 +1074,9 @@ def mirror(cfg, args):
 
 
 def add_gpg_keys(mirror_config):
+    keys_urls = {}
     if 'gpg-keys' in mirror_config:
         keys = mirror_config['gpg-keys']
-        keys_urls = {}
         if 'gpg-urls' in mirror_config:
             urls = mirror_config['gpg-urls']
             urls_len = len(urls)
@@ -1116,6 +1116,7 @@ def add_gpg_keys(mirror_config):
                 subprocess.check_call(['bash', '-c', key_command])
             else:
                 raise
+    state.read_gpg()
 
 
 def cmd_mirror_create(cfg, mirror_name, mirror_config):
