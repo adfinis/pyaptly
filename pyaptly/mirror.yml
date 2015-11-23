@@ -1,0 +1,9 @@
+mirrors:
+  fakerepo01: 
+    archive: "http://localhost/fakerepo01"
+  fakerepo02:
+    archive: "http://localhost/fakerepo02"
+  google-chrome: 
+    archive: "http://dl.google.com/linux/chrome/deb/"
+    gpg-keys: ["7FAC5991"]
+    gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]

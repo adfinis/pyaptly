@@ -1,0 +1,3 @@
+merge:
+  - "mirror.yml"
+  - "delete_test.yml"

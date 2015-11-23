@@ -16,7 +16,16 @@ Vagrant.configure(2) do |config|
   config.vm.box_url = "https://adfinis-sygroup.ch/file-exchange-public/adsy-centos-6.5.box"
   config.vm.box_download_checksum = "a0f2cc25560495cd927da103659a59d69b2e4f1bf032ee67f35e8ea1b1c88a80"
   config.vm.box_download_checksum_type = "sha256"
-  config.vbguest.auto_update = false
+  begin
+    if Vagrant.plugin("2").manager.config.has_key? :vbguest then
+      config.vbguest.auto_update = false
+    end
+  rescue
+  end
+  if ! File.exists?(".vagrant/machines/default/virtualbox/id")
+    # Then this machine is brannd new.
+    system "rm -rf pyaptly.egg-info/"
+  end
 
   config.ssh.forward_agent = true
 
