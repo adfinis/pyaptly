@@ -5,7 +5,7 @@ import random
 import unittest
 
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import example, given
 
 from . import test
 
@@ -43,12 +43,21 @@ class TestTest(unittest.TestCase):
         assert 'fakerepo01' not in yml['mirrors']
 
     @given(yml_st, yml_st)
+    @example({'1': 'Huhu'}, {'1': 'None'})
     def test_merge(self, a, b):
         res  = test.merge(a, b)
         for _ in range(10):
             path, data_b = self.rand_path(b)
-            data_res     = self.get_path(path, res)
-            assert data_res == data_b
+            if data_b == 'None':
+                error = False
+                try:
+                    data_res = self.get_path(path, res)
+                except KeyError:
+                    error = True
+                assert error
+            else:
+                data_res = self.get_path(path, res)
+                assert data_res == data_b
             if isinstance(a, dict) and isinstance(b, dict):
                 path, data_a = self.rand_path(a)
                 try:
@@ -56,7 +65,7 @@ class TestTest(unittest.TestCase):
                     if data_a != data_res:
                         data_b = self.get_path(path, b)
                         assert data_res == data_b
-                except TypeError:
+                except (TypeError, KeyError):
                     pass
 
     def get_path(self, path, data):
