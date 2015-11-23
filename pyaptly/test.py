@@ -1,7 +1,7 @@
 """Tools for testing pyaptly"""
 
-import itertools
 import os
+
 import yaml
 
 

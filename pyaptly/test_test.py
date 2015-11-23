@@ -1,10 +1,11 @@
 """Testing the testing tools"""
 
 import os
-import hypothesis.strategies as st
-from hypothesis import given
 import random
 import unittest
+
+import hypothesis.strategies as st
+from hypothesis import given
 
 from . import test
 
