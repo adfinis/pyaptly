@@ -64,6 +64,7 @@ Vagrant.configure(2) do |config|
   
     # Customize the amount of memory on the VM:
     vb.memory = "512"
+	vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
   #
   # View the documentation for the provider you are using for more
@@ -81,7 +82,7 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     set -e
-    yum -y install wget
+    yum -y install wget rsync
     cd /usr/local/bin
     wget -q https://dl.bintray.com/smira/aptly/0.9.5/centos-6.5-x64/aptly
     sha256sum -c <<EOF
@@ -113,6 +114,7 @@ EOF
     cp /vagrant/vagrant/nginx.conf /etc/nginx/nginx.conf
     cp /vagrant/vagrant/default.conf /etc/nginx/conf.d/default.conf
     service nginx restart
+    chkconfig nginx on
     python /vagrant/vagrant/get-pip.py
     pip install virtualenv
     sudo -u vagrant virtualenv /home/vagrant/.venv

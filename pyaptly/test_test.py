@@ -31,7 +31,7 @@ class TestTest(unittest.TestCase):
             "merge.yml"
         )
         yml = test.read_yml(path)
-        assert yml['mirrors']['fakerepo01'] is not None
+        assert yml['mirror']['fakerepo01'] is not None
 
     def test_delete(self):
         """Test if merges can delete fields"""
@@ -40,7 +40,7 @@ class TestTest(unittest.TestCase):
             "delete_merge.yml"
         )
         yml = test.read_yml(path)
-        assert 'fakerepo01' not in yml['mirrors']
+        assert 'fakerepo01' not in yml['mirror']
 
     @given(yml_st, yml_st)
     @example({'1': 'Huhu'}, {'1': 'None'})

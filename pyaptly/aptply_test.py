@@ -3,7 +3,11 @@ import contextlib
 import logging
 import os
 
-from pyaptly import main
+import testfixtures
+
+from pyaptly import SystemStateReader, main
+
+from . import test
 
 try:
     import unittest.mock as mock
@@ -37,3 +41,35 @@ def test_debug():
         ]
         main(args)
         assert logging.getLogger().level == logging.DEBUG
+
+
+def test_mirror():
+    """Test if createing mirrors works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "mirror.yml",
+    )) as (tyml, config):
+        args = [
+            '-d',
+            '-c',
+            config,
+            'mirror',
+            'create'
+        ]
+        keys_added = []
+        with testfixtures.LogCapture() as l:
+            main(args)
+            for rec in l.records:
+                for arg in rec.args:
+                    if isinstance(arg, list):
+                        if arg[0] == "gpg":
+                            keys_added.append(arg[7])
+        assert len(keys_added) > 0
+        assert len(keys_added) == len(set(keys_added)), (
+            "Key multiple times added"
+        )
+
+        expect = set(tyml['mirror'].keys())
+        state = SystemStateReader()
+        state.read()
+        assert state.mirrors == expect

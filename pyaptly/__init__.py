@@ -1107,6 +1107,7 @@ def add_gpg_keys(mirror_config):
                 "--recv-keys",
                 key
             ]
+            lg.debug("Adding gpg key with call: %s", key_command)
             subprocess.check_call(key_command)
         except subprocess.CalledProcessError:
             url = keys_urls[key]

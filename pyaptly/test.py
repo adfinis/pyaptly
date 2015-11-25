@@ -1,12 +1,19 @@
 """Tools for testing pyaptly"""
 
+import contextlib
 import os
+import shutil
+import subprocess
+import tempfile
 
 import yaml
 
 
 def read_yml(file_):
-    """Read and merge a yml file"""
+    """Read and merge a yml file.
+
+    :param file_: file to read
+    :type  file_: str"""
     directory = os.path.dirname(file_)
     with open(file_) as f:
         main_yml = dict(yaml.load(f.read()))
@@ -25,6 +32,14 @@ def read_yml(file_):
 
 
 def merge(a, b):
+    """Merge two dicts.
+
+    :param a: dict a
+    :type  a: dict
+    :param b: dict b
+    :type  b: dict
+    :rtype:   dict
+    """
     if isinstance(a, dict) and isinstance(b, dict):
         d = dict(a)
         d.update(dict(((k, merge(a.get(k, None), b[k])) for k in b)))
@@ -33,3 +48,52 @@ def merge(a, b):
                 del d[k]
         return d
     return b
+
+
+def create_config(test_input):
+    """Return path to pyaptly config from test input.
+
+    :param test_input: Test input read from test-yml.
+    :type  test_input: dict
+    :rtype:            str
+    """
+    input_ = read_yml(test_input)
+    if 'mirror' in input_:
+        for mirror in input_['mirror'].values():
+            if 'components' not in mirror:
+                mirror['components'] = "main"
+            if 'distribution' not in mirror:
+                mirror['distribution'] = "main"
+    try:
+        file_ = tempfile.NamedTemporaryFile(delete=False)
+        yaml.dump(input_, file_)
+    finally:
+        file_.close()
+    return (input_, file_.name)
+
+
+@contextlib.contextmanager
+def clean_and_config(test_input):
+    try:
+        shutil.rmtree("/home/vagrant/.aptly")
+    except OSError:
+        pass
+    input_, file_ = create_config(test_input)
+    if 'mirror' in input_:
+        for mirror in input_['mirror'].values():
+            if 'gpg-keys' in mirror:
+                for key in mirror['gpg-keys']:
+                    try:
+                        subprocess.check_call([
+                            'gpg',
+                            '--keyring',
+                            'trustedkeys.gpg',
+                            '--batch',
+                            '--yes',
+                            '--delete-key',
+                            key,
+                        ])
+                    except subprocess.CalledProcessError:
+                        pass
+    yield (input_, file_)
+    os.unlink(file_)
