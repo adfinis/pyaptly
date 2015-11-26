@@ -158,6 +158,13 @@ def date_round_daily(date, time=None):
 
 
 def call_output(args, input_=None):
+    """Call command and return output.
+
+    :param   args: Command to execute
+    :type    args: list
+    :param input_: Input to command
+    :type  input_: bytes
+    """
     p = subprocess.Popen(
         args,
         stdin=subprocess.PIPE,
@@ -170,7 +177,7 @@ def call_output(args, input_=None):
             p.returncode,
             args,
         )
-    return output
+    return (output, err)
 
 
 class Command(object):
@@ -299,7 +306,7 @@ class SystemStateReader(object):
 
     def read_gpg(self):
         self.gpg_keys = set()
-        data = call_output([
+        data, _ = call_output([
             "gpg",
             "--no-default-keyring",
             "--keyring", "trustedkeys.gpg",
@@ -317,7 +324,7 @@ class SystemStateReader(object):
 
     def read_publish_map(self):
         self.publish_map = {}
-        data = call_output([
+        data, _ = call_output([
             "aptly", "publish", "list"
         ])
 
@@ -351,7 +358,7 @@ class SystemStateReader(object):
         self.read_aptly_list("snapshot", self.snapshots)
 
     def read_aptly_list(self, type_, list_):
-        data = call_output([
+        data, _ = call_output([
             "aptly", type_, "list", "-raw"
         ])
         lg.debug('Aptly returned %s: %s', type_, data)

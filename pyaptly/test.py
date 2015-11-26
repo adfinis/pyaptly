@@ -8,6 +8,8 @@ import tempfile
 
 import yaml
 
+import pyaptly
+
 
 def read_yml(file_):
     """Read and merge a yml file.
@@ -48,6 +50,22 @@ def merge(a, b):
                 del d[k]
         return d
     return b
+
+
+def execute_and_parse_show_cmd(args):
+    """Executes and parses a aptly show command.
+
+    :param args: Command to execute
+    :type  args: list
+    """
+    result = {}
+    show, _ = pyaptly.call_output(args)
+    for line in show.split('\n'):
+        if ":" in line:
+            key, value = line.split(":", 1)
+            key = key.lower()
+            result[key] = value.strip()
+    return result
 
 
 def create_config(test_input):

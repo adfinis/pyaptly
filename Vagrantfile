@@ -117,6 +117,8 @@ EOF
     chkconfig nginx on
     python /vagrant/vagrant/get-pip.py
     pip install virtualenv
+    pip install ipython==1.2.1
+    pip install ipdb
     sudo -u vagrant virtualenv /home/vagrant/.venv
     sudo -u vagrant bash -c "echo '. /home/vagrant/.venv/bin/activate' >> /home/vagrant/.bashrc"
     true

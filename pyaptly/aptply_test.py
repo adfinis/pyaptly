@@ -31,7 +31,7 @@ def mock_subprocess():
 def test_debug():
     """Test if debug is enabled with -d"""
     with mock_subprocess() as (_, gpg):
-        gpg.side_effect = lambda _: ""
+        gpg.side_effect = lambda _: ("", "")
         args = [
             '-d',
             '-c',
@@ -43,7 +43,7 @@ def test_debug():
         assert logging.getLogger().level == logging.DEBUG
 
 
-def test_mirror():
+def test_mirror_create():
     """Test if createing mirrors works."""
     with test.clean_and_config(os.path.join(
             _test_base,
@@ -73,3 +73,40 @@ def test_mirror():
         state = SystemStateReader()
         state.read()
         assert state.mirrors == expect
+
+
+def test_mirror_update():
+    """Test if updating mirrors works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "mirror-no-google.yml",
+    )) as (tyml, config):
+        args = [
+            '-d',
+            '-c',
+            config,
+            'mirror',
+            'create'
+        ]
+        state = SystemStateReader()
+        state.read()
+        assert "fakerepo01" not in state.mirrors
+        main(args)
+        state.read()
+        assert "fakerepo01" in state.mirrors
+        args[4] = 'update'
+        main(args)
+        args = [
+            'aptly',
+            'mirror',
+            'show',
+        ]
+        args01 = list(args)
+        args01.append("fakerepo01")
+        aptly_state = test.execute_and_parse_show_cmd(args01)
+        assert aptly_state['number of packages'] == "2"
+
+
+def test_snapshot_create_basic():
+    """Test if snapshot create works."""
+    test_mirror_update()
