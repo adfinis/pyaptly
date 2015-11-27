@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import tempfile
 
+import freezegun
 import yaml
 
 import pyaptly
@@ -82,6 +83,13 @@ def create_config(test_input):
                 mirror['components'] = "main"
             if 'distribution' not in mirror:
                 mirror['distribution'] = "main"
+    if 'publish' in input_:
+        for publish in input_['publish'].values():
+            for item in publish:
+                if 'components' not in item:
+                    item['components'] = "main"
+                if 'distribution' not in item:
+                    item['distribution'] = "main"
     try:
         file_ = tempfile.NamedTemporaryFile(delete=False)
         yaml.dump(input_, file_)
@@ -91,27 +99,32 @@ def create_config(test_input):
 
 
 @contextlib.contextmanager
-def clean_and_config(test_input):
+def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     try:
-        shutil.rmtree("/home/vagrant/.aptly")
-    except OSError:
-        pass
-    input_, file_ = create_config(test_input)
-    if 'mirror' in input_:
-        for mirror in input_['mirror'].values():
-            if 'gpg-keys' in mirror:
-                for key in mirror['gpg-keys']:
-                    try:
-                        subprocess.check_call([
-                            'gpg',
-                            '--keyring',
-                            'trustedkeys.gpg',
-                            '--batch',
-                            '--yes',
-                            '--delete-key',
-                            key,
-                        ])
-                    except subprocess.CalledProcessError:
-                        pass
-    yield (input_, file_)
-    os.unlink(file_)
+        file_ = None
+        with freezegun.freeze_time(freeze):
+            try:
+                shutil.rmtree("/home/vagrant/.aptly")
+            except OSError:
+                pass
+            input_, file_ = create_config(test_input)
+            if 'mirror' in input_:
+                for mirror in input_['mirror'].values():
+                    if 'gpg-keys' in mirror:
+                        for key in mirror['gpg-keys']:
+                            try:
+                                subprocess.check_call([
+                                    'gpg',
+                                    '--keyring',
+                                    'trustedkeys.gpg',
+                                    '--batch',
+                                    '--yes',
+                                    '--delete-key',
+                                    key,
+                                ])
+                            except subprocess.CalledProcessError:
+                                pass
+            yield (input_, file_)
+    finally:
+        if file_:
+            os.unlink(file_)
