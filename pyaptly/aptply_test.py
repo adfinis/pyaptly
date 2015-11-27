@@ -51,7 +51,6 @@ def test_mirror_create():
             "mirror.yml",
     )) as (tyml, config):
         args = [
-            '-d',
             '-c',
             config,
             'mirror',
@@ -79,7 +78,6 @@ def test_mirror_create():
 def do_mirror_update(config):
     """Test if updating mirrors works."""
     args = [
-        '-d',
         '-c',
         config,
         'mirror',
@@ -91,7 +89,7 @@ def do_mirror_update(config):
     main(args)
     state.read()
     assert "fakerepo01" in state.mirrors
-    args[4] = 'update'
+    args[3] = 'update'
     main(args)
     args = [
         'aptly',
@@ -117,7 +115,6 @@ def do_snapshot_create(config):
     """Test if createing snapshots works"""
     do_mirror_update(config)
     args = [
-        '-d',
         '-c',
         config,
         'snapshot',
@@ -128,7 +125,8 @@ def do_snapshot_create(config):
     state.read()
     assert set(
         ['fakerepo01-20121010T0000Z', 'fakerepo02-20121010T0000Z']
-    ) == state.snapshots
+    ).issubset(state.snapshots)
+    return state
 
 
 def test_snapshot_create_basic():
@@ -137,14 +135,41 @@ def test_snapshot_create_basic():
             _test_base,
             "snapshot.yml",
     )) as (tyml, config):
-        do_snapshot_create(config)
+        state = do_snapshot_create(config)
+        assert set(
+            ['fakerepo01-20121010T0000Z', 'fakerepo02-20121010T0000Z']
+        ) == state.snapshots
+
+
+def test_snapshot_create_merge():
+    """Test if snapshot create works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "snapshot_merge.yml",
+    )) as (tyml, config):
+        state = do_snapshot_create(config)
+        assert set(
+            [
+                'fakerepo01-20121010T0000Z',
+                'fakerepo02-20121010T0000Z',
+                'superfake-20121010T0000Z'
+            ]
+        ) == state.snapshots
+        expect = {
+            'fakerepo01-20121010T0000Z': set([]),
+            'fakerepo02-20121010T0000Z': set([]),
+            'superfake-20121010T0000Z': set([
+                'fakerepo01-20121010T0000Z',
+                'fakerepo02-20121010T0000Z'
+            ])
+        }
+        assert expect == state.snapshot_map
 
 
 def do_publish_create(config):
     """Test if creating publishes works."""
     do_snapshot_create(config)
     args = [
-        '-d',
         '-c',
         config,
         'publish',
@@ -181,7 +206,6 @@ def test_publish_updating_basic():
         do_publish_create(config)
         with freezegun.freeze_time("2012-10-11 10:10:10"):
             args = [
-                '-d',
                 '-c',
                 config,
                 'snapshot',
@@ -189,7 +213,6 @@ def test_publish_updating_basic():
             ]
             main(args)
             args = [
-                '-d',
                 '-c',
                 config,
                 'publish',
@@ -212,3 +235,21 @@ def test_publish_updating_basic():
                 'fakerepo01 main': set(['fakerepo01-20121011T0000Z'])
             }
             assert expect ==  state.publish_map
+
+
+def test_repo_create_basic():
+    """Test if creating repositories works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "repo.yml",
+    )) as (tyml, config):
+        args = [
+            '-c',
+            config,
+            'repo',
+            'create'
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set(['centrify']) == state.repos

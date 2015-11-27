@@ -289,18 +289,20 @@ class Command(object):
 
 class SystemStateReader(object):
     def __init__(self):
-        self.gpg_keys  = set()
-        self.mirrors   = set()
-        self.repos     = set()
-        self.snapshots = set()
-        self.publishes = set()
-        self.publish_map = {}
+        self.gpg_keys     = set()
+        self.mirrors      = set()
+        self.repos        = set()
+        self.snapshots    = set()
+        self.snapshot_map = {}
+        self.publishes    = set()
+        self.publish_map  = {}
 
     def read(self):
         self.read_gpg()
         self.read_repos()
         self.read_mirror()
         self.read_snapshot()
+        self.read_snapshot_map()
         self.read_publishes()
         self.read_publish_map()
 
@@ -340,6 +342,28 @@ class SystemStateReader(object):
                         if re.match(".*\[%s\]" % snapshot, line):
                             self.publish_map[publish].add(snapshot)
         lg.debug('Joined snapshots and publishes: %s', self.publish_map)
+
+    def read_snapshot_map(self):
+        self.snapshot_map = {}
+        data, _ = call_output([
+            "aptly", "snapshot", "list"
+        ])
+
+        for snapshot_outer in self.snapshots:
+            self.snapshot_map[snapshot_outer] = set()
+            re_snap = re.compile(
+                r"^\s*\*\s+\[%s\]" %
+                snapshot_outer
+            )
+            for line in data.split("\n"):
+                if re_snap.match(line):
+                    for snapshot in self.snapshots:
+                        if re.match(".*sources.*'%s'" % snapshot, line):
+                            self.snapshot_map[snapshot_outer].add(snapshot)
+        lg.debug(
+            'Joined snapshots with self(snapshots): %s',
+            self.snapshot_map
+        )
 
     def read_publishes(self):
         self.publishes = set()
@@ -467,9 +491,10 @@ def main(argv=None):
     handler = logging.StreamHandler(sys.stderr)
     handler.setFormatter(formatter)
     root.addHandler(handler)
-    root.setLevel(logging.CRITICAL)
+    handler.setLevel(logging.CRITICAL)
     if args.debug:
-        logging.getLogger().setLevel(logging.DEBUG)
+        root.setLevel(logging.DEBUG)
+        handler.setLevel(logging.DEBUG)
     lg.debug("Args: %s", vars(args))
 
     with open(args.config, 'r') as cfgfile:
