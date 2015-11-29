@@ -111,8 +111,8 @@ def test_mirror_update():
         do_mirror_update(config)
 
 
-def test_mirror_update_wrong():
-    """Test if updating a single mirror works."""
+def test_mirror_update_inexistent():
+    """Test if updating an inexistent mirror causes an error."""
     with test.clean_and_config(os.path.join(
             _test_base,
             "mirror-no-google.yml",
@@ -336,6 +336,46 @@ def do_repo_create(config):
         'vagrant/hellome_0.1-1_amd64.deb'
     ])
     assert set(['centrify']) == state.repos
+
+
+def test_repo_create_single():
+    """Test if creating a single repo works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "repo.yml",
+    )) as (tyml, config):
+        args = [
+            '-c',
+            config,
+            'repo',
+            'create',
+            'centrify',
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set(['centrify']) == state.repos
+
+
+def test_repo_create_inexistent():
+    """Test if creating an inexistent repo causes an error."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "repo.yml",
+    )) as (tyml, config):
+        args = [
+            '-c',
+            config,
+            'repo',
+            'create',
+            'asdfasdf',
+        ]
+        error = False
+        try:
+            main(args)
+        except ValueError:
+            error = True
+        assert error
 
 
 def test_repo_create_basic():

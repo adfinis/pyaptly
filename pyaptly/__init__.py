@@ -857,7 +857,7 @@ def repo(cfg, args):
             cmd.execute()
 
     else:
-        if args.publish_name in cfg['repo']:
+        if args.repo_name in cfg['repo']:
             commands = [
                 cmd_repo(
                     cfg,
