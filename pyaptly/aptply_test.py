@@ -111,6 +111,45 @@ def test_mirror_update():
         do_mirror_update(config)
 
 
+def test_mirror_update_wrong():
+    """Test if updating a single mirror works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "mirror-no-google.yml",
+    )) as (tyml, config):
+        do_mirror_update(config)
+        args = [
+            '-c',
+            config,
+            'mirror',
+            'update',
+            'asdfasdf'
+        ]
+        error = False
+        try:
+            main(args)
+        except ValueError:
+            error = True
+        assert error
+
+
+def test_mirror_update_single():
+    """Test if updating a single mirror works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "mirror-no-google.yml",
+    )) as (tyml, config):
+        do_mirror_update(config)
+        args = [
+            '-c',
+            config,
+            'mirror',
+            'update',
+            'fakerepo01'
+        ]
+        main(args)
+
+
 def do_snapshot_create(config):
     """Test if createing snapshots works"""
     do_mirror_update(config)
@@ -139,6 +178,28 @@ def test_snapshot_create_basic():
         assert set(
             ['fakerepo01-20121010T0000Z', 'fakerepo02-20121010T0000Z']
         ) == state.snapshots
+
+
+def test_snapshot_create_repo():
+    """Test if repo snapshot create works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "snapshot_repo.yml",
+    )) as (tyml, config):
+        do_repo_create(config)
+        args = [
+            '-c',
+            config,
+            'snapshot',
+            'create'
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set(
+            ['centrify-latest']
+        ).issubset(state.snapshots)
+        return state
 
 
 def test_snapshot_create_merge():
@@ -256,19 +317,31 @@ def test_publish_updating_basic():
             assert expect ==  state.publish_map
 
 
+def do_repo_create(config):
+    """Test if creating repositories works."""
+    args = [
+        '-c',
+        config,
+        'repo',
+        'create'
+    ]
+    main(args)
+    state = SystemStateReader()
+    state.read()
+    call_output([
+        'aptly',
+        'repo',
+        'add',
+        'centrify',
+        'vagrant/hellome_0.1-1_amd64.deb'
+    ])
+    assert set(['centrify']) == state.repos
+
+
 def test_repo_create_basic():
     """Test if creating repositories works."""
     with test.clean_and_config(os.path.join(
             _test_base,
             "repo.yml",
     )) as (tyml, config):
-        args = [
-            '-c',
-            config,
-            'repo',
-            'create'
-        ]
-        main(args)
-        state = SystemStateReader()
-        state.read()
-        assert set(['centrify']) == state.repos
+        do_repo_create(config)
