@@ -1,0 +1,8 @@
+snapshot:
+  filterfake01-%T:
+    timestamp: {"time": "00:00"}
+    filter:
+      source: {"name": "fakerepo01-%T", "timestamp": "current"}
+      query: "libhello_0.1-1_amd64"
+merge:
+  - "snapshot.yml"

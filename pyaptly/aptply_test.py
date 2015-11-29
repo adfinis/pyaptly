@@ -6,7 +6,7 @@ import os
 import freezegun
 import testfixtures
 
-from pyaptly import SystemStateReader, main
+from pyaptly import SystemStateReader, call_output, main
 
 from . import test
 
@@ -142,7 +142,7 @@ def test_snapshot_create_basic():
 
 
 def test_snapshot_create_merge():
-    """Test if snapshot create works."""
+    """Test if snapshot merge create works."""
     with test.clean_and_config(os.path.join(
             _test_base,
             "snapshot_merge.yml",
@@ -164,6 +164,25 @@ def test_snapshot_create_merge():
             ])
         }
         assert expect == state.snapshot_map
+
+
+def test_snapshot_create_filter():
+    """Test if snapshot filter create works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "snapshot_filter.yml",
+    )) as (tyml, config):
+        do_snapshot_create(config)
+        data, _ = call_output([
+            'aptly',
+            'snapshot',
+            'search',
+            'filterfake01-20121010T0000Z',
+            'Name (% *)'
+        ])
+        state = [x.strip() for x in data.split('\n') if x]
+        expect = ['libhello_0.1-1_amd64']
+        assert state == expect
 
 
 def do_publish_create(config):
