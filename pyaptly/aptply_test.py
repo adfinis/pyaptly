@@ -168,6 +168,50 @@ def do_snapshot_create(config):
     return state
 
 
+def test_snapshot_create_inexistent():
+    """Test if creating an inexistent snapshot raises an error."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "snapshot.yml",
+    )) as (tyml, config):
+        do_mirror_update(config)
+        args = [
+            '-c',
+            config,
+            'snapshot',
+            'create',
+            'asdfasdf-%T',
+        ]
+        error = False
+        try:
+            main(args)
+        except ValueError:
+            error = True
+        assert error
+
+
+def test_snapshot_create_single():
+    """Test if single snapshot create works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "snapshot.yml",
+    )) as (tyml, config):
+        do_mirror_update(config)
+        args = [
+            '-c',
+            config,
+            'snapshot',
+            'create',
+            'fakerepo01-%T',
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set(
+            ['fakerepo01-20121010T0000Z']
+        ).issubset(state.snapshots)
+
+
 def test_snapshot_create_basic():
     """Test if snapshot create works."""
     with test.clean_and_config(os.path.join(
@@ -266,6 +310,76 @@ def do_publish_create(config):
         'fakerepo01 main': set(['fakerepo01-20121010T0000Z'])
     }
     assert expect == state.publish_map
+
+
+def test_publish_create_single():
+    """Test if creating a single publish works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "publish.yml",
+    )) as (tyml, config):
+        do_snapshot_create(config)
+        args = [
+            '-c',
+            config,
+            'publish',
+            'create',
+            'fakerepo01',
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set(
+            ['fakerepo01 main']
+        ) == state.publishes
+        expect = {
+            'fakerepo01 main': set(['fakerepo01-20121010T0000Z'])
+        }
+        assert expect == state.publish_map
+
+
+def test_publish_create_inexistent():
+    """Test if creating inexistent publish raises an error."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "publish.yml",
+    )) as (tyml, config):
+        do_snapshot_create(config)
+        args = [
+            '-c',
+            config,
+            'publish',
+            'create',
+            'asdfasdf',
+        ]
+        error = False
+        try:
+            main(args)
+        except ValueError:
+            error = True
+        assert error
+
+
+def test_publish_create_repo():
+    """Test if creating repo publishes works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "publish_repo.yml",
+    )) as (tyml, config):
+        do_repo_create(config)
+        args = [
+            '-c',
+            config,
+            'publish',
+            'create',
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set(
+            ['centrify latest']
+        ) == state.publishes
+        assert {'centrify latest': set([])} == state.publish_map
 
 
 def test_publish_create_basic():

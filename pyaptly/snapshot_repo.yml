@@ -1,0 +1,5 @@
+snapshot:
+  centrify-latest:
+    repo: "centrify"
+merge:
+  - "repo.yml"

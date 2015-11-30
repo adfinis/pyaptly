@@ -862,10 +862,8 @@ def repo(cfg, args):
                 cmd_repo(
                     cfg,
                     args.repo_name,
-                    repo_conf_entry
+                    cfg['repo'][args.repo_name]
                 )
-                for repo_conf_entry
-                in cfg['repo'][args.repo_name]
             ]
             for cmd in Command.order_commands(commands, state.has_dependency):
                 cmd.execute()
@@ -1141,7 +1139,7 @@ def add_gpg_keys(mirror_config):
             ]
             lg.debug("Adding gpg key with call: %s", key_command)
             subprocess.check_call(key_command)
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError:  # pragma: no cover
             url = keys_urls[key]
             if url:
                 key_command = (

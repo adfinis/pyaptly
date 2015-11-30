@@ -1,0 +1,10 @@
+
+publish:
+  centrify:
+    -
+      distribution: "latest"
+      repo: "centrify"
+      gpg-key: "650FE755"
+      automatic-update: true
+merge:
+  - "repo.yml"
