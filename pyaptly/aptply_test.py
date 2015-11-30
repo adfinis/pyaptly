@@ -391,6 +391,56 @@ def test_publish_create_basic():
         do_publish_create(config)
 
 
+def do_publish_create_republish(config):
+    """Test if creating republishes works."""
+    with testfixtures.LogCapture() as l:
+        do_publish_create(config)
+        found = False
+        for rec in l.records:
+            if rec.levelname == "CRITICAL":
+                if "has been deferred" in rec.msg:
+                    found = True
+        assert found
+    args = [
+        '-c',
+        config,
+        'publish',
+        'create',
+    ]
+    main(args)
+    state = SystemStateReader()
+    state.read()
+    assert 'fakerepo01-stable main' in state.publishes
+
+
+def test_publish_create_republish():
+    """Test if creating republishes works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "publish_publish.yml",
+    )) as (tyml, config):
+        do_publish_create_republish(config)
+
+
+def test_publish_update_republish():
+    """Test if update republishes works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            "publish_publish.yml",
+    )) as (tyml, config):
+        do_publish_create_republish(config)
+        args = [
+            '-c',
+            config,
+            'publish',
+            'update',
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert 'fakerepo01-stable main' in state.publishes
+
+
 def test_publish_updating_basic():
     """Test if updating publishes works."""
     with test.clean_and_config(os.path.join(

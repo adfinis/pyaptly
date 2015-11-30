@@ -9,6 +9,8 @@ import sys
 
 import yaml
 
+_logging_setup = False
+
 
 def init_hypothesis():
     try:  # pragma: no cover:w
@@ -413,6 +415,7 @@ state = SystemStateReader()
 
 def main(argv=None):
     """Called by command-line, defines parsers and executes commands"""
+    global _logging_setup
     if not argv:  # pragma: no cover
         argv = sys.argv[1:]
     parser = argparse.ArgumentParser(description='Manage aptly')
@@ -488,13 +491,15 @@ def main(argv=None):
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(formatter)
-    root.addHandler(handler)
-    handler.setLevel(logging.CRITICAL)
-    if args.debug:
-        root.setLevel(logging.DEBUG)
-        handler.setLevel(logging.DEBUG)
+    if not _logging_setup:  # noqa
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
+        handler.setLevel(logging.CRITICAL)
+        if args.debug:
+            root.setLevel(logging.DEBUG)
+            handler.setLevel(logging.DEBUG)
+        _logging_setup = True  # noqa
     lg.debug("Args: %s", vars(args))
 
     with open(args.config, 'r') as cfgfile:
@@ -695,7 +700,14 @@ def publish_cmd_create(cfg, publish_name, publish_config):
             has_source = True
             conf_value = " ".join(conf_value.split("/"))
             source_args.append('snapshot')
-            sources = state.publish_map[conf_value]
+            try:
+                sources = state.publish_map[conf_value]
+            except KeyError:
+                lg.critical((
+                    "Creating %s has been deferred, please call publish "
+                    "create again"
+                ) % publish_name)
+                return
             source_args.extend(sources)
             num_sources = len(sources)
         else:
