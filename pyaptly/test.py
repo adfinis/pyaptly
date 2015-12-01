@@ -7,9 +7,8 @@ import subprocess
 import tempfile
 
 import freezegun
-import yaml
-
 import pyaptly
+import yaml
 
 
 def read_yml(file_):

@@ -5,7 +5,6 @@ import os
 
 import freezegun
 import testfixtures
-
 from pyaptly import SystemStateReader, call_output, main
 
 from . import test
