@@ -24,6 +24,7 @@ Update mirrors and snapshots and switch publish endpoints with
 
    pyaptly -c mirrors.yml mirror update
    pyaptly -c mirrors.yml snapshot create
+   pyaptly -c mirrors.yml publish create
    pyaptly -c mirrors.yml publish update
 
 Manually trigger a switch to the new snapshots for the publish endpoint
@@ -47,5 +48,6 @@ Vagrant Box
 The box provisions aptly, nginx and two repos which can be used for tests:
 
 .. code::
+
    aptly mirror create mirro-fakerepo01 http://localhost/fakerepo01 main
    aptly mirror create mirro-fakerepo02 http://localhost/fakerepo02 main
