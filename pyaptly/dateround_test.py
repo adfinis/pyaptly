@@ -36,7 +36,7 @@ def test_round_weekly(date, day_of_week, time):
     )
     # double round
     assert round_date == date_round_weekly(round_date, day_of_week, time)
-    if round_date == date:
+    if round_date == date:  # pragma: no cover
         # Find tz problems
         assert date_time == time
         assert round_date.isoweekday() == day_of_week
@@ -110,7 +110,7 @@ def test_round_daily(date, time):
     )
     # double round
     assert round_date == date_round_daily(round_date, time)
-    if round_date == date:
+    if round_date == date:  # pragma: no cover
         # Find tz problems
         assert date_time == time
     else:

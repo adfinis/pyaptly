@@ -4,6 +4,6 @@ snapshot:
     timestamp: {"time": "00:00"}
   fakerepo02-%T:
     mirror: "fakerepo02"
-    timestamp: {"time": "00:00"}
+    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
 merge:
   - "mirror-no-google.yml"

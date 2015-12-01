@@ -163,7 +163,7 @@ def do_snapshot_create(config):
     state = SystemStateReader()
     state.read()
     assert set(
-        ['fakerepo01-20121010T0000Z', 'fakerepo02-20121010T0000Z']
+        ['fakerepo01-20121010T0000Z', 'fakerepo02-20121006T0000Z']
     ).issubset(state.snapshots)
     return state
 
@@ -220,7 +220,7 @@ def test_snapshot_create_basic():
     )) as (tyml, config):
         state = do_snapshot_create(config)
         assert set(
-            ['fakerepo01-20121010T0000Z', 'fakerepo02-20121010T0000Z']
+            ['fakerepo01-20121010T0000Z', 'fakerepo02-20121006T0000Z']
         ) == state.snapshots
 
 
@@ -256,16 +256,16 @@ def test_snapshot_create_merge():
         assert set(
             [
                 'fakerepo01-20121010T0000Z',
-                'fakerepo02-20121010T0000Z',
+                'fakerepo02-20121006T0000Z',
                 'superfake-20121010T0000Z'
             ]
         ) == state.snapshots
         expect = {
             'fakerepo01-20121010T0000Z': set([]),
-            'fakerepo02-20121010T0000Z': set([]),
+            'fakerepo02-20121006T0000Z': set([]),
             'superfake-20121010T0000Z': set([
                 'fakerepo01-20121010T0000Z',
-                'fakerepo02-20121010T0000Z'
+                'fakerepo02-20121006T0000Z'
             ])
         }
         assert expect == state.snapshot_map
@@ -306,7 +306,7 @@ def do_publish_create(config):
         ['fakerepo02 main', 'fakerepo01 main']
     ) == state.publishes
     expect = {
-        'fakerepo02 main': set(['fakerepo02-20121010T0000Z']),
+        'fakerepo02 main': set(['fakerepo02-20121006T0000Z']),
         'fakerepo01 main': set(['fakerepo01-20121010T0000Z'])
     }
     assert expect == state.publish_map
@@ -374,6 +374,13 @@ def test_publish_create_repo():
             'create',
         ]
         main(args)
+        args = [
+            '-c',
+            config,
+            'publish',
+            'update',
+        ]
+        main(args)
         state = SystemStateReader()
         state.read()
         assert set(
@@ -429,16 +436,36 @@ def test_publish_update_republish():
             "publish_publish.yml",
     )) as (tyml, config):
         do_publish_create_republish(config)
-        args = [
-            '-c',
-            config,
-            'publish',
-            'update',
-        ]
-        main(args)
+        with freezegun.freeze_time("2012-10-11 10:10:10"):
+            args = [
+                '-c',
+                config,
+                'snapshot',
+                'create',
+            ]
+            main(args)
+            args = [
+                '-c',
+                config,
+                'publish',
+                'update',
+            ]
+            main(args)
         state = SystemStateReader()
         state.read()
         assert 'fakerepo01-stable main' in state.publishes
+        # As you see fakerepo01-stable main points to the old snapshot
+        # this is theoretically not correct, but it will be fixed with
+        # the next call to publish update. Since we use this from a hourly cron
+        # job it is no problem.
+        # This can't be easily fixed and would need a rewrite of the
+        # dependencies engine.
+        expect = {
+            'fakerepo01-stable main': set(['fakerepo01-20121010T0000Z']),
+            'fakerepo02 main': set(['fakerepo02-20121006T0000Z']),
+            'fakerepo01 main': set(['fakerepo01-20121011T0000Z'])
+        }
+        assert expect == state.publish_map
 
 
 def test_publish_updating_basic():
@@ -466,16 +493,14 @@ def test_publish_updating_basic():
             state = SystemStateReader()
             state.read()
             expect = set([
-                'archived-fakerepo02-20121011T1010Z',
                 'archived-fakerepo01-20121011T1010Z',
                 'fakerepo01-20121011T0000Z',
-                'fakerepo02-20121010T0000Z',
+                'fakerepo02-20121006T0000Z',
                 'fakerepo01-20121010T0000Z',
-                'fakerepo02-20121011T0000Z'
             ])
             assert expect ==  state.snapshots
             expect = {
-                'fakerepo02 main': set(['fakerepo02-20121011T0000Z']),
+                'fakerepo02 main': set(['fakerepo02-20121006T0000Z']),
                 'fakerepo01 main': set(['fakerepo01-20121011T0000Z'])
             }
             assert expect ==  state.publish_map

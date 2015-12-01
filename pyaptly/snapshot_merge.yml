@@ -3,6 +3,6 @@ snapshot:
     timestamp: {"time": "00:00"}
     merge:
       - {"name": "fakerepo01-%T", "timestamp": "current"}
-      - {"name": "fakerepo02-%T", "timestamp": "current"}
+      - {"name": "fakerepo02-%T", "timestamp": 0}
 merge:
   - "snapshot.yml"

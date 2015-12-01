@@ -105,7 +105,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
         with freezegun.freeze_time(freeze):
             try:
                 shutil.rmtree("/home/vagrant/.aptly")
-            except OSError:
+            except OSError:  # pragma: no cover
                 pass
             input_, file_ = create_config(test_input)
             if 'mirror' in input_:

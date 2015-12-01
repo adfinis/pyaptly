@@ -112,7 +112,7 @@ def date_round_weekly(date, day_of_week=1, time=None):
     :rtype:             :py:class:`datetime.datetime`"""
     if time:
         time         = time_remove_tz(time)
-    else:
+    else:  # pragma: no cover
         time         = datetime.time(hour=0, minute=0)
 
     delta            = datetime.timedelta(
@@ -188,21 +188,28 @@ class Command(object):
         self._requires = set()
         self._provides = set()
         self._finished = None
+        self._known_dependency_types = (
+            'snapshot', 'mirror', 'repo', 'publish'
+        )
 
     def append(self, argument):
         assert str(argument) == argument
         self.cmd.append(argument)
 
     def require(self, type_, identifier):
-        assert type_ in ('snapshot', 'mirror', 'repo', 'any')
+        assert type_ in (
+            self._known_dependency_types +
+            ('any', ) +
+            SystemStateReader.known_dependency_types
+        )
         self._requires.add((type_, identifier))
 
     def provide(self, type_, identifier):
-        assert type_ in ('snapshot', 'mirror', 'repo', 'publish')
+        assert type_ in self._known_dependency_types
         self._provides.add((type_, identifier))
 
     def execute(self):
-        if self._finished is not None:
+        if self._finished is not None:  # pragma: no cover
             return self._finished
 
         lg.debug('Running command: %s', ' '.join(self.cmd))
@@ -211,7 +218,6 @@ class Command(object):
         return self._finished
 
     def __repr__(self):
-        return "Command<%s>" % (" ".join(self.cmd))
         return "Command<%s \n\trequires %s,\n\tprovides %s>" % (
             repr(self.cmd),
             ", ".join([repr(x) for x in self._requires]),
@@ -219,7 +225,7 @@ class Command(object):
         )
 
     @staticmethod
-    def order_commands(commands, has_dependency_cb=lambda: False):
+    def order_commands(commands, has_dependency_cb=lambda x: False):
         # Filter out any invalid entries.. TODO: Should be done
         # somewhere else...
         commands = [c for c in commands if c]
@@ -290,6 +296,10 @@ class Command(object):
 
 
 class SystemStateReader(object):
+    known_dependency_types = (
+        'repo', 'snapshot', 'mirror', 'gpg_key'
+    )
+
     def __init__(self):
         self.gpg_keys     = set()
         self.mirrors      = set()
@@ -402,8 +412,8 @@ class SystemStateReader(object):
             return name in self.mirrors
         elif type_ == 'snapshot':
             return name in self.snapshots
-        elif type_ == 'gpg_key':
-            return name in self.gpg_keys
+        elif type_ == 'gpg_key':  # pragma: no cover
+            return name in self.gpg_keys  # Not needed ATM
         else:
             raise ValueError(
                 "Unknown dependency to resolve: %s" % str(dependency)
@@ -575,7 +585,7 @@ def round_timestamp(timestamp_config, date=None):
     """
     timestamp_info = timestamp_config.get('timestamp', timestamp_config)
     config_time    = timestamp_info.get('time', 'FAIL')
-    if config_time == 'FAIL':
+    if config_time == 'FAIL':  # pragma: no cover
         raise ValueError(
             "Timestamp config has no valid time entry: %s" %
             str(timestamp_config)
@@ -631,7 +641,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
 
     for conf, conf_value in publish_config.items():
 
-        if conf == 'architectures':
+        if conf == 'architectures':  # pragma: no cover
             options.append(
                 '-architectures=%s' %
                 ','.join(unit_or_list_to_list(conf_value))
@@ -641,11 +651,11 @@ def publish_cmd_create(cfg, publish_name, publish_config):
             options.append(
                 '-component=%s' % ','.join(components)
             )
-        elif conf == 'label':
+        elif conf == 'label':  # pragma: no cover
             options.append(
                 '-label=%s' % conf_value
             )
-        elif conf == 'origin':
+        elif conf == 'origin':  # pragma: no cover
             options.append('-origin=%s' % conf_value)
 
         elif conf == 'distribution':
@@ -657,7 +667,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
             # Ignored here
             pass
         elif conf == 'snapshots':
-            if has_source:
+            if has_source:  # pragma: no cover
                 raise ValueError(
                     "Multiple sources for publish %s %s" % (
                         publish_name,
@@ -676,7 +686,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
             num_sources = len(snapshots)
 
         elif conf == 'repo':
-            if has_source:
+            if has_source:  # pragma: no cover
                 raise ValueError(
                     "Multiple sources for publish %s %s" % (
                         publish_name,
@@ -690,7 +700,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
             ]
             num_sources = 1
         elif conf == 'publish':
-            if has_source:
+            if has_source:  # pragma: no cover
                 raise ValueError(
                     "Multiple sources for publish %s %s" % (
                         publish_name,
@@ -710,7 +720,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
                 return
             source_args.extend(sources)
             num_sources = len(sources)
-        else:
+        else:  # pragma: no cover
             raise ValueError(
                 "Don't know how to handle publish config entry %s in %s" % (
                     conf,
@@ -763,7 +773,7 @@ def publish_cmd_update(cfg, publish_name, publish_config):
                 snapshots_config.extend(publish['snapshots'])
                 break
         new_snapshots = list(state.publish_map[conf_value])
-    else:
+    else:  # pragma: no cover
         raise ValueError(
             "No snapshot references configured in publish %s" % publish_name
         )
@@ -787,7 +797,7 @@ def publish_cmd_update(cfg, publish_name, publish_config):
                     '%T',
                     format_timestamp(datetime.datetime.now())
                 )
-                if archive in state.snapshots:
+                if archive in state.snapshots:  # pragma: no cover
                     continue
                 prefix_to_search = re.sub('%T$', '', snap['name'])
 
@@ -813,7 +823,7 @@ def publish_cmd_update(cfg, publish_name, publish_config):
 def repo_cmd_create(cfg, repo_name, repo_config):
     """Call the aptly repo command"""
 
-    if repo_name in state.repos:
+    if repo_name in state.repos:  # pragma: no cover
         # Nothing to do, repo already created
         return
 
@@ -832,13 +842,13 @@ def repo_cmd_create(cfg, repo_name, repo_config):
             options.append(
                 '-component=%s' % ','.join(components)
             )
-        elif conf == 'comment':
+        elif conf == 'comment':  # pragma: no cover
             options.append(
                 '-comment=%s' % conf_value
             )
         elif conf == 'distribution':
             options.append('-distribution=%s' % conf_value)
-        else:
+        else:  # pragma: no cover
             raise ValueError(
                 "Don't know how to handle repo config entry %s in %s" % (
                     conf,
@@ -1015,7 +1025,7 @@ def snapshot_spec_to_name(cfg, snapshot):
             cur_timestamp -= delta
         cur_timestamp += delta
         return name.replace('%T', format_timestamp(cur_timestamp))
-    else:
+    else:  # pragma: no cover
         return snapshot
 
 
@@ -1081,7 +1091,7 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
 
         return cmd
 
-    else:
+    else:  # pragma: no cover
         raise ValueError(
             "Don't know how to handle snapshot config" % (
                 snapshot_config
@@ -1128,7 +1138,7 @@ def add_gpg_keys(mirror_config):
             for x in range(len(keys)):
                 if x < urls_len:
                     url = urls[x]
-                else:
+                else:  # pragma: no cover
                     url = None
                 keys_urls[keys[x]] = url
         else:
@@ -1168,7 +1178,7 @@ def add_gpg_keys(mirror_config):
 def cmd_mirror_create(cfg, mirror_name, mirror_config):
     """Call the aptly mirror command"""
 
-    if mirror_name in state.mirrors:
+    if mirror_name in state.mirrors:  # pragma: no cover
         return
 
     add_gpg_keys(mirror_config)
@@ -1196,7 +1206,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
 
 def cmd_mirror_update(cfg, mirror_name, mirror_config):
     """Call the aptly mirror command"""
-    if mirror_name not in state.mirrors:
+    if mirror_name not in state.mirrors:  # pragma: no cover
         raise Exception("Mirror not created yet")
     add_gpg_keys(mirror_config)
     aptly_cmd = ['aptly', 'mirror', 'update']
