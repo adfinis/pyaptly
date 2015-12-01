@@ -1,0 +1,616 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyaptly &mdash; PyAptly 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/adsy.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PyAptly 0.0.1 documentation" href="index.html" />
+    <link rel="up" title="Internal API" href="modules.html" />
+    <link rel="next" title="test" href="test.html" />
+    <link rel="prev" title="Internal API" href="modules.html" /> 
+  </head>
+  <body role="document">
+<div class="document-header">
+  <img src="_static/logo.png" width="256" alt="Adfinis SyGroup AG">
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test.html" title="test"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Internal API"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyAptly 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Internal API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pyaptly">
+<span id="pyaptly"></span><h1>pyaptly<a class="headerlink" href="#module-pyaptly" title="Permalink to this headline">¶</a></h1>
+<p>Aptly mirror/snapshot managment automation.</p>
+<dl class="class">
+<dt id="pyaptly.Command">
+<em class="property">class </em><code class="descclassname">pyaptly.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repesents a system command and is used to resolve dependencies between
+such commands.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cmd</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; The command as list, one item per argument</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyaptly.Command.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>argument</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#Command.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.Command.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append additional arguments to the command.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>argument</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; String argument to append</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.Command.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#Command.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.Command.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the command.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pyaptly.Command.order_commands">
+<em class="property">static </em><code class="descname">order_commands</code><span class="sig-paren">(</span><em>commands</em>, <em>has_dependency_cb=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#Command.order_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.Command.order_commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Order the commands according to the dependencies they
+provide/require.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>commands</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; The commands to order</li>
+<li><strong>has_dependency_cb</strong> (<em>function</em>) &#8211; Optional callback the resolve external
+dependencies</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.Command.provide">
+<code class="descname">provide</code><span class="sig-paren">(</span><em>type_</em>, <em>identifier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#Command.provide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.Command.provide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a dependency for this command.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>type</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Type or category of the dependency ie. snapshot</li>
+<li><strong>identifier</strong> (<em>usually str</em>) &#8211; Identifier of the dependency for example name of a
+snapshot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.Command.require">
+<code class="descname">require</code><span class="sig-paren">(</span><em>type_</em>, <em>identifier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#Command.require"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.Command.require" title="Permalink to this definition">¶</a></dt>
+<dd><p>Require a dependency for this command.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>type</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Type or category of the dependency ie. snapshot</li>
+<li><strong>identifier</strong> (<em>usually str</em>) &#8211; Identifier of the dependency for example name of a
+snapshot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyaptly.SystemStateReader">
+<em class="property">class </em><code class="descclassname">pyaptly.</code><code class="descname">SystemStateReader</code><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the state from aptly and gpg to find out what operations have to
+be performed to reach the state defined in the yml config-file.</p>
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.has_dependency">
+<code class="descname">has_dependency</code><span class="sig-paren">(</span><em>dependency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.has_dependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.has_dependency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check system state dependencies.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dependency</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; The dependency to check</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads all available system states.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_aptly_list">
+<code class="descname">read_aptly_list</code><span class="sig-paren">(</span><em>type_</em>, <em>list_</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_aptly_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_aptly_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic method to read lists from aptly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>type</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The type of list to read ie. snapshot</li>
+<li><strong>list</strong> &#8211; Read into this list</li>
+<li><strong>list</strong> &#8211; list</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_gpg">
+<code class="descname">read_gpg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_gpg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_gpg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all trusted keys in gpg.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_mirror">
+<code class="descname">read_mirror</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_mirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_mirror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all available mirrors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_publish_map">
+<code class="descname">read_publish_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_publish_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_publish_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a publish map. publish -&gt; snapshots</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_publishes">
+<code class="descname">read_publishes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_publishes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_publishes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all available publishes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_repos">
+<code class="descname">read_repos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_repos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_repos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all available repos.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_snapshot">
+<code class="descname">read_snapshot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all available snapshots.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyaptly.SystemStateReader.read_snapshot_map">
+<code class="descname">read_snapshot_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#SystemStateReader.read_snapshot_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.SystemStateReader.read_snapshot_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a snapshot map. snapshot -&gt; snapshots. This is also called
+merge-tree.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.call_output">
+<code class="descclassname">pyaptly.</code><code class="descname">call_output</code><span class="sig-paren">(</span><em>args</em>, <em>input_=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#call_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.call_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call command and return output.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>args</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Command to execute</li>
+<li><strong>input</strong> (<em>bytes</em>) &#8211; Input to command</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.cmd_mirror_create">
+<code class="descclassname">pyaptly.</code><code class="descname">cmd_mirror_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>mirror_name</em>, <em>mirror_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#cmd_mirror_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.cmd_mirror_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the aptly mirror command</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.cmd_mirror_update">
+<code class="descclassname">pyaptly.</code><code class="descname">cmd_mirror_update</code><span class="sig-paren">(</span><em>cfg</em>, <em>mirror_name</em>, <em>mirror_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#cmd_mirror_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.cmd_mirror_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the aptly mirror command</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.cmd_snapshot_create">
+<code class="descclassname">pyaptly.</code><code class="descname">cmd_snapshot_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>snapshot_name</em>, <em>snapshot_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#cmd_snapshot_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.cmd_snapshot_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the aptly snapshot command</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.date_round_daily">
+<code class="descclassname">pyaptly.</code><code class="descname">date_round_daily</code><span class="sig-paren">(</span><em>date</em>, <em>time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#date_round_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.date_round_daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round datetime to day back (floor) to the roundpoint (time) in the day</p>
+<p>THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
+the date.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a>) &#8211; Datetime object to round</li>
+<li><strong>time</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.time" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.time</span></code></a>) &#8211; Roundpoint in the day (tzinfo ignored)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.date_round_weekly">
+<code class="descclassname">pyaptly.</code><code class="descname">date_round_weekly</code><span class="sig-paren">(</span><em>date</em>, <em>day_of_week=1</em>, <em>time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#date_round_weekly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.date_round_weekly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round datetime back (floor) to a given the of the week.</p>
+<p>THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as
+the date.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a>) &#8211; Datetime object to round</li>
+<li><strong>day_of_week</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; ISO day of week: monday is 1 and sunday is 7</li>
+<li><strong>time</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.time" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.time</span></code></a>) &#8211; Roundpoint in the day (tzinfo ignored)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.expand_timestamped_name">
+<code class="descclassname">pyaptly.</code><code class="descname">expand_timestamped_name</code><span class="sig-paren">(</span><em>name</em>, <em>timestamp_config</em>, <em>date=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#expand_timestamped_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.expand_timestamped_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand a timestamped name using round_timestamp</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.format_timestamp">
+<code class="descclassname">pyaptly.</code><code class="descname">format_timestamp</code><span class="sig-paren">(</span><em>timestamp</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#format_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.format_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for strftime, to ensure we&#8217;re all using the same format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.get_logger">
+<code class="descclassname">pyaptly.</code><code class="descname">get_logger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#get_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.get_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the logger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/logging.html#logging.Logger" title="(in Python v2.7)">logging.Logger</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.init_hypothesis">
+<code class="descclassname">pyaptly.</code><code class="descname">init_hypothesis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#init_hypothesis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.init_hypothesis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hypotesis profile is hypothesis is available</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.iso_first_week_start">
+<code class="descclassname">pyaptly.</code><code class="descname">iso_first_week_start</code><span class="sig-paren">(</span><em>iso_year</em>, <em>tzinfo=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#iso_first_week_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.iso_first_week_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>The gregorian calendar date of the first day of the given ISO year</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>iso_year</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Year to find the date of the first week.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.iso_to_gregorian">
+<code class="descclassname">pyaptly.</code><code class="descname">iso_to_gregorian</code><span class="sig-paren">(</span><em>iso_year</em>, <em>iso_week</em>, <em>iso_day</em>, <em>tzinfo=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#iso_to_gregorian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.iso_to_gregorian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gregorian calendar date for the given ISO year, week and day</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iso_year</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; ISO year</li>
+<li><strong>iso_week</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; ISO week</li>
+<li><strong>iso_day</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; ISO day</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.main">
+<code class="descclassname">pyaptly.</code><code class="descname">main</code><span class="sig-paren">(</span><em>argv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by command-line, defines parsers and executes commands.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>argv</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Arguments usually taken from sys.argv</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.mirror">
+<code class="descclassname">pyaptly.</code><code class="descname">mirror</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#mirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.mirror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates mirrors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.publish">
+<code class="descclassname">pyaptly.</code><code class="descname">publish</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#publish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.publish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates snapshots</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.publish_cmd_create">
+<code class="descclassname">pyaptly.</code><code class="descname">publish_cmd_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>publish_name</em>, <em>publish_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#publish_cmd_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.publish_cmd_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the aptly publish command</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.repo">
+<code class="descclassname">pyaptly.</code><code class="descname">repo</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#repo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.repo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates repositories</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.repo_cmd_create">
+<code class="descclassname">pyaptly.</code><code class="descname">repo_cmd_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>repo_name</em>, <em>repo_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#repo_cmd_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.repo_cmd_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the aptly repo command</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.round_timestamp">
+<code class="descclassname">pyaptly.</code><code class="descname">round_timestamp</code><span class="sig-paren">(</span><em>timestamp_config</em>, <em>date=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#round_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.round_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round the given name by adding a timestamp.</p>
+<p>The contents of the timestamp is configured by the given timestamp_config
+dict, which MUST contain a &#8220;time&#8221; key, and MAY contain a &#8220;repeat-weekly&#8221;
+key.</p>
+<p>If the key &#8220;repeat-weekly&#8221; is given, it is expected to contain a
+three-letter weekday name (mon, tue, thu, ...). The &#8220;time&#8221; key is expected
+to be a 24 hour HH:MM time specification.</p>
+<p>Timestamps are rounded down to the nearest time as specified (which may be
+on the previous day. If repeat-weekly is specified, it is rounded down
+(back in time) to the given weekday.)</p>
+<p>The name parameter may be a simple string. If it contains the marker &#8220;%T&#8221;,
+then this placeholder will be replaced by the timestamp. If it does NOT
+contain that marker, then nothing happens (and the timestamp_config is not
+evaluated at all)</p>
+<p>If a datetime object is given as third parameter, then it is used to
+generate the timestamp. If it is omitted, the current date/time is used.</p>
+<p>Example:
+&gt;&gt;&gt; expand_timestamped_name(
+...     &#8216;foo-%T&#8217;,
+...     {&#8216;timestamp&#8217;: {&#8216;time&#8217;: &#8216;00:00&#8217;}},
+...     datetime.datetime(2015,10,7, 15,30)  # A Wednesday
+... )
+foo-20151007T0000Z</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">expand_timestamped_name</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s">&#39;foo-%T&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;timestamp&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="s">&#39;00:00&#39;</span><span class="p">,</span> <span class="s">&#39;repeat-weekly&#39;</span><span class="p">:</span> <span class="s">&#39;mon&#39;</span><span class="p">}},</span>
+<span class="gp">... </span>    <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span><span class="mi">30</span><span class="p">)</span>  <span class="c"># A Thursday</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">foo-20151005T0000Z</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">expand_timestamped_name</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s">&#39;foo&#39;</span><span class="p">,</span>  <span class="c"># No %T placeholder, timestamp info is ignored</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;timestamp&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="s">&#39;00:00&#39;</span><span class="p">,</span> <span class="s">&#39;repeat-weekly&#39;</span><span class="p">:</span> <span class="s">&#39;mon&#39;</span><span class="p">}},</span>
+<span class="gp">... </span>    <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">foo</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.snapshot">
+<code class="descclassname">pyaptly.</code><code class="descname">snapshot</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates snapshots</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.snapshot_spec_to_name">
+<code class="descclassname">pyaptly.</code><code class="descname">snapshot_spec_to_name</code><span class="sig-paren">(</span><em>cfg</em>, <em>snapshot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#snapshot_spec_to_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.snapshot_spec_to_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a given snapshot short spec to a name.</p>
+<p>A short spec is a value that may either be a string or a dict.</p>
+<p>If it&#8217;s a string, everything is fine and we just use that as
+a snapshot name.</p>
+<p>However if it&#8217;s a dict, we assume it has the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li>name: template for the snapshot</li>
+<li>timestamp: information on how to generate the timestamp.</li>
+</ul>
+<p>For further information regarding the timestamp&#8217;s data structure,
+consult the documentation of expand_timestamped_name().</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Complete yaml config</li>
+<li><strong>snapshot</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Config of the snapshot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.time_delta_helper">
+<code class="descclassname">pyaptly.</code><code class="descname">time_delta_helper</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#time_delta_helper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.time_delta_helper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a :py:class`datetime.time` to :py:class`datetime.datetime` to
+calculate deltas</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.time" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.time</span></code></a>) &#8211; Time to convert</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.time_remove_tz">
+<code class="descclassname">pyaptly.</code><code class="descname">time_remove_tz</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#time_remove_tz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.time_remove_tz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a :py:class`datetime.time` to :py:class`datetime.time` to
+without tzinfo.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.time" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.time</span></code></a>) &#8211; Time to convert</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.time" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.time</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">Internal API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="test.html"
+                        title="next chapter">test</a></p>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pyaptly.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test.html" title="test"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Internal API"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyAptly 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Internal API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Lukas Grossar, David Vogt, Jean-Louis Fuchs.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.2.
+    </div>
+  </body>
+</html>

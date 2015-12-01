@@ -4,3 +4,6 @@
 [submodule "vagrant/libfaketime"]
 	path = vagrant/libfaketime
 	url = https://github.com/wolfcw/libfaketime.git
+[submodule "doc/adsy-sphinx-template.src"]
+	path = doc/adsy-sphinx-template.src
+	url = git@git.adfinis-sygroup.ch:ad-sy/adsy-sphinx-template.src.git

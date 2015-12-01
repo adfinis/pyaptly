@@ -69,11 +69,13 @@ def execute_and_parse_show_cmd(args):
 
 
 def create_config(test_input):
-    """Return path to pyaptly config from test input.
+    """Returns path to pyaptly config from test input.
+
+    Test input should be minimal and extended/tranformed in create_config.
 
     :param test_input: Test input read from test-yml.
     :type  test_input: dict
-    :rtype:            str
+    :rtype:            (dict, str)
     """
     input_ = read_yml(test_input)
     if 'mirror' in input_:
@@ -99,6 +101,17 @@ def create_config(test_input):
 
 @contextlib.contextmanager
 def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
+    """Remove aptly file and create a input config file to run pyaptly with.
+
+    Test input should be minimal and extended/tranformed in create_config.
+
+    :param test_input: Path to test data input file
+    :type  test_input: str
+    :param     freeze: ISO8601 date string used to set the date/time for the
+                       test
+    :param     freeze: str
+    :rtype:            (dict, str)
+    """
     try:
         file_ = None
         with freezegun.freeze_time(freeze):

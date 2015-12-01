@@ -45,6 +45,7 @@ class TestTest(unittest.TestCase):
     @given(yml_st, yml_st)
     @example({'1': 'Huhu'}, {'1': 'None'})
     def test_merge(self, a, b):
+        """Test if merge has the expected result."""
         res  = test.merge(a, b)
         for _ in range(10):
             path, data_b = self.rand_path(b)

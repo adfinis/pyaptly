@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pyaptly &mdash; PyAptly 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/adsy.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PyAptly 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Internal API" href="modules.html" />
+    <link rel="prev" title="PyAptly" href="index.html" /> 
+  </head>
+  <body role="document">
+<div class="document-header">
+  <img src="_static/logo.png" width="256" alt="Adfinis SyGroup AG">
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Internal API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="PyAptly"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyAptly 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pyaptly">
+<h1>Pyaptly<a class="headerlink" href="#pyaptly" title="Permalink to this headline">¶</a></h1>
+<p>Automates the creation and managment of aptly mirrors and snapshots based on yml
+input files.</p>
+<div class="section" id="example-commands">
+<h2>Example commands<a class="headerlink" href="#example-commands" title="Permalink to this headline">¶</a></h2>
+<p>Initialize a new Aptly server.</p>
+<div class="code shell highlight-python"><div class="highlight"><pre>pyaptly -c mirrors.yml mirror create
+pyaptly -c mirrors.yml mirror update
+pyaptly -c mirrors.yml snapshot create
+pyaptly -c mirrors.yml publish create
+</pre></div>
+</div>
+<p>Update mirrors and snapshots and switch publish endpoints with
+<code class="docutils literal"><span class="pre">automatic-update:</span> <span class="pre">true</span></code> to the new snapshots.</p>
+<div class="code shell highlight-python"><div class="highlight"><pre>pyaptly -c mirrors.yml mirror update
+pyaptly -c mirrors.yml snapshot create
+pyaptly -c mirrors.yml publish update
+</pre></div>
+</div>
+<p>Manually trigger a switch to the new snapshots for the publish endpoint
+ubuntu/stable.</p>
+<div class="code highlight-python"><div class="highlight"><pre>pyaptly -c mirrors.yml publish update ubuntu/stable
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<div class="code shell highlight-python"><div class="highlight"><pre>git submodule update --init --recursive
+make test
+</pre></div>
+</div>
+</div>
+<div class="section" id="vagrant-box">
+<h2>Vagrant Box<a class="headerlink" href="#vagrant-box" title="Permalink to this headline">¶</a></h2>
+<p>The box provisions aptly, nginx and two repos which can be used for tests:</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pyaptly</a><ul>
+<li><a class="reference internal" href="#example-commands">Example commands</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+<li><a class="reference internal" href="#vagrant-box">Vagrant Box</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">PyAptly</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="next chapter">Internal API</a></p>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/README.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Internal API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="PyAptly"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyAptly 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Lukas Grossar, David Vogt, Jean-Louis Fuchs.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyaptly &mdash; PyAptly 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/adsy.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PyAptly 0.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body role="document">
+<div class="document-header">
+  <img src="_static/logo.png" width="256" alt="Adfinis SyGroup AG">
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyAptly 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyaptly</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python2</span>
+<span class="sd">&quot;&quot;&quot;Aptly mirror/snapshot managment automation.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="n">_logging_setup</span> <span class="o">=</span> <span class="bp">False</span>
+
+
+<div class="viewcode-block" id="init_hypothesis"><a class="viewcode-back" href="../pyaptly.html#pyaptly.init_hypothesis">[docs]</a><span class="k">def</span> <span class="nf">init_hypothesis</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Initialize hypotesis profile is hypothesis is available&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>  <span class="c"># pragma: no cover:w</span>
+        <span class="kn">import</span> <span class="nn">os</span>
+        <span class="k">if</span> <span class="s">&#39;HYPOTHESIS_PROFILE&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">Settings</span>
+            <span class="n">Settings</span><span class="o">.</span><span class="n">register_profile</span><span class="p">(</span><span class="s">&quot;ci&quot;</span><span class="p">,</span> <span class="n">Settings</span><span class="p">(</span>
+                <span class="n">max_examples</span><span class="o">=</span><span class="mi">10000</span>
+            <span class="p">))</span>
+            <span class="n">Settings</span><span class="o">.</span><span class="n">load_profile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">u&#39;HYPOTHESIS_PROFILE&#39;</span><span class="p">,</span> <span class="s">&#39;default&#39;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>  <span class="c"># pragma: no cover</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="get_logger"><a class="viewcode-back" href="../pyaptly.html#pyaptly.get_logger">[docs]</a><span class="k">def</span> <span class="nf">get_logger</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the logger.</span>
+
+<span class="sd">    :rtype: logging.Logger&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;pyaptly&quot;</span><span class="p">)</span></div>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+<span class="n">init_hypothesis</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="iso_first_week_start"><a class="viewcode-back" href="../pyaptly.html#pyaptly.iso_first_week_start">[docs]</a><span class="k">def</span> <span class="nf">iso_first_week_start</span><span class="p">(</span><span class="n">iso_year</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The gregorian calendar date of the first day of the given ISO year</span>
+
+<span class="sd">    :param iso_year: Year to find the date of the first week.</span>
+<span class="sd">    :type  iso_year: int&quot;&quot;&quot;</span>
+    <span class="n">fourth_jan</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">iso_year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">tzinfo</span><span class="p">)</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">fourth_jan</span><span class="o">.</span><span class="n">isoweekday</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fourth_jan</span> <span class="o">-</span> <span class="n">delta</span></div>
+
+
+<div class="viewcode-block" id="iso_to_gregorian"><a class="viewcode-back" href="../pyaptly.html#pyaptly.iso_to_gregorian">[docs]</a><span class="k">def</span> <span class="nf">iso_to_gregorian</span><span class="p">(</span><span class="n">iso_year</span><span class="p">,</span> <span class="n">iso_week</span><span class="p">,</span> <span class="n">iso_day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gregorian calendar date for the given ISO year, week and day</span>
+
+<span class="sd">    :param iso_year: ISO year</span>
+<span class="sd">    :type  iso_year: int</span>
+<span class="sd">    :param iso_week: ISO week</span>
+<span class="sd">    :type  iso_week: int</span>
+<span class="sd">    :param  iso_day: ISO day</span>
+<span class="sd">    :type   iso_day: int&quot;&quot;&quot;</span>
+    <span class="n">year_start</span> <span class="o">=</span> <span class="n">iso_first_week_start</span><span class="p">(</span><span class="n">iso_year</span><span class="p">,</span> <span class="n">tzinfo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">year_start</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
+        <span class="n">days</span><span class="o">=</span><span class="n">iso_day</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">weeks</span><span class="o">=</span><span class="n">iso_week</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="time_remove_tz"><a class="viewcode-back" href="../pyaptly.html#pyaptly.time_remove_tz">[docs]</a><span class="k">def</span> <span class="nf">time_remove_tz</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a :py:class`datetime.time` to :py:class`datetime.time` to</span>
+<span class="sd">    without tzinfo.</span>
+
+<span class="sd">    :param time: Time to convert</span>
+<span class="sd">    :type  time: :py:class:`datetime.time`</span>
+<span class="sd">    :rtype:      :py:class:`datetime.time`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span>
+        <span class="n">hour</span>        <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+        <span class="n">minute</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+        <span class="n">second</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+        <span class="n">microsecond</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="time_delta_helper"><a class="viewcode-back" href="../pyaptly.html#pyaptly.time_delta_helper">[docs]</a><span class="k">def</span> <span class="nf">time_delta_helper</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a :py:class`datetime.time` to :py:class`datetime.datetime` to</span>
+<span class="sd">    calculate deltas</span>
+
+<span class="sd">    :param time: Time to convert</span>
+<span class="sd">    :type  time: :py:class:`datetime.time`</span>
+<span class="sd">    :rtype:      :py:class:`datetime.datetime`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span>
+        <span class="n">year</span>        <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+        <span class="n">month</span>       <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">day</span>         <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">hour</span>        <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+        <span class="n">minute</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+        <span class="n">second</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+        <span class="n">microsecond</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
+        <span class="n">tzinfo</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="date_round_weekly"><a class="viewcode-back" href="../pyaptly.html#pyaptly.date_round_weekly">[docs]</a><span class="k">def</span> <span class="nf">date_round_weekly</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">day_of_week</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Round datetime back (floor) to a given the of the week.</span>
+
+<span class="sd">    THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as</span>
+<span class="sd">    the date.</span>
+
+<span class="sd">    :param        date: Datetime object to round</span>
+<span class="sd">    :type         date: :py:class:`datetime.datetime`</span>
+<span class="sd">    :param day_of_week: ISO day of week: monday is 1 and sunday is 7</span>
+<span class="sd">    :type  day_of_week: int</span>
+<span class="sd">    :param        time: Roundpoint in the day (tzinfo ignored)</span>
+<span class="sd">    :type         time: :py:class:`datetime.time`</span>
+<span class="sd">    :rtype:             :py:class:`datetime.datetime`&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">time</span><span class="p">:</span>
+        <span class="n">time</span>         <span class="o">=</span> <span class="n">time_remove_tz</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="n">time</span>         <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">delta</span>            <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
+        <span class="n">days</span>         <span class="o">=</span> <span class="n">day_of_week</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">hours</span>        <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+        <span class="n">minutes</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+        <span class="n">seconds</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+        <span class="n">microseconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">raster_date</span>  <span class="o">=</span> <span class="n">date</span> <span class="o">-</span> <span class="n">delta</span>
+    <span class="n">iso</span> <span class="o">=</span> <span class="n">raster_date</span><span class="o">.</span><span class="n">isocalendar</span><span class="p">()</span>
+    <span class="n">rounded_date</span> <span class="o">=</span> <span class="n">iso_to_gregorian</span><span class="p">(</span><span class="n">iso</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">iso</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rounded_date</span> <span class="o">+</span> <span class="n">delta</span></div>
+
+
+<div class="viewcode-block" id="date_round_daily"><a class="viewcode-back" href="../pyaptly.html#pyaptly.date_round_daily">[docs]</a><span class="k">def</span> <span class="nf">date_round_daily</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Round datetime to day back (floor) to the roundpoint (time) in the day</span>
+
+<span class="sd">    THIS FUNCTION IGNORES THE TZINFO OF TIME and assumes it is the same tz as</span>
+<span class="sd">    the date.</span>
+
+<span class="sd">    :param date: Datetime object to round</span>
+<span class="sd">    :type  date: :py:class:`datetime.datetime`</span>
+<span class="sd">    :param time: Roundpoint in the day (tzinfo ignored)</span>
+<span class="sd">    :type  time: :py:class:`datetime.time`</span>
+<span class="sd">    :rtype:      :py:class:`datetime.datetime`&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">time</span><span class="p">:</span>
+        <span class="n">time</span>         <span class="o">=</span> <span class="n">time_remove_tz</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">time</span>         <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">delta</span>            <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
+        <span class="n">hours</span>        <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+        <span class="n">minutes</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+        <span class="n">seconds</span>      <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+        <span class="n">microseconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">raster_date</span>  <span class="o">=</span> <span class="n">date</span> <span class="o">-</span> <span class="n">delta</span>
+    <span class="n">rounded_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span>
+        <span class="n">year</span>     <span class="o">=</span> <span class="n">raster_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+        <span class="n">month</span>    <span class="o">=</span> <span class="n">raster_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+        <span class="n">day</span>      <span class="o">=</span> <span class="n">raster_date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+        <span class="n">tzinfo</span>   <span class="o">=</span> <span class="n">raster_date</span><span class="o">.</span><span class="n">tzinfo</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">rounded_date</span> <span class="o">+</span> <span class="n">delta</span></div>
+
+
+<div class="viewcode-block" id="call_output"><a class="viewcode-back" href="../pyaptly.html#pyaptly.call_output">[docs]</a><span class="k">def</span> <span class="nf">call_output</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">input_</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Call command and return output.</span>
+
+<span class="sd">    :param   args: Command to execute</span>
+<span class="sd">    :type    args: list</span>
+<span class="sd">    :param input_: Input to command</span>
+<span class="sd">    :type  input_: bytes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">args</span><span class="p">,</span>
+        <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+    <span class="p">)</span>
+    <span class="n">output</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../pyaptly.html#pyaptly.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Repesents a system command and is used to resolve dependencies between</span>
+<span class="sd">    such commands.</span>
+
+<span class="sd">    :param cmd: The command as list, one item per argument</span>
+<span class="sd">    :type  cmd: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requires</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_provides</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_known_dependency_types</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="s">&#39;mirror&#39;</span><span class="p">,</span> <span class="s">&#39;repo&#39;</span><span class="p">,</span> <span class="s">&#39;publish&#39;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Command.append"><a class="viewcode-back" href="../pyaptly.html#pyaptly.Command.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argument</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Append additional arguments to the command.</span>
+
+<span class="sd">        :param argument: String argument to append</span>
+<span class="sd">        :type  argument: str&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span> <span class="o">==</span> <span class="n">argument</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.require"><a class="viewcode-back" href="../pyaptly.html#pyaptly.Command.require">[docs]</a>    <span class="k">def</span> <span class="nf">require</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Require a dependency for this command.</span>
+
+<span class="sd">        :param      type_: Type or category of the dependency ie. snapshot</span>
+<span class="sd">        :type       type_: str</span>
+<span class="sd">        :param identifier: Identifier of the dependency for example name of a</span>
+<span class="sd">                           snapshot</span>
+<span class="sd">        :type  identifier: usually str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">type_</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_known_dependency_types</span> <span class="o">+</span>
+            <span class="p">(</span><span class="s">&#39;any&#39;</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span>
+            <span class="n">SystemStateReader</span><span class="o">.</span><span class="n">known_dependency_types</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requires</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">type_</span><span class="p">,</span> <span class="n">identifier</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Command.provide"><a class="viewcode-back" href="../pyaptly.html#pyaptly.Command.provide">[docs]</a>    <span class="k">def</span> <span class="nf">provide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provide a dependency for this command.</span>
+
+<span class="sd">        :param      type_: Type or category of the dependency ie. snapshot</span>
+<span class="sd">        :type       type_: str</span>
+<span class="sd">        :param identifier: Identifier of the dependency for example name of a</span>
+<span class="sd">                           snapshot</span>
+<span class="sd">        :type  identifier: usually str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">type_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_known_dependency_types</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_provides</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">type_</span><span class="p">,</span> <span class="n">identifier</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Command.execute"><a class="viewcode-back" href="../pyaptly.html#pyaptly.Command.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the command.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span>
+
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Running command: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span></div>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Command&lt;</span><span class="si">%s</span><span class="s"> </span><span class="se">\n\t</span><span class="s">requires </span><span class="si">%s</span><span class="s">,</span><span class="se">\n\t</span><span class="s">provides </span><span class="si">%s</span><span class="s">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">),</span>
+            <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requires</span><span class="p">]),</span>
+            <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_provides</span><span class="p">]),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Command.order_commands"><a class="viewcode-back" href="../pyaptly.html#pyaptly.Command.order_commands">[docs]</a>    <span class="k">def</span> <span class="nf">order_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">has_dependency_cb</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Order the commands according to the dependencies they</span>
+<span class="sd">        provide/require.</span>
+
+<span class="sd">        :param          commands: The commands to order</span>
+<span class="sd">        :type           commands: list</span>
+<span class="sd">        :param has_dependency_cb: Optional callback the resolve external</span>
+<span class="sd">                                  dependencies</span>
+<span class="sd">        :type  has_dependency_cb: function&quot;&quot;&quot;</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">commands</span> <span class="k">if</span> <span class="n">c</span><span class="p">]</span>
+
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Ordering commands: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span>
+        <span class="p">])</span>
+
+        <span class="n">have_requirements</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">scheduled</span>  <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">something_changed</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">while</span> <span class="n">something_changed</span><span class="p">:</span>
+            <span class="n">something_changed</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">scheduled</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">can_schedule</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">cmd</span><span class="o">.</span><span class="n">_requires</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">req</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">have_requirements</span><span class="p">:</span>
+                        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s">&quot;</span><span class="si">%s</span><span class="s">: dependency </span><span class="si">%s</span><span class="s"> not fulfilled, &quot;</span>
+                            <span class="s">&quot;checking aptly state&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="c"># No command providing our dependency.. Let&#39;s see if</span>
+                        <span class="c"># it&#39;s already otherwise fulfilled</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_dependency_cb</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
+                            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                <span class="s">&quot;</span><span class="si">%s</span><span class="s">: dependency </span><span class="si">%s</span><span class="s"> not &quot;</span>
+                                <span class="s">&quot;in aptly state either&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="n">can_schedule</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="c"># Break out of the requirements loop, as the</span>
+                            <span class="c"># command cannot be scheduled anyway.</span>
+                            <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">can_schedule</span><span class="p">:</span>
+                    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s">&quot;</span><span class="si">%s</span><span class="s">: all dependencies fulfilled&quot;</span> <span class="o">%</span> <span class="n">cmd</span>
+                    <span class="p">)</span>
+                    <span class="n">scheduled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                    <span class="n">have_requirements</span> <span class="o">=</span> <span class="n">have_requirements</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_provides</span><span class="p">)</span>
+                    <span class="n">something_changed</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">unresolved</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cmd</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span>
+            <span class="k">if</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scheduled</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unresolved</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Commands with unresolved deps: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">unresolved</span>
+            <span class="p">])</span>
+
+        <span class="c"># Just one last verification before we commence</span>
+        <span class="n">scheduled_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">scheduled</span><span class="p">])</span>
+        <span class="n">incoming_set</span>  <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">incoming_set</span> <span class="o">==</span> <span class="n">scheduled_set</span>
+
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Reordered commands: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">scheduled</span>
+        <span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">scheduled</span></div></div>
+
+
+<div class="viewcode-block" id="SystemStateReader"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader">[docs]</a><span class="k">class</span> <span class="nc">SystemStateReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reads the state from aptly and gpg to find out what operations have to</span>
+<span class="sd">    be performed to reach the state defined in the yml config-file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">known_dependency_types</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;repo&#39;</span><span class="p">,</span> <span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="s">&#39;mirror&#39;</span><span class="p">,</span> <span class="s">&#39;gpg_key&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpg_keys</span>     <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mirrors</span>      <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repos</span>        <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span>    <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapshot_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publishes</span>    <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publish_map</span>  <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="SystemStateReader.read"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads all available system states.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_gpg</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_repos</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_mirror</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_snapshot</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_snapshot_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_publishes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_publish_map</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_gpg"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_gpg">[docs]</a>    <span class="k">def</span> <span class="nf">read_gpg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read all trusted keys in gpg.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpg_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">call_output</span><span class="p">([</span>
+            <span class="s">&quot;gpg&quot;</span><span class="p">,</span>
+            <span class="s">&quot;--no-default-keyring&quot;</span><span class="p">,</span>
+            <span class="s">&quot;--keyring&quot;</span><span class="p">,</span> <span class="s">&quot;trustedkeys.gpg&quot;</span><span class="p">,</span>
+            <span class="s">&quot;--list-keys&quot;</span><span class="p">,</span>
+            <span class="s">&quot;--with-colons&quot;</span>
+        <span class="p">])</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;GPG returned: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">):</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;pub&quot;</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+                <span class="n">key_short</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gpg_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gpg_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key_short</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_publish_map"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_publish_map">[docs]</a>    <span class="k">def</span> <span class="nf">read_publish_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a publish map. publish -&gt; snapshots&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publish_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">call_output</span><span class="p">([</span>
+            <span class="s">&quot;aptly&quot;</span><span class="p">,</span> <span class="s">&quot;publish&quot;</span><span class="p">,</span> <span class="s">&quot;list&quot;</span>
+        <span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">publish</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">publishes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">publish_map</span><span class="p">[</span><span class="n">publish</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">re_snap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+                <span class="s">r&quot;^\s*\*\s+</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s"> &quot;</span> <span class="o">%</span>
+                <span class="nb">tuple</span><span class="p">(</span><span class="n">publish</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">re_snap</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s">&quot;.*\[</span><span class="si">%s</span><span class="s">\]&quot;</span> <span class="o">%</span> <span class="n">snapshot</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">publish_map</span><span class="p">[</span><span class="n">publish</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Joined snapshots and publishes: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publish_map</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_snapshot_map"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_snapshot_map">[docs]</a>    <span class="k">def</span> <span class="nf">read_snapshot_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a snapshot map. snapshot -&gt; snapshots. This is also called</span>
+<span class="sd">        merge-tree.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapshot_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">call_output</span><span class="p">([</span>
+            <span class="s">&quot;aptly&quot;</span><span class="p">,</span> <span class="s">&quot;snapshot&quot;</span><span class="p">,</span> <span class="s">&quot;list&quot;</span>
+        <span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">snapshot_outer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">snapshot_map</span><span class="p">[</span><span class="n">snapshot_outer</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">re_snap</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+                <span class="s">r&quot;^\s*\*\s+\[</span><span class="si">%s</span><span class="s">\]&quot;</span> <span class="o">%</span>
+                <span class="n">snapshot_outer</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">re_snap</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s">&quot;.*sources.*&#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="n">snapshot</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">snapshot_map</span><span class="p">[</span><span class="n">snapshot_outer</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s">&#39;Joined snapshots with self(snapshots): </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">snapshot_map</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_publishes"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_publishes">[docs]</a>    <span class="k">def</span> <span class="nf">read_publishes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read all available publishes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publishes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_aptly_list</span><span class="p">(</span><span class="s">&quot;publish&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publishes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_repos"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_repos">[docs]</a>    <span class="k">def</span> <span class="nf">read_repos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read all available repos.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repos</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_aptly_list</span><span class="p">(</span><span class="s">&quot;repo&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_mirror"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_mirror">[docs]</a>    <span class="k">def</span> <span class="nf">read_mirror</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read all available mirrors.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mirrors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_aptly_list</span><span class="p">(</span><span class="s">&quot;mirror&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mirrors</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_snapshot"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">read_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read all available snapshots.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_aptly_list</span><span class="p">(</span><span class="s">&quot;snapshot&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.read_aptly_list"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.read_aptly_list">[docs]</a>    <span class="k">def</span> <span class="nf">read_aptly_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">list_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generic method to read lists from aptly.</span>
+
+<span class="sd">        :param type_: The type of list to read ie. snapshot</span>
+<span class="sd">        :type  type_: str</span>
+<span class="sd">        :param list_: Read into this list</span>
+<span class="sd">        :param list_: list&quot;&quot;&quot;</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">call_output</span><span class="p">([</span>
+            <span class="s">&quot;aptly&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="s">&quot;list&quot;</span><span class="p">,</span> <span class="s">&quot;-raw&quot;</span>
+        <span class="p">])</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Aptly returned </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">):</span>
+            <span class="n">clean_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">clean_line</span><span class="p">:</span>
+                <span class="n">list_</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">clean_line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemStateReader.has_dependency"><a class="viewcode-back" href="../pyaptly.html#pyaptly.SystemStateReader.has_dependency">[docs]</a>    <span class="k">def</span> <span class="nf">has_dependency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependency</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check system state dependencies.</span>
+
+<span class="sd">        :param dependency: The dependency to check</span>
+<span class="sd">        :type  dependency: list&quot;&quot;&quot;</span>
+        <span class="n">type_</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">dependency</span>
+
+        <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s">&#39;repo&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">repos</span>
+        <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s">&#39;mirror&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mirrors</span>
+        <span class="k">elif</span> <span class="n">type_</span> <span class="o">==</span> <span class="s">&#39;snapshot&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapshots</span>
+        <span class="k">elif</span> <span class="n">type_</span> <span class="o">==</span> <span class="s">&#39;gpg_key&#39;</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpg_keys</span>  <span class="c"># Not needed ATM</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Unknown dependency to resolve: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+            <span class="p">)</span></div></div>
+
+
+<span class="n">state</span> <span class="o">=</span> <span class="n">SystemStateReader</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../pyaptly.html#pyaptly.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Called by command-line, defines parsers and executes commands.</span>
+
+<span class="sd">    :param argv: Arguments usually taken from sys.argv</span>
+<span class="sd">    :type  argv: list&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_logging_setup</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">argv</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s">&#39;Manage aptly&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;--config&#39;</span><span class="p">,</span>
+        <span class="s">&#39;-c&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&#39;Yaml config file defining mirrors and snapshots&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">True</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;--debug&#39;</span><span class="p">,</span>
+        <span class="s">&#39;-d&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&#39;Enable debug output&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">()</span>
+    <span class="n">mirror_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s">&#39;mirror&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&#39;manage aptly mirrors&#39;</span>
+    <span class="p">)</span>
+    <span class="n">mirror_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">mirror</span><span class="p">)</span>
+    <span class="n">mirror_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;task&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">mirror_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;mirror_name&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">&#39;all&#39;</span>
+    <span class="p">)</span>
+    <span class="n">snapshot_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s">&#39;snapshot&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&#39;manage aptly snapshots&#39;</span>
+    <span class="p">)</span>
+    <span class="n">snapshot_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">snapshot</span><span class="p">)</span>
+    <span class="n">snapshot_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;task&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;create&#39;</span><span class="p">])</span>
+    <span class="n">snapshot_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;snapshot_name&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">&#39;all&#39;</span>
+    <span class="p">)</span>
+    <span class="n">publish_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s">&#39;publish&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&#39;manage aptly publish endpoints&#39;</span>
+    <span class="p">)</span>
+    <span class="n">publish_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">publish</span><span class="p">)</span>
+    <span class="n">publish_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;task&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">])</span>
+    <span class="n">publish_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;publish_name&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">&#39;all&#39;</span>
+    <span class="p">)</span>
+    <span class="n">repo_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s">&#39;repo&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&#39;manage aptly repositories&#39;</span>
+    <span class="p">)</span>
+    <span class="n">repo_parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">repo</span><span class="p">)</span>
+    <span class="n">repo_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;task&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;create&#39;</span><span class="p">])</span>
+    <span class="n">repo_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&#39;repo_name&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">&#39;all&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+        <span class="s">&#39;</span><span class="si">%(asctime)s</span><span class="s"> - </span><span class="si">%(name)s</span><span class="s"> - </span><span class="si">%(levelname)s</span><span class="s"> - </span><span class="si">%(message)s</span><span class="s">&#39;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_logging_setup</span><span class="p">:</span>  <span class="c"># noqa</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">_logging_setup</span> <span class="o">=</span> <span class="bp">True</span>  <span class="c"># noqa</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Args: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cfgfile</span><span class="p">:</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">)</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="c"># run function for selected subparser</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
+
+<span class="n">day_of_week_map</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;mon&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">&#39;tue&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s">&#39;wed&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s">&#39;thu&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s">&#39;fri&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s">&#39;sat&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s">&#39;sun&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="expand_timestamped_name"><a class="viewcode-back" href="../pyaptly.html#pyaptly.expand_timestamped_name">[docs]</a><span class="k">def</span> <span class="nf">expand_timestamped_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">timestamp_config</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Expand a timestamped name using round_timestamp&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&#39;%T&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">round_timestamp</span><span class="p">(</span><span class="n">timestamp_config</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;%T&#39;</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y%m</span><span class="si">%d</span><span class="s">T%H%MZ&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="round_timestamp"><a class="viewcode-back" href="../pyaptly.html#pyaptly.round_timestamp">[docs]</a><span class="k">def</span> <span class="nf">round_timestamp</span><span class="p">(</span><span class="n">timestamp_config</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Round the given name by adding a timestamp.</span>
+
+<span class="sd">    The contents of the timestamp is configured by the given timestamp_config</span>
+<span class="sd">    dict, which MUST contain a &quot;time&quot; key, and MAY contain a &quot;repeat-weekly&quot;</span>
+<span class="sd">    key.</span>
+
+<span class="sd">    If the key &quot;repeat-weekly&quot; is given, it is expected to contain a</span>
+<span class="sd">    three-letter weekday name (mon, tue, thu, ...). The &quot;time&quot; key is expected</span>
+<span class="sd">    to be a 24 hour HH:MM time specification.</span>
+
+<span class="sd">    Timestamps are rounded down to the nearest time as specified (which may be</span>
+<span class="sd">    on the previous day. If repeat-weekly is specified, it is rounded down</span>
+<span class="sd">    (back in time) to the given weekday.)</span>
+
+<span class="sd">    The name parameter may be a simple string. If it contains the marker &quot;%T&quot;,</span>
+<span class="sd">    then this placeholder will be replaced by the timestamp. If it does NOT</span>
+<span class="sd">    contain that marker, then nothing happens (and the timestamp_config is not</span>
+<span class="sd">    evaluated at all)</span>
+
+<span class="sd">    If a datetime object is given as third parameter, then it is used to</span>
+<span class="sd">    generate the timestamp. If it is omitted, the current date/time is used.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    &gt;&gt;&gt; expand_timestamped_name(</span>
+<span class="sd">    ...     &#39;foo-%T&#39;,</span>
+<span class="sd">    ...     {&#39;timestamp&#39;: {&#39;time&#39;: &#39;00:00&#39;}},</span>
+<span class="sd">    ...     datetime.datetime(2015,10,7, 15,30)  # A Wednesday</span>
+<span class="sd">    ... )</span>
+<span class="sd">    foo-20151007T0000Z</span>
+
+<span class="sd">    &gt;&gt;&gt; expand_timestamped_name(</span>
+<span class="sd">    ...     &#39;foo-%T&#39;,</span>
+<span class="sd">    ...     {&#39;timestamp&#39;: {&#39;time&#39;: &#39;00:00&#39;, &#39;repeat-weekly&#39;: &#39;mon&#39;}},</span>
+<span class="sd">    ...     datetime.datetime(2015,10,8, 15,30)  # A Thursday</span>
+<span class="sd">    ... )</span>
+<span class="sd">    foo-20151005T0000Z</span>
+
+<span class="sd">    &gt;&gt;&gt; expand_timestamped_name(</span>
+<span class="sd">    ...     &#39;foo&#39;,  # No %T placeholder, timestamp info is ignored</span>
+<span class="sd">    ...     {&#39;timestamp&#39;: {&#39;time&#39;: &#39;00:00&#39;, &#39;repeat-weekly&#39;: &#39;mon&#39;}},</span>
+<span class="sd">    ...     datetime.datetime(2015,10,8, 15,30)</span>
+<span class="sd">    ... )</span>
+<span class="sd">    foo</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">timestamp_info</span> <span class="o">=</span> <span class="n">timestamp_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;timestamp&#39;</span><span class="p">,</span> <span class="n">timestamp_config</span><span class="p">)</span>
+    <span class="n">config_time</span>    <span class="o">=</span> <span class="n">timestamp_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;FAIL&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">config_time</span> <span class="o">==</span> <span class="s">&#39;FAIL&#39;</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s">&quot;Timestamp config has no valid time entry: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">timestamp_config</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">config_repeat_weekly</span> <span class="o">=</span> <span class="n">timestamp_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;repeat-weekly&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">config_time</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)][:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">config_repeat_weekly</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">day_of_week</span> <span class="o">=</span> <span class="n">day_of_week_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">config_repeat_weekly</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">date_round_weekly</span><span class="p">(</span>
+            <span class="n">date</span><span class="p">,</span>
+            <span class="n">day_of_week</span><span class="p">,</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="n">minute</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">date_round_daily</span><span class="p">(</span>
+            <span class="n">date</span><span class="p">,</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="n">minute</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">timestamp</span></div>
+
+
+<span class="k">def</span> <span class="nf">unit_or_list_to_list</span><span class="p">(</span><span class="n">thingy</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thingy</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thingy</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">thingy</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">thingy</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="publish_cmd_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.publish_cmd_create">[docs]</a><span class="k">def</span> <span class="nf">publish_cmd_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Call the aptly publish command&quot;&quot;&quot;</span>
+
+    <span class="n">publish_fullname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">publish_fullname</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">publishes</span><span class="p">:</span>
+        <span class="c"># Nothing to do, publish already created</span>
+        <span class="k">return</span>
+
+    <span class="n">publish_cmd</span>   <span class="o">=</span> <span class="p">[</span><span class="s">&#39;aptly&#39;</span><span class="p">,</span> <span class="s">&#39;publish&#39;</span><span class="p">]</span>
+    <span class="n">options</span>       <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">source_args</span>   <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">endpoint_args</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">publish_name</span>
+    <span class="p">]</span>
+
+    <span class="n">has_source</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">num_sources</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">conf</span><span class="p">,</span> <span class="n">conf_value</span> <span class="ow">in</span> <span class="n">publish_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="k">if</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;architectures&#39;</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s">&#39;-architectures=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
+                <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">conf_value</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;components&#39;</span><span class="p">:</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">conf_value</span><span class="p">)</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s">&#39;-component=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;label&#39;</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s">&#39;-label=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">conf_value</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;origin&#39;</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-origin=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">conf_value</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;distribution&#39;</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-distribution=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">conf_value</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;gpg-key&#39;</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-gpg-key=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">conf_value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;automatic-update&#39;</span><span class="p">:</span>
+            <span class="c"># Ignored here</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;snapshots&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">has_source</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;Multiple sources for publish </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">publish_name</span><span class="p">,</span>
+                        <span class="n">publish_config</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">has_source</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">snapshots</span> <span class="o">=</span> <span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">conf_value</span><span class="p">)</span>
+            <span class="n">source_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">)</span>
+            <span class="n">source_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                <span class="n">snapshot_spec_to_name</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">conf_value</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">conf_value</span>
+                <span class="ow">in</span> <span class="n">snapshots</span>
+            <span class="p">])</span>
+
+            <span class="n">num_sources</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">snapshots</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;repo&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">has_source</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;Multiple sources for publish </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">publish_name</span><span class="p">,</span>
+                        <span class="n">publish_config</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">has_source</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">source_args</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s">&#39;repo&#39;</span><span class="p">,</span>
+                <span class="n">conf_value</span>
+            <span class="p">]</span>
+            <span class="n">num_sources</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;publish&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">has_source</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&quot;Multiple sources for publish </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">publish_name</span><span class="p">,</span>
+                        <span class="n">publish_config</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">has_source</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">conf_value</span> <span class="o">=</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">conf_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">))</span>
+            <span class="n">source_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sources</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">publish_map</span><span class="p">[</span><span class="n">conf_value</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">critical</span><span class="p">((</span>
+                    <span class="s">&quot;Creating </span><span class="si">%s</span><span class="s"> has been deferred, please call publish &quot;</span>
+                    <span class="s">&quot;create again&quot;</span>
+                <span class="p">)</span> <span class="o">%</span> <span class="n">publish_name</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">source_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+            <span class="n">num_sources</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Don&#39;t know how to handle publish config entry </span><span class="si">%s</span><span class="s"> in </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">conf</span><span class="p">,</span>
+                    <span class="n">publish_name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">has_source</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_sources</span>
+
+    <span class="k">return</span> <span class="n">Command</span><span class="p">(</span><span class="n">publish_cmd</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="n">source_args</span> <span class="o">+</span> <span class="n">endpoint_args</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">clone_snapshot</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">Command</span><span class="p">([</span>
+        <span class="s">&#39;aptly&#39;</span><span class="p">,</span>
+        <span class="s">&#39;snapshot&#39;</span><span class="p">,</span>
+        <span class="s">&#39;merge&#39;</span><span class="p">,</span>
+        <span class="n">destination</span><span class="p">,</span>
+        <span class="n">origin</span>
+    <span class="p">])</span>
+    <span class="n">cmd</span><span class="o">.</span><span class="n">provide</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+    <span class="n">cmd</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmd</span>
+
+
+<span class="k">def</span> <span class="nf">publish_cmd_update</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s">&#39;repo&#39;</span> <span class="ow">in</span> <span class="n">publish_config</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Command</span><span class="p">([</span>
+            <span class="s">&#39;aptly&#39;</span><span class="p">,</span>
+            <span class="s">&#39;publish&#39;</span><span class="p">,</span>
+            <span class="s">&#39;update&#39;</span><span class="p">,</span>
+            <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">],</span>
+            <span class="n">publish_name</span><span class="p">,</span>
+        <span class="p">])</span>
+    <span class="n">publish_fullname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">])</span>
+    <span class="n">current_snapshots</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">publish_map</span><span class="p">[</span><span class="n">publish_fullname</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s">&#39;snapshots&#39;</span> <span class="ow">in</span> <span class="n">publish_config</span><span class="p">:</span>
+        <span class="n">snapshots_config</span>  <span class="o">=</span> <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;snapshots&#39;</span><span class="p">]</span>
+        <span class="n">new_snapshots</span>     <span class="o">=</span> <span class="p">[</span>
+            <span class="n">snapshot_spec_to_name</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">snap</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">snap</span>
+            <span class="ow">in</span> <span class="n">snapshots_config</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="s">&#39;publish&#39;</span> <span class="ow">in</span> <span class="n">publish_config</span><span class="p">:</span>
+        <span class="n">conf_value</span>       <span class="o">=</span> <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;publish&#39;</span><span class="p">]</span>
+        <span class="n">snapshots_config</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ref_publish_name</span><span class="p">,</span> <span class="n">distribution</span>     <span class="o">=</span> <span class="n">conf_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">publish</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;publish&#39;</span><span class="p">][</span><span class="n">ref_publish_name</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">publish</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">distribution</span><span class="p">:</span>
+                <span class="n">snapshots_config</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">publish</span><span class="p">[</span><span class="s">&#39;snapshots&#39;</span><span class="p">])</span>
+                <span class="k">break</span>
+        <span class="n">new_snapshots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">publish_map</span><span class="p">[</span><span class="n">conf_value</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s">&quot;No snapshot references configured in publish </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">publish_name</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_snapshots</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">current_snapshots</span><span class="p">):</span>
+        <span class="c"># Already pointing to the newest snapshot, nothing to do</span>
+        <span class="k">return</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;components&#39;</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">snap</span> <span class="ow">in</span> <span class="n">snapshots_config</span><span class="p">:</span>
+        <span class="c"># snap may be a plain name or a dict..</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">snap</span><span class="p">,</span> <span class="s">&#39;items&#39;</span><span class="p">):</span>
+            <span class="c"># Dict mode - only here can we even have an archive option</span>
+            <span class="n">archive</span> <span class="o">=</span> <span class="n">snap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;archive-on-update&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">archive</span><span class="p">:</span>
+                <span class="c"># Replace any timestamp placeholder with the current</span>
+                <span class="c"># date/time.  Note that this is NOT rounded, as we want to</span>
+                <span class="c"># know exactly when the archival happened.</span>
+                <span class="n">archive</span> <span class="o">=</span> <span class="n">archive</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s">&#39;%T&#39;</span><span class="p">,</span>
+                    <span class="n">format_timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">archive</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">snapshots</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+                    <span class="k">continue</span>
+                <span class="n">prefix_to_search</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;%T$&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">snap</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+
+                <span class="n">current_snapshot</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">snap_name</span>
+                    <span class="k">for</span> <span class="n">snap_name</span>
+                    <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">current_snapshots</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">snap_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix_to_search</span><span class="p">)</span>
+                <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="n">clone_snapshot</span><span class="p">(</span><span class="n">current_snapshot</span><span class="p">,</span> <span class="n">archive</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">Command</span><span class="p">([</span>
+        <span class="s">&#39;aptly&#39;</span><span class="p">,</span>
+        <span class="s">&#39;publish&#39;</span><span class="p">,</span>
+        <span class="s">&#39;switch&#39;</span><span class="p">,</span>
+        <span class="s">&#39;-component=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components</span><span class="p">),</span>
+        <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">],</span>
+        <span class="n">publish_name</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="n">new_snapshots</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="repo_cmd_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.repo_cmd_create">[docs]</a><span class="k">def</span> <span class="nf">repo_cmd_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">repo_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Call the aptly repo command&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">repo_name</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">repos</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="c"># Nothing to do, repo already created</span>
+        <span class="k">return</span>
+
+    <span class="n">repo_cmd</span>      <span class="o">=</span> <span class="p">[</span><span class="s">&#39;aptly&#39;</span><span class="p">,</span> <span class="s">&#39;repo&#39;</span><span class="p">]</span>
+    <span class="n">options</span>       <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">endpoint_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">conf</span><span class="p">,</span> <span class="n">conf_value</span> <span class="ow">in</span> <span class="n">repo_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;architectures&#39;</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s">&#39;-architectures=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
+                <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">conf_value</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;component&#39;</span><span class="p">:</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">conf_value</span><span class="p">)</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s">&#39;-component=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;comment&#39;</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s">&#39;-comment=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">conf_value</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">conf</span> <span class="o">==</span> <span class="s">&#39;distribution&#39;</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-distribution=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">conf_value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Don&#39;t know how to handle repo config entry </span><span class="si">%s</span><span class="s"> in </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">conf</span><span class="p">,</span>
+                    <span class="n">repo_name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Command</span><span class="p">(</span><span class="n">repo_cmd</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="n">endpoint_args</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="repo"><a class="viewcode-back" href="../pyaptly.html#pyaptly.repo">[docs]</a><span class="k">def</span> <span class="nf">repo</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates repositories&quot;&quot;&quot;</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Repositories to create: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">]))</span>
+
+    <span class="n">repo_cmds</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;create&#39;</span><span class="p">:</span> <span class="n">repo_cmd_create</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">cmd_repo</span> <span class="o">=</span> <span class="n">repo_cmds</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">task</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">repo_name</span> <span class="o">==</span> <span class="s">&quot;all&quot;</span><span class="p">:</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cmd_repo</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">repo_conf</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">repo_conf</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">Command</span><span class="o">.</span><span class="n">order_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">has_dependency</span><span class="p">):</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">repo_name</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">]:</span>
+            <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">cmd_repo</span><span class="p">(</span>
+                    <span class="n">cfg</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">repo_name</span><span class="p">,</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">][</span><span class="n">args</span><span class="o">.</span><span class="n">repo_name</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">Command</span><span class="o">.</span><span class="n">order_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">has_dependency</span><span class="p">):</span>
+                <span class="n">cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Requested publish is not defined in config file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">repo_name</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="publish"><a class="viewcode-back" href="../pyaptly.html#pyaptly.publish">[docs]</a><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates snapshots&quot;&quot;&quot;</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Publishes to create / update: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s">&#39;publish&#39;</span><span class="p">]))</span>
+
+    <span class="c"># aptly publish snapshot -components ... -architectures ... -distribution</span>
+    <span class="c"># ... -origin Ubuntu trusty-stable ubuntu/stable</span>
+
+    <span class="n">publish_cmds</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;create&#39;</span><span class="p">:</span> <span class="n">publish_cmd_create</span><span class="p">,</span>
+        <span class="s">&#39;update&#39;</span><span class="p">:</span> <span class="n">publish_cmd_update</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">cmd_publish</span> <span class="o">=</span> <span class="n">publish_cmds</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">task</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">publish_name</span> <span class="o">==</span> <span class="s">&quot;all&quot;</span><span class="p">:</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cmd_publish</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_conf_entry</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_conf</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;publish&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">publish_conf_entry</span> <span class="ow">in</span> <span class="n">publish_conf</span>
+            <span class="k">if</span> <span class="n">publish_conf_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;automatic-update&#39;</span><span class="p">,</span> <span class="s">&#39;false&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">True</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">Command</span><span class="o">.</span><span class="n">order_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">has_dependency</span><span class="p">):</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">publish_name</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;publish&#39;</span><span class="p">]:</span>
+            <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">cmd_publish</span><span class="p">(</span>
+                    <span class="n">cfg</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">publish_name</span><span class="p">,</span>
+                    <span class="n">publish_conf_entry</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">publish_conf_entry</span>
+                <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;publish&#39;</span><span class="p">][</span><span class="n">args</span><span class="o">.</span><span class="n">publish_name</span><span class="p">]</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">Command</span><span class="o">.</span><span class="n">order_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">has_dependency</span><span class="p">):</span>
+                <span class="n">cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Requested publish is not defined in config file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">publish_name</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="snapshot"><a class="viewcode-back" href="../pyaptly.html#pyaptly.snapshot">[docs]</a><span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates snapshots&quot;&quot;&quot;</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Snapshots to create: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s">&#39;snapshot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+    <span class="n">snapshot_cmds</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;create&#39;</span><span class="p">:</span> <span class="n">cmd_snapshot_create</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">cmd_snapshot</span> <span class="o">=</span> <span class="n">snapshot_cmds</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">task</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">snapshot_name</span> <span class="o">==</span> <span class="s">&quot;all&quot;</span><span class="p">:</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cmd_snapshot</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">,</span> <span class="n">snapshot_config</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">snapshot_name</span><span class="p">,</span> <span class="n">snapshot_config</span>
+            <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;snapshot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">Command</span><span class="o">.</span><span class="n">order_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">has_dependency</span><span class="p">):</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">snapshot_name</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;snapshot&#39;</span><span class="p">]:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd_snapshot</span><span class="p">(</span>
+                <span class="n">cfg</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">snapshot_name</span><span class="p">,</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;snapshot&#39;</span><span class="p">][</span><span class="n">args</span><span class="o">.</span><span class="n">snapshot_name</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Requested snapshot is not defined in config file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">snapshot_name</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="format_timestamp"><a class="viewcode-back" href="../pyaptly.html#pyaptly.format_timestamp">[docs]</a><span class="k">def</span> <span class="nf">format_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">):</span>
+    <span class="s">&quot;Wrapper for strftime, to ensure we&#39;re all using the same format&quot;</span>
+    <span class="k">return</span> <span class="n">timestamp</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y%m</span><span class="si">%d</span><span class="s">T%H%MZ&#39;</span><span class="p">)</span></div>
+
+
+<span class="n">back_reference_map</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;current&quot;</span>  <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">&quot;previous&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="snapshot_spec_to_name"><a class="viewcode-back" href="../pyaptly.html#pyaptly.snapshot_spec_to_name">[docs]</a><span class="k">def</span> <span class="nf">snapshot_spec_to_name</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a given snapshot short spec to a name.</span>
+
+<span class="sd">    A short spec is a value that may either be a string or a dict.</span>
+
+<span class="sd">    If it&#39;s a string, everything is fine and we just use that as</span>
+<span class="sd">    a snapshot name.</span>
+
+<span class="sd">    However if it&#39;s a dict, we assume it has the following keys:</span>
+
+<span class="sd">     * name: template for the snapshot</span>
+<span class="sd">     * timestamp: information on how to generate the timestamp.</span>
+
+<span class="sd">     For further information regarding the timestamp&#39;s data structure,</span>
+<span class="sd">     consult the documentation of expand_timestamped_name().</span>
+
+<span class="sd">    :param      cfg: Complete yaml config</span>
+<span class="sd">    :type       cfg: dict</span>
+<span class="sd">    :param snapshot: Config of the snapshot</span>
+<span class="sd">    :type  snapshot: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">snapshot</span><span class="p">,</span> <span class="s">&#39;items&#39;</span><span class="p">):</span>
+        <span class="n">name</span>      <span class="o">=</span> <span class="n">snapshot</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">ts</span>        <span class="o">=</span> <span class="n">snapshot</span><span class="p">[</span><span class="s">&#39;timestamp&#39;</span><span class="p">]</span>
+        <span class="n">back_ref</span>  <span class="o">=</span> <span class="n">back_reference_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">back_ref</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">back_ref</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;snapshot&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">back_ref</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">cur_timestamp</span> <span class="o">=</span> <span class="n">round_timestamp</span><span class="p">(</span><span class="n">reference</span><span class="p">[</span><span class="s">&quot;timestamp&quot;</span><span class="p">])</span>
+            <span class="n">cur_timestamp</span> <span class="o">-=</span> <span class="n">delta</span>
+        <span class="n">cur_timestamp</span> <span class="o">+=</span> <span class="n">delta</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;%T&#39;</span><span class="p">,</span> <span class="n">format_timestamp</span><span class="p">(</span><span class="n">cur_timestamp</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="k">return</span> <span class="n">snapshot</span></div>
+
+
+<div class="viewcode-block" id="cmd_snapshot_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.cmd_snapshot_create">[docs]</a><span class="k">def</span> <span class="nf">cmd_snapshot_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">,</span> <span class="n">snapshot_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Call the aptly snapshot command&quot;&quot;&quot;</span>
+
+    <span class="c"># TODO: extract possible timestamp component</span>
+    <span class="c"># and generate *actual* snapshot name</span>
+
+    <span class="n">snapshot_name</span> <span class="o">=</span> <span class="n">expand_timestamped_name</span><span class="p">(</span>
+        <span class="n">snapshot_name</span><span class="p">,</span> <span class="n">snapshot_config</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">snapshot_name</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">snapshots</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">default_aptly_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;aptly&#39;</span><span class="p">,</span> <span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="s">&#39;create&#39;</span><span class="p">]</span>
+    <span class="n">default_aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snapshot_name</span><span class="p">)</span>
+    <span class="n">default_aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;from&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">&#39;mirror&#39;</span> <span class="ow">in</span> <span class="n">snapshot_config</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">Command</span><span class="p">(</span>
+            <span class="n">default_aptly_cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">,</span> <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">]]</span>
+        <span class="p">)</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">provide</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">)</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s">&#39;mirror&#39;</span><span class="p">,</span>  <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">cmd</span>
+
+    <span class="k">elif</span> <span class="s">&#39;repo&#39;</span> <span class="ow">in</span> <span class="n">snapshot_config</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">Command</span><span class="p">(</span><span class="n">default_aptly_cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">,</span> <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">]])</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">provide</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">)</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s">&#39;repo&#39;</span><span class="p">,</span>     <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">cmd</span>
+
+    <span class="k">elif</span> <span class="s">&#39;filter&#39;</span> <span class="ow">in</span> <span class="n">snapshot_config</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">Command</span><span class="p">([</span>
+            <span class="s">&#39;aptly&#39;</span><span class="p">,</span>
+            <span class="s">&#39;snapshot&#39;</span><span class="p">,</span>
+            <span class="s">&#39;filter&#39;</span><span class="p">,</span>
+            <span class="n">snapshot_spec_to_name</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;filter&#39;</span><span class="p">][</span><span class="s">&#39;source&#39;</span><span class="p">]),</span>
+            <span class="n">snapshot_name</span><span class="p">,</span>
+            <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;filter&#39;</span><span class="p">][</span><span class="s">&#39;query&#39;</span><span class="p">],</span>
+        <span class="p">])</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">provide</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">)</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">require</span><span class="p">(</span>
+            <span class="s">&#39;snapshot&#39;</span><span class="p">,</span>
+            <span class="n">snapshot_spec_to_name</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;filter&#39;</span><span class="p">][</span><span class="s">&#39;source&#39;</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span>
+
+    <span class="k">elif</span> <span class="s">&#39;merge&#39;</span> <span class="ow">in</span> <span class="n">snapshot_config</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">Command</span><span class="p">([</span>
+            <span class="s">&#39;aptly&#39;</span><span class="p">,</span>
+            <span class="s">&#39;snapshot&#39;</span><span class="p">,</span>
+            <span class="s">&#39;merge&#39;</span><span class="p">,</span>
+            <span class="n">snapshot_name</span><span class="p">,</span>
+        <span class="p">])</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">provide</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">snapshot_config</span><span class="p">[</span><span class="s">&#39;merge&#39;</span><span class="p">]:</span>
+            <span class="n">source_name</span> <span class="o">=</span> <span class="n">snapshot_spec_to_name</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cmd</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s">&quot;Don&#39;t know how to handle snapshot config&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">snapshot_config</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mirror"><a class="viewcode-back" href="../pyaptly.html#pyaptly.mirror">[docs]</a><span class="k">def</span> <span class="nf">mirror</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates mirrors&quot;&quot;&quot;</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Mirrors to create: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">])</span>
+
+    <span class="n">mirror_cmds</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;create&#39;</span><span class="p">:</span> <span class="n">cmd_mirror_create</span><span class="p">,</span>
+        <span class="s">&#39;update&#39;</span><span class="p">:</span> <span class="n">cmd_mirror_update</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">cmd_mirror</span> <span class="o">=</span> <span class="n">mirror_cmds</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">task</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mirror_name</span> <span class="o">==</span> <span class="s">&quot;all&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">mirror_name</span><span class="p">,</span> <span class="n">mirror_config</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">cmd_mirror</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">mirror_name</span><span class="p">,</span> <span class="n">mirror_config</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mirror_name</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">]:</span>
+            <span class="n">cmd_mirror</span><span class="p">(</span>
+                <span class="n">cfg</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">mirror_name</span><span class="p">,</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">][</span><span class="n">args</span><span class="o">.</span><span class="n">mirror_name</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Requested mirror is not defined in config file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">mirror_name</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">add_gpg_keys</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">):</span>
+    <span class="n">keys_urls</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="s">&#39;gpg-keys&#39;</span> <span class="ow">in</span> <span class="n">mirror_config</span><span class="p">:</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;gpg-keys&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s">&#39;gpg-urls&#39;</span> <span class="ow">in</span> <span class="n">mirror_config</span><span class="p">:</span>
+            <span class="n">urls</span> <span class="o">=</span> <span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;gpg-urls&#39;</span><span class="p">]</span>
+            <span class="n">urls_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">urls_len</span><span class="p">:</span>
+                    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+                    <span class="n">url</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">keys_urls</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="n">keys_urls</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_urls</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">gpg_keys</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">key_command</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s">&quot;gpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;--no-default-keyring&quot;</span><span class="p">,</span>
+                <span class="s">&quot;--keyring&quot;</span><span class="p">,</span>
+                <span class="s">&quot;trustedkeys.gpg&quot;</span><span class="p">,</span>
+                <span class="s">&quot;--keyserver&quot;</span><span class="p">,</span>
+                <span class="s">&quot;pool.sks-keyservers.net&quot;</span><span class="p">,</span>
+                <span class="s">&quot;--recv-keys&quot;</span><span class="p">,</span>
+                <span class="n">key</span>
+            <span class="p">]</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Adding gpg key with call: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">key_command</span><span class="p">)</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">key_command</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">keys_urls</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
+                <span class="n">key_command</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s">&quot;wget -q -O - </span><span class="si">%s</span><span class="s"> | &quot;</span>
+                    <span class="s">&quot;gpg --no-default-keyring &quot;</span>
+                    <span class="s">&quot;--keyring trustedkeys.gpg --import&quot;</span>
+                <span class="p">)</span> <span class="o">%</span> <span class="n">url</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">([</span><span class="s">&#39;bash&#39;</span><span class="p">,</span> <span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">key_command</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">read_gpg</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="cmd_mirror_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.cmd_mirror_create">[docs]</a><span class="k">def</span> <span class="nf">cmd_mirror_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">mirror_name</span><span class="p">,</span> <span class="n">mirror_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Call the aptly mirror command&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mirror_name</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">mirrors</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="k">return</span>
+
+    <span class="n">add_gpg_keys</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">)</span>
+    <span class="n">aptly_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;aptly&#39;</span><span class="p">,</span> <span class="s">&#39;mirror&#39;</span><span class="p">,</span> <span class="s">&#39;create&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s">&#39;sources&#39;</span> <span class="ow">in</span> <span class="n">mirror_config</span> <span class="ow">and</span> <span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;sources&#39;</span><span class="p">]:</span>
+        <span class="kn">import</span> <span class="nn">ipdb</span><span class="p">;</span> <span class="n">ipdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+        <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-with-sources&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">&#39;udeb&#39;</span> <span class="ow">in</span> <span class="n">mirror_config</span> <span class="ow">and</span> <span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;udeb&#39;</span><span class="p">]:</span>
+        <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-with-udebs&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">&#39;architectures&#39;</span> <span class="ow">in</span> <span class="n">mirror_config</span><span class="p">:</span>
+        <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-architectures={0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;architectures&#39;</span><span class="p">]))</span>
+        <span class="p">))</span>
+
+    <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror_name</span><span class="p">)</span>
+    <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;archive&#39;</span><span class="p">])</span>
+    <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">])</span>
+    <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">unit_or_list_to_list</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;components&#39;</span><span class="p">]))</span>
+
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Running command: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aptly_cmd</span><span class="p">))</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">aptly_cmd</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cmd_mirror_update"><a class="viewcode-back" href="../pyaptly.html#pyaptly.cmd_mirror_update">[docs]</a><span class="k">def</span> <span class="nf">cmd_mirror_update</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">mirror_name</span><span class="p">,</span> <span class="n">mirror_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Call the aptly mirror command&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mirror_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">mirrors</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Mirror not created yet&quot;</span><span class="p">)</span>
+    <span class="n">add_gpg_keys</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">)</span>
+    <span class="n">aptly_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;aptly&#39;</span><span class="p">,</span> <span class="s">&#39;mirror&#39;</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">]</span>
+    <span class="n">aptly_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror_name</span><span class="p">)</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Running command: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aptly_cmd</span><span class="p">))</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">aptly_cmd</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyAptly 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Lukas Grossar, David Vogt, Jean-Louis Fuchs.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.2.
+    </div>
+  </body>
+</html>

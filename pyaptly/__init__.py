@@ -13,6 +13,7 @@ _logging_setup = False
 
 
 def init_hypothesis():
+    """Initialize hypotesis profile is hypothesis is available"""
     try:  # pragma: no cover:w
         import os
         if 'HYPOTHESIS_PROFILE' in os.environ:
@@ -183,6 +184,12 @@ def call_output(args, input_=None):
 
 
 class Command(object):
+    """Repesents a system command and is used to resolve dependencies between
+    such commands.
+
+    :param cmd: The command as list, one item per argument
+    :type  cmd: list
+    """
     def __init__(self, cmd):
         self.cmd = cmd
         self._requires = set()
@@ -193,10 +200,22 @@ class Command(object):
         )
 
     def append(self, argument):
+        """Append additional arguments to the command.
+
+        :param argument: String argument to append
+        :type  argument: str"""
         assert str(argument) == argument
         self.cmd.append(argument)
 
     def require(self, type_, identifier):
+        """Require a dependency for this command.
+
+        :param      type_: Type or category of the dependency ie. snapshot
+        :type       type_: str
+        :param identifier: Identifier of the dependency for example name of a
+                           snapshot
+        :type  identifier: usually str
+        """
         assert type_ in (
             self._known_dependency_types +
             ('any', ) +
@@ -205,10 +224,19 @@ class Command(object):
         self._requires.add((type_, identifier))
 
     def provide(self, type_, identifier):
+        """Provide a dependency for this command.
+
+        :param      type_: Type or category of the dependency ie. snapshot
+        :type       type_: str
+        :param identifier: Identifier of the dependency for example name of a
+                           snapshot
+        :type  identifier: usually str
+        """
         assert type_ in self._known_dependency_types
         self._provides.add((type_, identifier))
 
     def execute(self):
+        """Execute the command."""
         if self._finished is not None:  # pragma: no cover
             return self._finished
 
@@ -226,8 +254,14 @@ class Command(object):
 
     @staticmethod
     def order_commands(commands, has_dependency_cb=lambda x: False):
-        # Filter out any invalid entries.. TODO: Should be done
-        # somewhere else...
+        """Order the commands according to the dependencies they
+        provide/require.
+
+        :param          commands: The commands to order
+        :type           commands: list
+        :param has_dependency_cb: Optional callback the resolve external
+                                  dependencies
+        :type  has_dependency_cb: function"""
         commands = [c for c in commands if c]
 
         lg.debug('Ordering commands: %s', [
@@ -296,6 +330,9 @@ class Command(object):
 
 
 class SystemStateReader(object):
+    """Reads the state from aptly and gpg to find out what operations have to
+    be performed to reach the state defined in the yml config-file.
+    """
     known_dependency_types = (
         'repo', 'snapshot', 'mirror', 'gpg_key'
     )
@@ -310,6 +347,7 @@ class SystemStateReader(object):
         self.publish_map  = {}
 
     def read(self):
+        """Reads all available system states."""
         self.read_gpg()
         self.read_repos()
         self.read_mirror()
@@ -319,6 +357,7 @@ class SystemStateReader(object):
         self.read_publish_map()
 
     def read_gpg(self):
+        """Read all trusted keys in gpg."""
         self.gpg_keys = set()
         data, _ = call_output([
             "gpg",
@@ -337,6 +376,7 @@ class SystemStateReader(object):
                 self.gpg_keys.add(key_short)
 
     def read_publish_map(self):
+        """Create a publish map. publish -> snapshots"""
         self.publish_map = {}
         data, _ = call_output([
             "aptly", "publish", "list"
@@ -356,6 +396,8 @@ class SystemStateReader(object):
         lg.debug('Joined snapshots and publishes: %s', self.publish_map)
 
     def read_snapshot_map(self):
+        """Create a snapshot map. snapshot -> snapshots. This is also called
+        merge-tree."""
         self.snapshot_map = {}
         data, _ = call_output([
             "aptly", "snapshot", "list"
@@ -378,22 +420,32 @@ class SystemStateReader(object):
         )
 
     def read_publishes(self):
+        """Read all available publishes."""
         self.publishes = set()
         self.read_aptly_list("publish", self.publishes)
 
     def read_repos(self):
+        """Read all available repos."""
         self.repos = set()
         self.read_aptly_list("repo", self.repos)
 
     def read_mirror(self):
+        """Read all available mirrors."""
         self.mirrors = set()
         self.read_aptly_list("mirror", self.mirrors)
 
     def read_snapshot(self):
+        """Read all available snapshots."""
         self.snapshots = set()
         self.read_aptly_list("snapshot", self.snapshots)
 
     def read_aptly_list(self, type_, list_):
+        """Generic method to read lists from aptly.
+
+        :param type_: The type of list to read ie. snapshot
+        :type  type_: str
+        :param list_: Read into this list
+        :param list_: list"""
         data, _ = call_output([
             "aptly", type_, "list", "-raw"
         ])
@@ -404,6 +456,10 @@ class SystemStateReader(object):
                 list_.add(clean_line)
 
     def has_dependency(self, dependency):
+        """Check system state dependencies.
+
+        :param dependency: The dependency to check
+        :type  dependency: list"""
         type_, name = dependency
 
         if type_ == 'repo':
@@ -424,7 +480,10 @@ state = SystemStateReader()
 
 
 def main(argv=None):
-    """Called by command-line, defines parsers and executes commands"""
+    """Called by command-line, defines parsers and executes commands.
+
+    :param argv: Arguments usually taken from sys.argv
+    :type  argv: list"""
     global _logging_setup
     if not argv:  # pragma: no cover
         argv = sys.argv[1:]

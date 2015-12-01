@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>test &mdash; PyAptly 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/adsy.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PyAptly 0.0.1 documentation" href="index.html" />
+    <link rel="up" title="Internal API" href="modules.html" />
+    <link rel="next" title="aptly_test" href="aptly_test.html" />
+    <link rel="prev" title="pyaptly" href="pyaptly.html" /> 
+  </head>
+  <body role="document">
+<div class="document-header">
+  <img src="_static/logo.png" width="256" alt="Adfinis SyGroup AG">
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="aptly_test.html" title="aptly_test"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pyaptly.html" title="pyaptly"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyAptly 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Internal API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pyaptly.test">
+<span id="test"></span><h1>test<a class="headerlink" href="#module-pyaptly.test" title="Permalink to this headline">¶</a></h1>
+<p>Tools for testing pyaptly</p>
+<dl class="function">
+<dt id="pyaptly.test.clean_and_config">
+<code class="descclassname">pyaptly.test.</code><code class="descname">clean_and_config</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly/test.html#clean_and_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.test.clean_and_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove aptly file and create a input config file to run pyaptly with.</p>
+<p>Test input should be minimal and extended/tranformed in create_config.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>test_input</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to test data input file</li>
+<li><strong>freeze</strong> &#8211; ISO8601 date string used to set the date/time for the
+test</li>
+<li><strong>freeze</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(dict, str)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.test.create_config">
+<code class="descclassname">pyaptly.test.</code><code class="descname">create_config</code><span class="sig-paren">(</span><em>test_input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly/test.html#create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.test.create_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns path to pyaptly config from test input.</p>
+<p>Test input should be minimal and extended/tranformed in create_config.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>test_input</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Test input read from test-yml.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(dict, str)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.test.execute_and_parse_show_cmd">
+<code class="descclassname">pyaptly.test.</code><code class="descname">execute_and_parse_show_cmd</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly/test.html#execute_and_parse_show_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.test.execute_and_parse_show_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes and parses a aptly show command.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Command to execute</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.test.merge">
+<code class="descclassname">pyaptly.test.</code><code class="descname">merge</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly/test.html#merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.test.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge two dicts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dict a</li>
+<li><strong>b</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dict b</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.test.read_yml">
+<code class="descclassname">pyaptly.test.</code><code class="descname">read_yml</code><span class="sig-paren">(</span><em>file_</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly/test.html#read_yml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.test.read_yml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read and merge a yml file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; file to read</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pyaptly.html"
+                        title="previous chapter">pyaptly</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="aptly_test.html"
+                        title="next chapter">aptly_test</a></p>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/test.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="aptly_test.html" title="aptly_test"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pyaptly.html" title="pyaptly"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyAptly 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Internal API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Lukas Grossar, David Vogt, Jean-Louis Fuchs.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.2.
+    </div>
+  </body>
+</html>
