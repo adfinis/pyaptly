@@ -325,6 +325,21 @@ merge-tree.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pyaptly.add_gpg_keys">
+<code class="descclassname">pyaptly.</code><code class="descname">add_gpg_keys</code><span class="sig-paren">(</span><em>mirror_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#add_gpg_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.add_gpg_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the gpg command-line to download and add gpg keys needed to create
+mirrors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mirror_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The configuration yml as dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyaptly.call_output">
 <code class="descclassname">pyaptly.</code><code class="descname">call_output</code><span class="sig-paren">(</span><em>args</em>, <em>input_=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#call_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.call_output" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call command and return output.</p>
@@ -343,21 +358,76 @@ merge-tree.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pyaptly.clone_snapshot">
+<code class="descclassname">pyaptly.</code><code class="descname">clone_snapshot</code><span class="sig-paren">(</span><em>origin</em>, <em>destination</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#clone_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.clone_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a clone snapshot command with dependencies to be ordered and
+executed later.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>origin</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The snapshot to clone</li>
+<li><strong>destination</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The new name of the snapshot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyaptly.cmd_mirror_create">
 <code class="descclassname">pyaptly.</code><code class="descname">cmd_mirror_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>mirror_name</em>, <em>mirror_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#cmd_mirror_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.cmd_mirror_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the aptly mirror command</p>
+<dd><p>Create a mirror create command to be ordered and executed later.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mirror_name</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name of the mirror to create</li>
+<li><strong>mirror_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Configuration of the snapshot from the yml file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.cmd_mirror_update">
 <code class="descclassname">pyaptly.</code><code class="descname">cmd_mirror_update</code><span class="sig-paren">(</span><em>cfg</em>, <em>mirror_name</em>, <em>mirror_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#cmd_mirror_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.cmd_mirror_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the aptly mirror command</p>
+<dd><p>Create a mirror update command to be ordered and executed later.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mirror_name</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name of the mirror to create</li>
+<li><strong>mirror_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Configuration of the snapshot from the yml file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.cmd_snapshot_create">
 <code class="descclassname">pyaptly.</code><code class="descname">cmd_snapshot_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>snapshot_name</em>, <em>snapshot_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#cmd_snapshot_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.cmd_snapshot_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the aptly snapshot command</p>
+<dd><p>Create a snapshot create command to be ordered and executed later.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snapshot_name</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name of the snapshot to create</li>
+<li><strong>snapshot_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Configuration of the snapshot from the yml file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -410,13 +480,34 @@ the date.</p>
 <dl class="function">
 <dt id="pyaptly.expand_timestamped_name">
 <code class="descclassname">pyaptly.</code><code class="descname">expand_timestamped_name</code><span class="sig-paren">(</span><em>name</em>, <em>timestamp_config</em>, <em>date=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#expand_timestamped_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.expand_timestamped_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Expand a timestamped name using round_timestamp</p>
+<dd><p>Expand a timestamped name using round_timestamp.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>timestamp_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Contains the recurrence specification for the
+timestamp. See <a class="reference internal" href="#pyaptly.round_timestamp" title="pyaptly.round_timestamp"><code class="xref py py-func docutils literal"><span class="pre">round_timestamp()</span></code></a></li>
+<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a>) &#8211; The date to expand the timestamp with.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.format_timestamp">
 <code class="descclassname">pyaptly.</code><code class="descname">format_timestamp</code><span class="sig-paren">(</span><em>timestamp</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#format_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.format_timestamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper for strftime, to ensure we&#8217;re all using the same format</p>
+<dd><p>Wrapper for strftime, to ensure we&#8217;re all using the same format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timestamp</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a>) &#8211; The timestamp to format</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -489,31 +580,111 @@ the date.</p>
 <dl class="function">
 <dt id="pyaptly.mirror">
 <code class="descclassname">pyaptly.</code><code class="descname">mirror</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#mirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.mirror" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates mirrors</p>
+<dd><p>Creates mirror commands, orders and executes them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The configuration yml as dict</li>
+<li><strong>args</strong> (<em>namespace</em>) &#8211; The command-line arguments read with <a class="reference external" href="https://docs.python.org/library/argparse.html#module-argparse" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">argparse</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.publish">
 <code class="descclassname">pyaptly.</code><code class="descname">publish</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#publish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.publish" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates snapshots</p>
+<dd><p>Creates publish commands, orders and executes them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The configuration yml as dict</li>
+<li><strong>args</strong> (<em>namespace</em>) &#8211; The command-line arguments read with <a class="reference external" href="https://docs.python.org/library/argparse.html#module-argparse" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">argparse</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.publish_cmd_create">
 <code class="descclassname">pyaptly.</code><code class="descname">publish_cmd_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>publish_name</em>, <em>publish_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#publish_cmd_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.publish_cmd_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the aptly publish command</p>
+<dd><p>Creates a publish command with its dependencies to be ordered and
+executed later.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>publish_name</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name of the publish to create</li>
+<li><strong>publish_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Configuration of the publish from the yml file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.publish_cmd_update">
+<code class="descclassname">pyaptly.</code><code class="descname">publish_cmd_update</code><span class="sig-paren">(</span><em>cfg</em>, <em>publish_name</em>, <em>publish_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#publish_cmd_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.publish_cmd_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a publish command with its dependencies to be ordered and
+executed later.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>publish_name</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name of the publish to update</li>
+<li><strong>publish_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Configuration of the publish from the yml file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.repo">
 <code class="descclassname">pyaptly.</code><code class="descname">repo</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#repo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.repo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates repositories</p>
+<dd><p>Creates repository commands, orders and executes them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The configuration yml as dict</li>
+<li><strong>args</strong> (<em>namespace</em>) &#8211; The command-line arguments read with <a class="reference external" href="https://docs.python.org/library/argparse.html#module-argparse" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">argparse</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.repo_cmd_create">
 <code class="descclassname">pyaptly.</code><code class="descname">repo_cmd_create</code><span class="sig-paren">(</span><em>cfg</em>, <em>repo_name</em>, <em>repo_config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#repo_cmd_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.repo_cmd_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the aptly repo command</p>
+<dd><p>Create a repo create command to be ordered and executed later.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>repo_name</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name of the repo to create</li>
+<li><strong>repo_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Configuration of the repo from the yml file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -558,12 +729,37 @@ foo-20151007T0000Z</p>
 <span class="go">foo</span>
 </pre></div>
 </div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>timestamp_config</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Contains the recurrence specification for the
+timestamp.</li>
+<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.datetime" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.datetime</span></code></a>) &#8211; The date to expand the timestamp with.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyaptly.snapshot">
 <code class="descclassname">pyaptly.</code><code class="descname">snapshot</code><span class="sig-paren">(</span><em>cfg</em>, <em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.snapshot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates snapshots</p>
+<dd><p>Creates snapshot commands, orders and executes them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The configuration yml as dict</li>
+<li><strong>args</strong> (<em>namespace</em>) &#8211; The command-line arguments read with <a class="reference external" href="https://docs.python.org/library/argparse.html#module-argparse" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">argparse</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -579,9 +775,9 @@ a snapshot name.</p>
 <li>name: template for the snapshot</li>
 <li>timestamp: information on how to generate the timestamp.</li>
 </ul>
+</div></blockquote>
 <p>For further information regarding the timestamp&#8217;s data structure,
 consult the documentation of expand_timestamped_name().</p>
-</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -625,6 +821,21 @@ without tzinfo.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.time" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.time</span></code></a>) &#8211; Time to convert</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/datetime.html#datetime.time" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">datetime.time</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyaptly.unit_or_list_to_list">
+<code class="descclassname">pyaptly.</code><code class="descname">unit_or_list_to_list</code><span class="sig-paren">(</span><em>thingy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyaptly.html#unit_or_list_to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyaptly.unit_or_list_to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures that a yml entry is always a list. Used to allow lists and
+single units in the yml file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>thingy</strong> (<em>list, tuple or other</em>) &#8211; The data to ensure it is a list</td>
 </tr>
 </tbody>
 </table>

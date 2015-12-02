@@ -590,7 +590,13 @@ day_of_week_map = {
 
 
 def expand_timestamped_name(name, timestamp_config, date=None):
-    """Expand a timestamped name using round_timestamp"""
+    """Expand a timestamped name using round_timestamp.
+
+    :param timestamp_config: Contains the recurrence specification for the
+                             timestamp. See :func:`round_timestamp`
+    :type  timestamp_config: dict
+    :param             date: The date to expand the timestamp with.
+    :type              date: :py:class:`datetime.datetime`"""
     if '%T' not in name:
         return name
     timestamp = round_timestamp(timestamp_config, date)
@@ -641,6 +647,12 @@ def round_timestamp(timestamp_config, date=None):
     ...     datetime.datetime(2015,10,8, 15,30)
     ... )
     foo
+
+    :param timestamp_config: Contains the recurrence specification for the
+                             timestamp.
+    :type  timestamp_config: dict
+    :param             date: The date to expand the timestamp with.
+    :type              date: :py:class:`datetime.datetime`
     """
     timestamp_info = timestamp_config.get('timestamp', timestamp_config)
     config_time    = timestamp_info.get('time', 'FAIL')
@@ -674,6 +686,11 @@ def round_timestamp(timestamp_config, date=None):
 
 
 def unit_or_list_to_list(thingy):
+    """Ensures that a yml entry is always a list. Used to allow lists and
+    single units in the yml file.
+
+    :param thingy: The data to ensure it is a list
+    :type  thingy: list, tuple or other"""
     if isinstance(thingy, list) or isinstance(thingy, tuple):
         return list(thingy)
     else:
@@ -681,8 +698,13 @@ def unit_or_list_to_list(thingy):
 
 
 def publish_cmd_create(cfg, publish_name, publish_config):
-    """Call the aptly publish command"""
+    """Creates a publish command with its dependencies to be ordered and
+    executed later.
 
+    :param   publish_name: Name of the publish to create
+    :type    publish_name: str
+    :param publish_config: Configuration of the publish from the yml file.
+    :type  publish_config: dict"""
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
     if publish_fullname in state.publishes:
         # Nothing to do, publish already created
@@ -793,6 +815,13 @@ def publish_cmd_create(cfg, publish_name, publish_config):
 
 
 def clone_snapshot(origin, destination):
+    """Creates a clone snapshot command with dependencies to be ordered and
+    executed later.
+
+    :param      origin: The snapshot to clone
+    :type       origin: str
+    :param destination: The new name of the snapshot
+    :type  destination: str"""
     cmd = Command([
         'aptly',
         'snapshot',
@@ -806,6 +835,13 @@ def clone_snapshot(origin, destination):
 
 
 def publish_cmd_update(cfg, publish_name, publish_config):
+    """Creates a publish command with its dependencies to be ordered and
+    executed later.
+
+    :param   publish_name: Name of the publish to update
+    :type    publish_name: str
+    :param publish_config: Configuration of the publish from the yml file.
+    :type  publish_config: dict"""
     if 'repo' in publish_config:
         return Command([
             'aptly',
@@ -880,7 +916,12 @@ def publish_cmd_update(cfg, publish_name, publish_config):
 
 
 def repo_cmd_create(cfg, repo_name, repo_config):
-    """Call the aptly repo command"""
+    """Create a repo create command to be ordered and executed later.
+
+    :param   repo_name: Name of the repo to create
+    :type    repo_name: str
+    :param repo_config: Configuration of the repo from the yml file.
+    :type  repo_config: dict"""
 
     if repo_name in state.repos:  # pragma: no cover
         # Nothing to do, repo already created
@@ -919,7 +960,12 @@ def repo_cmd_create(cfg, repo_name, repo_config):
 
 
 def repo(cfg, args):
-    """Creates repositories"""
+    """Creates repository commands, orders and executes them.
+
+    :param  cfg: The configuration yml as dict
+    :type   cfg: dict
+    :param args: The command-line arguments read with :py:mod:`argparse`
+    :type  args: namespace"""
     lg.debug("Repositories to create: %s", (cfg['repo']))
 
     repo_cmds = {
@@ -957,7 +1003,12 @@ def repo(cfg, args):
 
 
 def publish(cfg, args):
-    """Creates snapshots"""
+    """Creates publish commands, orders and executes them.
+
+    :param  cfg: The configuration yml as dict
+    :type   cfg: dict
+    :param args: The command-line arguments read with :py:mod:`argparse`
+    :type  args: namespace"""
     lg.debug("Publishes to create / update: %s", (cfg['publish']))
 
     # aptly publish snapshot -components ... -architectures ... -distribution
@@ -1003,7 +1054,12 @@ def publish(cfg, args):
 
 
 def snapshot(cfg, args):
-    """Creates snapshots"""
+    """Creates snapshot commands, orders and executes them.
+
+    :param  cfg: The configuration yml as dict
+    :type   cfg: dict
+    :param args: The command-line arguments read with :py:mod:`argparse`
+    :type  args: namespace"""
     lg.debug("Snapshots to create: %s", (cfg['snapshot'].keys()))
 
     snapshot_cmds = {
@@ -1040,7 +1096,10 @@ def snapshot(cfg, args):
 
 
 def format_timestamp(timestamp):
-    "Wrapper for strftime, to ensure we're all using the same format"
+    """Wrapper for strftime, to ensure we're all using the same format.
+
+    :param timestamp: The timestamp to format
+    :type  timestamp: :py:class:`datetime.datetime`"""
     return timestamp.strftime('%Y%m%dT%H%MZ')
 
 
@@ -1063,8 +1122,8 @@ def snapshot_spec_to_name(cfg, snapshot):
      * name: template for the snapshot
      * timestamp: information on how to generate the timestamp.
 
-     For further information regarding the timestamp's data structure,
-     consult the documentation of expand_timestamped_name().
+    For further information regarding the timestamp's data structure,
+    consult the documentation of expand_timestamped_name().
 
     :param      cfg: Complete yaml config
     :type       cfg: dict
@@ -1089,7 +1148,12 @@ def snapshot_spec_to_name(cfg, snapshot):
 
 
 def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
-    """Call the aptly snapshot command"""
+    """Create a snapshot create command to be ordered and executed later.
+
+    :param   snapshot_name: Name of the snapshot to create
+    :type    snapshot_name: str
+    :param snapshot_config: Configuration of the snapshot from the yml file.
+    :type  snapshot_config: dict"""
 
     # TODO: extract possible timestamp component
     # and generate *actual* snapshot name
@@ -1159,7 +1223,12 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
 
 
 def mirror(cfg, args):
-    """Creates mirrors"""
+    """Creates mirror commands, orders and executes them.
+
+    :param  cfg: The configuration yml as dict
+    :type   cfg: dict
+    :param args: The command-line arguments read with :py:mod:`argparse`
+    :type  args: namespace"""
     lg.debug("Mirrors to create: %s", cfg['mirror'])
 
     mirror_cmds = {
@@ -1188,6 +1257,12 @@ def mirror(cfg, args):
 
 
 def add_gpg_keys(mirror_config):
+    """Uses the gpg command-line to download and add gpg keys needed to create
+    mirrors.
+
+    :param  mirror_config: The configuration yml as dict
+    :type   mirror_config: dict
+    """
     keys_urls = {}
     if 'gpg-keys' in mirror_config:
         keys = mirror_config['gpg-keys']
@@ -1235,7 +1310,12 @@ def add_gpg_keys(mirror_config):
 
 
 def cmd_mirror_create(cfg, mirror_name, mirror_config):
-    """Call the aptly mirror command"""
+    """Create a mirror create command to be ordered and executed later.
+
+    :param   mirror_name: Name of the mirror to create
+    :type    mirror_name: str
+    :param mirror_config: Configuration of the snapshot from the yml file.
+    :type  mirror_config: dict"""
 
     if mirror_name in state.mirrors:  # pragma: no cover
         return
@@ -1264,7 +1344,12 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
 
 
 def cmd_mirror_update(cfg, mirror_name, mirror_config):
-    """Call the aptly mirror command"""
+    """Create a mirror update command to be ordered and executed later.
+
+    :param   mirror_name: Name of the mirror to create
+    :type    mirror_name: str
+    :param mirror_config: Configuration of the snapshot from the yml file.
+    :type  mirror_config: dict"""
     if mirror_name not in state.mirrors:  # pragma: no cover
         raise Exception("Mirror not created yet")
     add_gpg_keys(mirror_config)

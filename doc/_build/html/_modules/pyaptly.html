@@ -720,7 +720,13 @@
 
 
 <div class="viewcode-block" id="expand_timestamped_name"><a class="viewcode-back" href="../pyaptly.html#pyaptly.expand_timestamped_name">[docs]</a><span class="k">def</span> <span class="nf">expand_timestamped_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">timestamp_config</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Expand a timestamped name using round_timestamp&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Expand a timestamped name using round_timestamp.</span>
+
+<span class="sd">    :param timestamp_config: Contains the recurrence specification for the</span>
+<span class="sd">                             timestamp. See :func:`round_timestamp`</span>
+<span class="sd">    :type  timestamp_config: dict</span>
+<span class="sd">    :param             date: The date to expand the timestamp with.</span>
+<span class="sd">    :type              date: :py:class:`datetime.datetime`&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s">&#39;%T&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">name</span>
     <span class="n">timestamp</span> <span class="o">=</span> <span class="n">round_timestamp</span><span class="p">(</span><span class="n">timestamp_config</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
@@ -771,6 +777,12 @@
 <span class="sd">    ...     datetime.datetime(2015,10,8, 15,30)</span>
 <span class="sd">    ... )</span>
 <span class="sd">    foo</span>
+
+<span class="sd">    :param timestamp_config: Contains the recurrence specification for the</span>
+<span class="sd">                             timestamp.</span>
+<span class="sd">    :type  timestamp_config: dict</span>
+<span class="sd">    :param             date: The date to expand the timestamp with.</span>
+<span class="sd">    :type              date: :py:class:`datetime.datetime`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">timestamp_info</span> <span class="o">=</span> <span class="n">timestamp_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;timestamp&#39;</span><span class="p">,</span> <span class="n">timestamp_config</span><span class="p">)</span>
     <span class="n">config_time</span>    <span class="o">=</span> <span class="n">timestamp_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;FAIL&#39;</span><span class="p">)</span>
@@ -803,16 +815,26 @@
     <span class="k">return</span> <span class="n">timestamp</span></div>
 
 
-<span class="k">def</span> <span class="nf">unit_or_list_to_list</span><span class="p">(</span><span class="n">thingy</span><span class="p">):</span>
+<div class="viewcode-block" id="unit_or_list_to_list"><a class="viewcode-back" href="../pyaptly.html#pyaptly.unit_or_list_to_list">[docs]</a><span class="k">def</span> <span class="nf">unit_or_list_to_list</span><span class="p">(</span><span class="n">thingy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ensures that a yml entry is always a list. Used to allow lists and</span>
+<span class="sd">    single units in the yml file.</span>
+
+<span class="sd">    :param thingy: The data to ensure it is a list</span>
+<span class="sd">    :type  thingy: list, tuple or other&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thingy</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thingy</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">thingy</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">thingy</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">thingy</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="publish_cmd_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.publish_cmd_create">[docs]</a><span class="k">def</span> <span class="nf">publish_cmd_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call the aptly publish command&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Creates a publish command with its dependencies to be ordered and</span>
+<span class="sd">    executed later.</span>
 
+<span class="sd">    :param   publish_name: Name of the publish to create</span>
+<span class="sd">    :type    publish_name: str</span>
+<span class="sd">    :param publish_config: Configuration of the publish from the yml file.</span>
+<span class="sd">    :type  publish_config: dict&quot;&quot;&quot;</span>
     <span class="n">publish_fullname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">publish_fullname</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">publishes</span><span class="p">:</span>
         <span class="c"># Nothing to do, publish already created</span>
@@ -922,7 +944,14 @@
     <span class="k">return</span> <span class="n">Command</span><span class="p">(</span><span class="n">publish_cmd</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="n">source_args</span> <span class="o">+</span> <span class="n">endpoint_args</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">clone_snapshot</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="clone_snapshot"><a class="viewcode-back" href="../pyaptly.html#pyaptly.clone_snapshot">[docs]</a><span class="k">def</span> <span class="nf">clone_snapshot</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a clone snapshot command with dependencies to be ordered and</span>
+<span class="sd">    executed later.</span>
+
+<span class="sd">    :param      origin: The snapshot to clone</span>
+<span class="sd">    :type       origin: str</span>
+<span class="sd">    :param destination: The new name of the snapshot</span>
+<span class="sd">    :type  destination: str&quot;&quot;&quot;</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="n">Command</span><span class="p">([</span>
         <span class="s">&#39;aptly&#39;</span><span class="p">,</span>
         <span class="s">&#39;snapshot&#39;</span><span class="p">,</span>
@@ -932,10 +961,17 @@
     <span class="p">])</span>
     <span class="n">cmd</span><span class="o">.</span><span class="n">provide</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
     <span class="n">cmd</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s">&#39;snapshot&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cmd</span>
+    <span class="k">return</span> <span class="n">cmd</span></div>
 
 
-<span class="k">def</span> <span class="nf">publish_cmd_update</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">):</span>
+<div class="viewcode-block" id="publish_cmd_update"><a class="viewcode-back" href="../pyaptly.html#pyaptly.publish_cmd_update">[docs]</a><span class="k">def</span> <span class="nf">publish_cmd_update</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">publish_name</span><span class="p">,</span> <span class="n">publish_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a publish command with its dependencies to be ordered and</span>
+<span class="sd">    executed later.</span>
+
+<span class="sd">    :param   publish_name: Name of the publish to update</span>
+<span class="sd">    :type    publish_name: str</span>
+<span class="sd">    :param publish_config: Configuration of the publish from the yml file.</span>
+<span class="sd">    :type  publish_config: dict&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s">&#39;repo&#39;</span> <span class="ow">in</span> <span class="n">publish_config</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Command</span><span class="p">([</span>
             <span class="s">&#39;aptly&#39;</span><span class="p">,</span>
@@ -1006,11 +1042,16 @@
         <span class="s">&#39;-component=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components</span><span class="p">),</span>
         <span class="n">publish_config</span><span class="p">[</span><span class="s">&#39;distribution&#39;</span><span class="p">],</span>
         <span class="n">publish_name</span><span class="p">,</span>
-    <span class="p">]</span> <span class="o">+</span> <span class="n">new_snapshots</span><span class="p">)</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="n">new_snapshots</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="repo_cmd_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.repo_cmd_create">[docs]</a><span class="k">def</span> <span class="nf">repo_cmd_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">repo_config</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call the aptly repo command&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Create a repo create command to be ordered and executed later.</span>
+
+<span class="sd">    :param   repo_name: Name of the repo to create</span>
+<span class="sd">    :type    repo_name: str</span>
+<span class="sd">    :param repo_config: Configuration of the repo from the yml file.</span>
+<span class="sd">    :type  repo_config: dict&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">repo_name</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">repos</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
         <span class="c"># Nothing to do, repo already created</span>
@@ -1049,7 +1090,12 @@
 
 
 <div class="viewcode-block" id="repo"><a class="viewcode-back" href="../pyaptly.html#pyaptly.repo">[docs]</a><span class="k">def</span> <span class="nf">repo</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates repositories&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Creates repository commands, orders and executes them.</span>
+
+<span class="sd">    :param  cfg: The configuration yml as dict</span>
+<span class="sd">    :type   cfg: dict</span>
+<span class="sd">    :param args: The command-line arguments read with :py:mod:`argparse`</span>
+<span class="sd">    :type  args: namespace&quot;&quot;&quot;</span>
     <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Repositories to create: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s">&#39;repo&#39;</span><span class="p">]))</span>
 
     <span class="n">repo_cmds</span> <span class="o">=</span> <span class="p">{</span>
@@ -1087,7 +1133,12 @@
 
 
 <div class="viewcode-block" id="publish"><a class="viewcode-back" href="../pyaptly.html#pyaptly.publish">[docs]</a><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates snapshots&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Creates publish commands, orders and executes them.</span>
+
+<span class="sd">    :param  cfg: The configuration yml as dict</span>
+<span class="sd">    :type   cfg: dict</span>
+<span class="sd">    :param args: The command-line arguments read with :py:mod:`argparse`</span>
+<span class="sd">    :type  args: namespace&quot;&quot;&quot;</span>
     <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Publishes to create / update: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s">&#39;publish&#39;</span><span class="p">]))</span>
 
     <span class="c"># aptly publish snapshot -components ... -architectures ... -distribution</span>
@@ -1133,7 +1184,12 @@
 
 
 <div class="viewcode-block" id="snapshot"><a class="viewcode-back" href="../pyaptly.html#pyaptly.snapshot">[docs]</a><span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates snapshots&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Creates snapshot commands, orders and executes them.</span>
+
+<span class="sd">    :param  cfg: The configuration yml as dict</span>
+<span class="sd">    :type   cfg: dict</span>
+<span class="sd">    :param args: The command-line arguments read with :py:mod:`argparse`</span>
+<span class="sd">    :type  args: namespace&quot;&quot;&quot;</span>
     <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Snapshots to create: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s">&#39;snapshot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
     <span class="n">snapshot_cmds</span> <span class="o">=</span> <span class="p">{</span>
@@ -1170,7 +1226,10 @@
 
 
 <div class="viewcode-block" id="format_timestamp"><a class="viewcode-back" href="../pyaptly.html#pyaptly.format_timestamp">[docs]</a><span class="k">def</span> <span class="nf">format_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">):</span>
-    <span class="s">&quot;Wrapper for strftime, to ensure we&#39;re all using the same format&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for strftime, to ensure we&#39;re all using the same format.</span>
+
+<span class="sd">    :param timestamp: The timestamp to format</span>
+<span class="sd">    :type  timestamp: :py:class:`datetime.datetime`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">timestamp</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y%m</span><span class="si">%d</span><span class="s">T%H%MZ&#39;</span><span class="p">)</span></div>
 
 
@@ -1193,8 +1252,8 @@
 <span class="sd">     * name: template for the snapshot</span>
 <span class="sd">     * timestamp: information on how to generate the timestamp.</span>
 
-<span class="sd">     For further information regarding the timestamp&#39;s data structure,</span>
-<span class="sd">     consult the documentation of expand_timestamped_name().</span>
+<span class="sd">    For further information regarding the timestamp&#39;s data structure,</span>
+<span class="sd">    consult the documentation of expand_timestamped_name().</span>
 
 <span class="sd">    :param      cfg: Complete yaml config</span>
 <span class="sd">    :type       cfg: dict</span>
@@ -1219,7 +1278,12 @@
 
 
 <div class="viewcode-block" id="cmd_snapshot_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.cmd_snapshot_create">[docs]</a><span class="k">def</span> <span class="nf">cmd_snapshot_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">snapshot_name</span><span class="p">,</span> <span class="n">snapshot_config</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call the aptly snapshot command&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Create a snapshot create command to be ordered and executed later.</span>
+
+<span class="sd">    :param   snapshot_name: Name of the snapshot to create</span>
+<span class="sd">    :type    snapshot_name: str</span>
+<span class="sd">    :param snapshot_config: Configuration of the snapshot from the yml file.</span>
+<span class="sd">    :type  snapshot_config: dict&quot;&quot;&quot;</span>
 
     <span class="c"># TODO: extract possible timestamp component</span>
     <span class="c"># and generate *actual* snapshot name</span>
@@ -1289,7 +1353,12 @@
 
 
 <div class="viewcode-block" id="mirror"><a class="viewcode-back" href="../pyaptly.html#pyaptly.mirror">[docs]</a><span class="k">def</span> <span class="nf">mirror</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates mirrors&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Creates mirror commands, orders and executes them.</span>
+
+<span class="sd">    :param  cfg: The configuration yml as dict</span>
+<span class="sd">    :type   cfg: dict</span>
+<span class="sd">    :param args: The command-line arguments read with :py:mod:`argparse`</span>
+<span class="sd">    :type  args: namespace&quot;&quot;&quot;</span>
     <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Mirrors to create: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;mirror&#39;</span><span class="p">])</span>
 
     <span class="n">mirror_cmds</span> <span class="o">=</span> <span class="p">{</span>
@@ -1317,7 +1386,13 @@
             <span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">add_gpg_keys</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">):</span>
+<div class="viewcode-block" id="add_gpg_keys"><a class="viewcode-back" href="../pyaptly.html#pyaptly.add_gpg_keys">[docs]</a><span class="k">def</span> <span class="nf">add_gpg_keys</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Uses the gpg command-line to download and add gpg keys needed to create</span>
+<span class="sd">    mirrors.</span>
+
+<span class="sd">    :param  mirror_config: The configuration yml as dict</span>
+<span class="sd">    :type   mirror_config: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">keys_urls</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="s">&#39;gpg-keys&#39;</span> <span class="ow">in</span> <span class="n">mirror_config</span><span class="p">:</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">mirror_config</span><span class="p">[</span><span class="s">&#39;gpg-keys&#39;</span><span class="p">]</span>
@@ -1361,11 +1436,16 @@
                 <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">([</span><span class="s">&#39;bash&#39;</span><span class="p">,</span> <span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">key_command</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span>
-    <span class="n">state</span><span class="o">.</span><span class="n">read_gpg</span><span class="p">()</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">read_gpg</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="cmd_mirror_create"><a class="viewcode-back" href="../pyaptly.html#pyaptly.cmd_mirror_create">[docs]</a><span class="k">def</span> <span class="nf">cmd_mirror_create</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">mirror_name</span><span class="p">,</span> <span class="n">mirror_config</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call the aptly mirror command&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Create a mirror create command to be ordered and executed later.</span>
+
+<span class="sd">    :param   mirror_name: Name of the mirror to create</span>
+<span class="sd">    :type    mirror_name: str</span>
+<span class="sd">    :param mirror_config: Configuration of the snapshot from the yml file.</span>
+<span class="sd">    :type  mirror_config: dict&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">mirror_name</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">mirrors</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
         <span class="k">return</span>
@@ -1394,7 +1474,12 @@
 
 
 <div class="viewcode-block" id="cmd_mirror_update"><a class="viewcode-back" href="../pyaptly.html#pyaptly.cmd_mirror_update">[docs]</a><span class="k">def</span> <span class="nf">cmd_mirror_update</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">mirror_name</span><span class="p">,</span> <span class="n">mirror_config</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call the aptly mirror command&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Create a mirror update command to be ordered and executed later.</span>
+
+<span class="sd">    :param   mirror_name: Name of the mirror to create</span>
+<span class="sd">    :type    mirror_name: str</span>
+<span class="sd">    :param mirror_config: Configuration of the snapshot from the yml file.</span>
+<span class="sd">    :type  mirror_config: dict&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mirror_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">mirrors</span><span class="p">:</span>  <span class="c"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Mirror not created yet&quot;</span><span class="p">)</span>
     <span class="n">add_gpg_keys</span><span class="p">(</span><span class="n">mirror_config</span><span class="p">)</span>
