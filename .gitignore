@@ -7,4 +7,5 @@ __pycache__
 /.coverage
 /.vagrant
 /build
-/_build
+/doc/_build
+.hypothesis
