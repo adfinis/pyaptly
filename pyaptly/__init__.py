@@ -253,6 +253,59 @@ class Command(object):
         )
 
     @staticmethod
+    def command_list_to_digraph(commands):
+        """Generate dot source for a digraph - suitable for generating
+        diagrams.
+
+        The requires and provides from the commands build nodes, the commands
+        themselves act as connectors.
+
+        :param          commands: The commands to draw a diagram with
+        :type           commands: list
+        """
+
+        nodes = set()
+        edges = set()
+        print(commands)
+
+        def result_node(type_, name):
+            return (
+                '"%s %s" [shape=ellipse]' % (type_, name),
+                '"%s %s"'                 % (type_, name),
+            )
+
+        def cmd_node(command):
+            return (
+                '"%s" [shape=box]' % ' '.join(command.cmd),
+                '"%s"'             % ' '.join(command.cmd),
+            )
+
+        for cmd in commands:
+            cmd_spec, cmd_identifier = cmd_node(cmd)
+            nodes.add(cmd_spec)
+
+            for type_, name in cmd._requires:
+                spec, identifier = result_node(type_, name)
+                nodes.add(spec)
+                edges.add((identifier, cmd_identifier))
+
+            for type_, name in cmd._provides:
+                spec, identifier = result_node(type_, name)
+                nodes.add(spec)
+                edges.add((cmd_identifier, identifier))
+
+        template = """
+            digraph {
+                %s;
+                %s;
+            }
+        """
+        return template % (
+            ";\n".join(nodes),
+            ";\n".join(['%s -> %s' % edge for edge in edges])
+        )
+
+    @staticmethod
     def order_commands(commands, has_dependency_cb=lambda x: False):
         """Order the commands according to the dependencies they
         provide/require.
