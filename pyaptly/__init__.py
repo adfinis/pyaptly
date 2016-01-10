@@ -199,7 +199,7 @@ class Command(object):
         self._provides = set()
         self._finished = None
         self._known_dependency_types = (
-            'snapshot', 'mirror', 'repo', 'publish'
+            'snapshot', 'mirror', 'repo', 'publish', 'virtual'
         )
 
     def append(self, argument):
