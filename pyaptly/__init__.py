@@ -1146,6 +1146,12 @@ def snapshot(cfg, args):
             in cfg['snapshot'].items()
         ]
 
+        if args.debug:
+            dot_file = "/tmp/commands.dot"
+            with open(dot_file, 'w') as fh_dot:
+                fh_dot.write(Command.command_list_to_digraph(commands))
+            lg.info('Wrote command dependency tree graph to %s', dot_file)
+
         for cmd in Command.order_commands(commands, state.has_dependency):
             cmd.execute()
 
