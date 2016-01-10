@@ -394,6 +394,39 @@ class Command(object):
         return scheduled
 
 
+class FunctionCommand(Command):
+
+    def __init__(self, func, *args, **kwargs):
+        self.cmd    = func
+        self.args   = args
+        self.kwargs = kwargs
+        super(FunctionCommand, self).__init__(self, None)
+
+    def execute(self):
+        """Execute the command."""
+        if self._finished is not None:  # pragma: no cover
+            return self._finished
+
+        if not Command.pretend_mode:
+            lg.debug(
+                'Running code: %s(args=%s, kwargs=%s)',
+                repr(self.args),
+                repr(self.kwargs),
+            )
+
+            self.cmd(*self.args, **self.kwargs)
+
+            self._finished = True
+        else:
+            lg.debug(
+                'Pretending to run code: %s(args=%s, kwargs=%s)',
+                repr(self.args),
+                repr(self.kwargs),
+            )
+
+        return self._finished
+
+
 class SystemStateReader(object):
     """Reads the state from aptly and gpg to find out what operations have to
     be performed to reach the state defined in the yml config-file.
