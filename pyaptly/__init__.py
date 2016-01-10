@@ -1266,6 +1266,120 @@ def snapshot_spec_to_name(cfg, snapshot):
         return snapshot
 
 
+def dependents_of_snapshot(snapshot_name):
+    for dependent in state.snapshot_map.get(snapshot_name, []):
+        yield dependent
+        for sub in dependents_of_snapshot(dependent):
+            yield dependent
+
+
+def rotate_snapshot(cfg, snapshot_name):
+    rotated_name = cfg['snapshot'][snapshot_name].get(
+        'rotate_via', '%s-rotated' % snapshot_name
+    )
+
+    # First, verify that our snapshot environment is in a sane state.
+    # Fixing the environment is not currently our task.
+
+    if rotated_name in state.snapshots:
+        raise Exception(
+            "Cannot update snapshot %s - rotated name %s already exists" % (
+                snapshot_name, rotated_name
+            )
+        )
+
+    cmd = Command([
+        'aptly', 'snapshot', 'rename', snapshot_name, rotated_name
+    ])
+    cmd.require('snapshot', snapshot_name)
+    cmd.provide('snapshot', rotated_name)
+    cmd.provide('virtual',  rotated_name)
+    return cmd
+
+
+def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
+    """Create commands to update all rotating snapshots.
+
+    :param   snapshot_name: Name of the snapshot to update/rotate
+    :type    snapshot_name: str
+    :param snapshot_config: Configuration of the snapshot from the yml file.
+    :type  snapshot_config: dict"""
+
+    # To update a snapshot, we need to do roughly the following steps:
+    # 1) Rename the current snapshot and all snapshots that depend on it
+    # 2) Create new version of the snapshot and all snapshots that depend on it
+    # 3) Recreate all renamed snapshots
+    # 4) Update / switch-over publishes
+    # 5) Remove the rotated temporary snapshots
+
+    if '%T' in snapshot_name:
+        # Timestamped snapshots are never rotated by design.
+        return []
+
+    affected_snapshots = [snapshot_name]
+    affected_snapshots.extend(list(dependents_of_snapshot(snapshot_name)))
+
+    rename_cmds = [
+        rotate_snapshot(cfg, snap)
+        for snap
+        in affected_snapshots
+    ]
+
+    # The "intermediate" command causes the state reader to refresh.  At the
+    # same time, it provides a collection point for dependency handling.
+    intermediate = FunctionCommand(state.read)
+    intermediate.provide('virtual', 'all-snapshots-rotated')
+
+    for cmd in rename_cmds:
+        # Ensure that our "intermediate" pseudo command comes after all
+        # the rename commands, by ensuring it depends on all their "virtual"
+        # provided items.
+        cmd_vprovides = [
+            provide
+            for ptype, provide
+            in cmd.get_provides()
+            if ptype == 'virtual'
+        ]
+        intermediate.depend('virtual', cmd_vprovides)
+
+    # Same as before - create a focal point to "collect" dependencies
+    # after the snapshots have been rebuilt. Also reload state once again
+    intermediate2 = FunctionCommand(state.read)
+    intermediate2.provide('virtual', 'all-snapshots-rebuilt')
+
+    create_cmds = []
+    for snap in affected_snapshots:
+        create_cmd = cmd_snapshot_create(
+            cfg,
+            snapshot_name,
+            cfg['snapshot'][snapshot_name]
+        )
+
+        # enforce cmd to run after the refresh, and thus also
+        # after all the renames
+        create_cmd.require('virtual', 'all-snapshots-rotated')
+
+        # "Focal point" - make intermediate2 run after all the commands
+        # that re-create the snapshots
+        create_cmd.provide('virtual', 'rebuilt-%s' % snapshot_name)
+        intermediate2.require('virtual', 'rebuilt-%s' % snapshot_name)
+
+        create_cmds.append(create_cmd)
+
+    # At this point, snapshots have been renamed, then recreated.
+    # After each of the steps, the system state has been re-read.
+    # So now, we're left with updating the publishes.
+
+    republish_cmds = all_publish_commands(publish_cmd_update, cfg)
+
+    return (
+        rename_cmds +
+        create_cmds +
+        republish_cmds +
+        [intermediate, intermediate2]
+    )
+
+
 def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
     """Create a snapshot create command to be ordered and executed later.
 
