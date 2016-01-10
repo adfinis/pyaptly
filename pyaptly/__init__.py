@@ -1151,13 +1151,14 @@ def snapshot(cfg, args):
 
     else:
         if args.snapshot_name in cfg['snapshot']:
-            cmd = cmd_snapshot(
+            command = cmd_snapshot(
                 cfg,
                 args.snapshot_name,
                 cfg['snapshot'][args.snapshot_name]
             )
-            if cmd is not None:
-                cmd.execute()
+
+            command.execute()
+
         else:
             raise ValueError(
                 "Requested snapshot is not defined in config file: %s" % (
