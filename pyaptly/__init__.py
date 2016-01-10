@@ -583,13 +583,13 @@ def main(argv=None):
         nargs='?',
         default='all'
     )
-    snapshot_parser = subparsers.add_parser(
+    snap_parser = subparsers.add_parser(
         'snapshot',
         help='manage aptly snapshots'
     )
-    snapshot_parser.set_defaults(func=snapshot)
-    snapshot_parser.add_argument('task', type=str, choices=['create'])
-    snapshot_parser.add_argument(
+    snap_parser.set_defaults(func=snapshot)
+    snap_parser.add_argument('task', type=str, choices=['create', 'update'])
+    snap_parser.add_argument(
         'snapshot_name',
         type=str,
         nargs='?',
@@ -1132,6 +1132,7 @@ def snapshot(cfg, args):
 
     snapshot_cmds = {
         'create': cmd_snapshot_create,
+        'update': cmd_snapshot_update,
     }
 
     cmd_snapshot = snapshot_cmds[args.task]
@@ -1232,6 +1233,7 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
 
     if snapshot_name in state.snapshots:
         return
+
     default_aptly_cmd = ['aptly', 'snapshot', 'create']
     default_aptly_cmd.append(snapshot_name)
     default_aptly_cmd.append('from')
