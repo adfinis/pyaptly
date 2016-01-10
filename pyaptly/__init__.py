@@ -190,6 +190,9 @@ class Command(object):
     :param cmd: The command as list, one item per argument
     :type  cmd: list
     """
+
+    pretend_mode = False
+
     def __init__(self, cmd):
         self.cmd = cmd
         self._requires = set()
@@ -240,8 +243,11 @@ class Command(object):
         if self._finished is not None:  # pragma: no cover
             return self._finished
 
-        lg.debug('Running command: %s', ' '.join(self.cmd))
-        self._finished = subprocess.check_call(self.cmd)
+        if not Command.pretend_mode:
+            lg.debug('Running command: %s', ' '.join(self.cmd))
+            self._finished = subprocess.check_call(self.cmd)
+        else:
+            lg.info('Pretending to run command: %s', ' '.join(self.cmd))
 
         return self._finished
 
@@ -554,6 +560,12 @@ def main(argv=None):
         help='Enable debug output',
         action='store_true',
     )
+    parser.add_argument(
+        '--pretend',
+        '-p',
+        help='Do not do anything, just print out what WOULD be done',
+        action='store_true',
+    )
     subparsers = parser.add_subparsers()
     mirror_parser = subparsers.add_parser(
         'mirror',
@@ -621,6 +633,9 @@ def main(argv=None):
         if args.debug:
             root.setLevel(logging.DEBUG)
             handler.setLevel(logging.DEBUG)
+        if args.pretend:
+            Command.pretend_mode = True
+
         _logging_setup = True  # noqa
     lg.debug("Args: %s", vars(args))
 
