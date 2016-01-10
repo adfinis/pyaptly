@@ -272,7 +272,6 @@ class Command(object):
 
         nodes = set()
         edges = set()
-        print(commands)
 
         def result_node(type_, name):
             return (
@@ -287,6 +286,9 @@ class Command(object):
             )
 
         for cmd in commands:
+            if cmd is None:
+                continue
+
             cmd_spec, cmd_identifier = cmd_node(cmd)
             nodes.add(cmd_spec)
 
