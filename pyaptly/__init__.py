@@ -1109,6 +1109,15 @@ def repo(cfg, args):
             )
 
 
+def all_publish_commands(cmd_publish, cfg):
+    return [
+        cmd_publish(cfg, publish_name, publish_conf_entry)
+        for publish_name, publish_conf in cfg['publish'].items()
+        for publish_conf_entry in publish_conf
+        if publish_conf_entry.get('automatic-update', 'false') is True
+    ]
+
+
 def publish(cfg, args):
     """Creates publish commands, orders and executes them.
 
@@ -1129,12 +1138,7 @@ def publish(cfg, args):
     cmd_publish = publish_cmds[args.task]
 
     if args.publish_name == "all":
-        commands = [
-            cmd_publish(cfg, publish_name, publish_conf_entry)
-            for publish_name, publish_conf in cfg['publish'].items()
-            for publish_conf_entry in publish_conf
-            if publish_conf_entry.get('automatic-update', 'false') is True
-        ]
+        commands = all_publish_commands(cmd_publish, cfg)
 
         for cmd in Command.order_commands(commands, state.has_dependency):
             cmd.execute()
