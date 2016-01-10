@@ -202,6 +202,10 @@ class Command(object):
             'snapshot', 'mirror', 'repo', 'publish', 'virtual'
         )
 
+    def get_provides(self):
+        """Return all provides of this command."""
+        return self._provides
+
     def append(self, argument):
         """Append additional arguments to the command.
 
