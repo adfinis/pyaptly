@@ -1325,6 +1325,8 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
 
     if 'sources' in mirror_config and mirror_config['sources']:
         aptly_cmd.append('-with-sources')
+    else:
+       aptly_cmd.append('-with-sources=false')
 
     if 'udeb' in mirror_config and mirror_config['udeb']:
         aptly_cmd.append('-with-udebs')
