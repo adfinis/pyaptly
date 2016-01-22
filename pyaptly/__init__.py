@@ -599,6 +599,11 @@ class SystemStateReader(object):
             return name in self.snapshots
         elif type_ == 'gpg_key':  # pragma: no cover
             return name in self.gpg_keys  # Not needed ATM
+        elif type_ == 'virtual':
+            # virtual dependencies can never be resolved by the
+            # system state reader - they are used for internal
+            # ordering only
+            return False
         else:
             raise ValueError(
                 "Unknown dependency to resolve: %s" % str(dependency)
