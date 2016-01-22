@@ -2,6 +2,7 @@
 """Aptly mirror/snapshot managment automation."""
 import argparse
 import datetime
+import freeze
 import logging
 import re
 import subprocess
@@ -258,6 +259,12 @@ class Command(object):
     def repr_cmd(self):
         return repr(self.cmd)
 
+    def __hash__(self):
+        return freeze.recursive_hash((self.cmd, self._requires))
+
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
+
     def __repr__(self):
         return "Command<%s requires %s, provides %s>\n" % (
             self.repr_cmd(),
@@ -331,7 +338,7 @@ class Command(object):
                                   dependencies
         :type  has_dependency_cb: function"""
 
-        commands = [c for c in commands if c is not None]
+        commands = set([c for c in commands if c is not None])
 
         lg.debug('Ordering commands: %s', [
             str(cmd) for cmd in commands
@@ -407,6 +414,11 @@ class FunctionCommand(Command):
         self.cmd    = func
         self.args   = args
         self.kwargs = kwargs
+
+    def __hash__(self):
+        return freeze.recursive_hash(
+            (self.cmd, self.args, self.kwargs, self._requires)
+        )
 
     def execute(self):
         """Execute the command."""
