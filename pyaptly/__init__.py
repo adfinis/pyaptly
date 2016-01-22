@@ -401,10 +401,12 @@ class Command(object):
 class FunctionCommand(Command):
 
     def __init__(self, func, *args, **kwargs):
+        super(FunctionCommand, self).__init__(None)
+
+        assert hasattr(func, '__call__')
         self.cmd    = func
         self.args   = args
         self.kwargs = kwargs
-        super(FunctionCommand, self).__init__(self, None)
 
     def execute(self):
         """Execute the command."""
