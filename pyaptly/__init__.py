@@ -1115,7 +1115,7 @@ def repo(cfg, args):
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace"""
-    lg.debug("Repositories to create: %s", (cfg['repo']))
+    lg.debug("Repositories to create: %s", cfg['repo'])
 
     repo_cmds = {
         'create': repo_cmd_create,
@@ -1167,7 +1167,7 @@ def publish(cfg, args):
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace"""
-    lg.debug("Publishes to create / update: %s", (cfg['publish']))
+    lg.debug("Publishes to create / update: %s", cfg['publish'])
 
     # aptly publish snapshot -components ... -architectures ... -distribution
     # ... -origin Ubuntu trusty-stable ubuntu/stable
@@ -1213,7 +1213,7 @@ def snapshot(cfg, args):
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace"""
-    lg.debug("Snapshots to create: %s", (cfg['snapshot'].keys()))
+    lg.debug("Snapshots to create: %s", cfg['snapshot'].keys())
 
     snapshot_cmds = {
         'create': cmd_snapshot_create,
@@ -1369,8 +1369,7 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     # The "intermediate" command causes the state reader to refresh.  At the
     # same time, it provides a collection point for dependency handling.
     intermediate = FunctionCommand(state.read)
-    intermediate.provide('virtual',
-                         'all-snapshots-rotated|%s' % id(intermediate))
+    intermediate.provide('virtual', 'all-snapshots-rotated')
 
     for cmd in rename_cmds:
         # Ensure that our "intermediate" pseudo command comes after all
@@ -1405,8 +1404,7 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
 
             # enforce cmd to run after the refresh, and thus also
             # after all the renames
-            create_cmd.require('virtual',
-                               'all-snapshots-rotated|%s' % id(intermediate))
+            create_cmd.require('virtual', 'all-snapshots-rotated')
 
             # "Focal point" - make intermediate2 run after all the commands
             # that re-create the snapshots
