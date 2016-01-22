@@ -822,7 +822,10 @@ def unit_or_list_to_list(thingy):
         return [thingy]
 
 
-def publish_cmd_create(cfg, publish_name, publish_config):
+def publish_cmd_create(cfg,
+                       publish_name,
+                       publish_config,
+                       ignore_existing=False):
     """Creates a publish command with its dependencies to be ordered and
     executed later.
 
@@ -831,7 +834,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
     :param publish_config: Configuration of the publish from the yml file.
     :type  publish_config: dict"""
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
-    if publish_fullname in state.publishes:
+    if publish_fullname in state.publishes and not ignore_existing:
         # Nothing to do, publish already created
         return
 
@@ -959,7 +962,10 @@ def clone_snapshot(origin, destination):
     return cmd
 
 
-def publish_cmd_update(cfg, publish_name, publish_config):
+def publish_cmd_update(cfg,
+                       publish_name,
+                       publish_config,
+                       ignore_existing=False):
     """Creates a publish command with its dependencies to be ordered and
     executed later.
 
@@ -998,7 +1004,7 @@ def publish_cmd_update(cfg, publish_name, publish_config):
             "No snapshot references configured in publish %s" % publish_name
         )
 
-    if set(new_snapshots) == set(current_snapshots):
+    if set(new_snapshots) == set(current_snapshots) and not ignore_existing:
         # Already pointing to the newest snapshot, nothing to do
         return
     components = unit_or_list_to_list(publish_config['components'])
@@ -1127,9 +1133,9 @@ def repo(cfg, args):
             )
 
 
-def all_publish_commands(cmd_publish, cfg):
+def all_publish_commands(cmd_publish, cfg, ignore_existing=False):
     return [
-        cmd_publish(cfg, publish_name, publish_conf_entry)
+        cmd_publish(cfg, publish_name, publish_conf_entry, ignore_existing)
         for publish_name, publish_conf in cfg['publish'].items()
         for publish_conf_entry in publish_conf
         if publish_conf_entry.get('automatic-update', 'false') is True
@@ -1398,13 +1404,23 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     )
 
 
-def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
+def cmd_snapshot_create(cfg,
+                        snapshot_name,
+                        snapshot_config,
+                        ignore_existing=False):
     """Create a snapshot create command to be ordered and executed later.
 
     :param   snapshot_name: Name of the snapshot to create
     :type    snapshot_name: str
     :param snapshot_config: Configuration of the snapshot from the yml file.
-    :type  snapshot_config: dict"""
+    :type  snapshot_config: dict
+    :param ignore_existing: Optional, defaults to False. If set to True, still
+                            return a command object even if the requested
+                            snapshot already exists
+    :type  ignore_existing: dict
+
+    :rtype: Command
+    """
 
     # TODO: extract possible timestamp component
     # and generate *actual* snapshot name
@@ -1413,7 +1429,7 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
         snapshot_name, snapshot_config
     )
 
-    if snapshot_name in state.snapshots:
+    if snapshot_name in state.snapshots and not ignore_existing:
         return
 
     default_aptly_cmd = ['aptly', 'snapshot', 'create']
