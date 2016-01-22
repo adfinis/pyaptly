@@ -436,8 +436,9 @@ class FunctionCommand(Command):
 
             self._finished = True
         else:
-            lg.debug(
+            lg.info(
                 'Pretending to run code: %s(args=%s, kwargs=%s)',
+                self.repr_cmd(),
                 repr(self.args),
                 repr(self.kwargs),
             )
