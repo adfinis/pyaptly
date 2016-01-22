@@ -1351,7 +1351,8 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     # The "intermediate" command causes the state reader to refresh.  At the
     # same time, it provides a collection point for dependency handling.
     intermediate = FunctionCommand(state.read)
-    intermediate.provide('virtual', 'all-snapshots-rotated')
+    intermediate.provide('virtual',
+                         'all-snapshots-rotated|%s' % id(intermediate))
 
     for cmd in rename_cmds:
         # Ensure that our "intermediate" pseudo command comes after all
@@ -1363,7 +1364,8 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
             in cmd.get_provides()
             if ptype == 'virtual'
         ]
-        intermediate.depend('virtual', cmd_vprovides)
+        for provide in cmd_vprovides:
+            intermediate.require('virtual', provide)
 
     # Same as before - create a focal point to "collect" dependencies
     # after the snapshots have been rebuilt. Also reload state once again
@@ -1372,28 +1374,42 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
 
     create_cmds = []
     for snap in affected_snapshots:
-        create_cmd = cmd_snapshot_create(
-            cfg,
-            snapshot_name,
-            cfg['snapshot'][snapshot_name]
-        )
 
-        # enforce cmd to run after the refresh, and thus also
-        # after all the renames
-        create_cmd.require('virtual', 'all-snapshots-rotated')
+        # Well.. there's normally just one, but since we need interface
+        # consistency, cmd_snapshot_create() returns a list. And since it
+        # returns a list, we may just as well future-proof it and loop instead
+        # of assuming it's going to be a single entry (and fail horribly if
+        # this assumption changes in the future).
+        for create_cmd in cmd_snapshot_create(cfg,
+                                              snapshot_name,
+                                              cfg['snapshot'][snapshot_name],
+                                              ignore_existing=True):
 
-        # "Focal point" - make intermediate2 run after all the commands
-        # that re-create the snapshots
-        create_cmd.provide('virtual', 'rebuilt-%s' % snapshot_name)
-        intermediate2.require('virtual', 'rebuilt-%s' % snapshot_name)
+            # enforce cmd to run after the refresh, and thus also
+            # after all the renames
+            create_cmd.require('virtual',
+                               'all-snapshots-rotated|%s' % id(intermediate))
 
-        create_cmds.append(create_cmd)
+            # "Focal point" - make intermediate2 run after all the commands
+            # that re-create the snapshots
+            create_cmd.provide('virtual', 'rebuilt-%s' % snapshot_name)
+            intermediate2.require('virtual', 'rebuilt-%s' % snapshot_name)
+
+            create_cmds.append(create_cmd)
 
     # At this point, snapshots have been renamed, then recreated.
     # After each of the steps, the system state has been re-read.
     # So now, we're left with updating the publishes.
+    republish_cmds = [
+        c
+        for c
+        in all_publish_commands(publish_cmd_update, cfg, ignore_existing=True)
+        if c
+    ]
 
-    republish_cmds = all_publish_commands(publish_cmd_update, cfg)
+    # Ensure that the republish commands run AFTER the snapshots are rebuilt
+    for cmd in republish_cmds:
+        cmd.require('virtual', 'all-snapshots-rebuilt')
 
     return (
         rename_cmds +
