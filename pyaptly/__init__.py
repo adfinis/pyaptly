@@ -1182,9 +1182,9 @@ def snapshot(cfg, args):
 
     if args.snapshot_name == "all":
         commands = [
-            cmd_snapshot(cfg, snapshot_name, snapshot_config)
-            for snapshot_name, snapshot_config
-            in cfg['snapshot'].items()
+            cmd
+            for snapshot_name, snapshot_config in cfg['snapshot'].items()
+            for cmd in cmd_snapshot(cfg, snapshot_name, snapshot_config)
         ]
 
         if args.debug:
@@ -1408,13 +1408,13 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
         )
         cmd.provide('snapshot', snapshot_name)
         cmd.require('mirror',  snapshot_config['mirror'])
-        return cmd
+        return [cmd]
 
     elif 'repo' in snapshot_config:
         cmd = Command(default_aptly_cmd + ['repo', snapshot_config['repo']])
         cmd.provide('snapshot', snapshot_name)
         cmd.require('repo',     snapshot_config['repo'])
-        return cmd
+        return [cmd]
 
     elif 'filter' in snapshot_config:
         cmd = Command([
@@ -1430,7 +1430,7 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
             'snapshot',
             snapshot_spec_to_name(cfg, snapshot_config['filter']['source'])
         )
-        return cmd
+        return [cmd]
 
     elif 'merge' in snapshot_config:
         cmd = Command([
@@ -1446,7 +1446,7 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
             cmd.append(source_name)
             cmd.require('snapshot', source_name)
 
-        return cmd
+        return [cmd]
 
     else:  # pragma: no cover
         raise ValueError(
