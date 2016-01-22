@@ -1315,8 +1315,7 @@ def rotate_snapshot(cfg, snapshot_name):
     cmd = Command([
         'aptly', 'snapshot', 'rename', snapshot_name, rotated_name
     ])
-    cmd.require('snapshot', snapshot_name)
-    cmd.provide('snapshot', rotated_name)
+
     cmd.provide('virtual',  rotated_name)
     return cmd
 
