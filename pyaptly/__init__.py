@@ -1427,6 +1427,11 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     for cmd in republish_cmds:
         cmd.require('virtual', 'all-snapshots-rebuilt')
 
+    # TODO:
+    # - We need to cleanup all the rotated snapshots after the publishes are
+    #   rebuilt
+    # - Filter publishes, so only the non-timestamped publishes are rebuilt
+
     return (
         rename_cmds +
         create_cmds +
