@@ -330,7 +330,8 @@ class Command(object):
         :param has_dependency_cb: Optional callback the resolve external
                                   dependencies
         :type  has_dependency_cb: function"""
-        commands = [c for c in commands if c]
+
+        commands = [c for c in commands if c is not None]
 
         lg.debug('Ordering commands: %s', [
             str(cmd) for cmd in commands
