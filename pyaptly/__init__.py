@@ -228,7 +228,7 @@ class Command(object):
             ('any', ) +
             SystemStateReader.known_dependency_types
         )
-        self._requires.add((type_, identifier))
+        self._requires.add((type_, str(identifier)))
 
     def provide(self, type_, identifier):
         """Provide a dependency for this command.
@@ -240,7 +240,7 @@ class Command(object):
         :type  identifier: usually str
         """
         assert type_ in self._known_dependency_types
-        self._provides.add((type_, identifier))
+        self._provides.add((type_, str(identifier)))
 
     def execute(self):
         """Execute the command."""
@@ -255,9 +255,12 @@ class Command(object):
 
         return self._finished
 
+    def repr_cmd(self):
+        return repr(self.cmd)
+
     def __repr__(self):
-        return "Command<%s \n\trequires %s,\n\tprovides %s>" % (
-            repr(self.cmd),
+        return "Command<%s requires %s, provides %s>\n" % (
+            self.repr_cmd(),
             ", ".join([repr(x) for x in self._requires]),
             ", ".join([repr(x) for x in self._provides]),
         )
@@ -285,8 +288,8 @@ class Command(object):
 
         def cmd_node(command):
             return (
-                '"%s" [shape=box]' % ' '.join(command.cmd),
-                '"%s"'             % ' '.join(command.cmd),
+                '"%s" [shape=box]' % command.repr_cmd(),
+                '"%s"'             % command.repr_cmd(),
             )
 
         for cmd in commands:
@@ -425,6 +428,18 @@ class FunctionCommand(Command):
             )
 
         return self._finished
+
+    def repr_cmd(self):
+        # We need to "id" ourselves here so that multiple commands that call a
+        # function with the same name won't be shown as being equal.
+        return '%s|%s' % (self.cmd.__name__, id(self))
+
+    def __repr__(self):
+        return "FunctionCommand<%s requires %s, provides %s>\n" % (
+            self.repr_cmd(),
+            ", ".join([repr(x) for x in self._requires]),
+            ", ".join([repr(x) for x in self._provides]),
+        )
 
 
 class SystemStateReader(object):
