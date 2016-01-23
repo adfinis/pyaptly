@@ -1151,15 +1151,6 @@ def repo(cfg, args):
             )
 
 
-def all_publish_commands(cmd_publish, cfg, ignore_existing=False):
-    return [
-        cmd_publish(cfg, publish_name, publish_conf_entry, ignore_existing)
-        for publish_name, publish_conf in cfg['publish'].items()
-        for publish_conf_entry in publish_conf
-        if publish_conf_entry.get('automatic-update', 'false') is True
-    ]
-
-
 def publish(cfg, args):
     """Creates publish commands, orders and executes them.
 
@@ -1180,7 +1171,12 @@ def publish(cfg, args):
     cmd_publish = publish_cmds[args.task]
 
     if args.publish_name == "all":
-        commands = all_publish_commands(cmd_publish, cfg)
+        commands = [
+            cmd_publish(cfg, publish_name, publish_conf_entry)
+            for publish_name, publish_conf in cfg['publish'].items()
+            for publish_conf_entry in publish_conf
+            if publish_conf_entry.get('automatic-update', 'false') is True
+        ]
 
         for cmd in Command.order_commands(commands, state.has_dependency):
             cmd.execute()
@@ -1416,10 +1412,30 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     # At this point, snapshots have been renamed, then recreated.
     # After each of the steps, the system state has been re-read.
     # So now, we're left with updating the publishes.
+
+    def is_publish_affected(publish):
+        for snap in publish['snapshots']:
+            snap_name = snapshot_spec_to_name(cfg, snap)
+            if snap_name in affected_snapshots:
+                return True
+
+        return False
+
+    all_publish_commands = [
+        publish_cmd_update(cfg,
+                           publish_name,
+                           publish_conf_entry,
+                           ignore_existing=True)
+        for publish_name, publish_conf in cfg['publish'].items()
+        for publish_conf_entry in publish_conf
+        if publish_conf_entry.get('automatic-update', 'false') is True
+        if is_publish_affected(publish_conf_entry)
+    ]
+
     republish_cmds = [
         c
         for c
-        in all_publish_commands(publish_cmd_update, cfg, ignore_existing=True)
+        in all_publish_commands
         if c
     ]
 
