@@ -2,6 +2,7 @@
 """Aptly mirror/snapshot managment automation."""
 import argparse
 import datetime
+import freeze
 import logging
 import re
 import subprocess
@@ -190,14 +191,21 @@ class Command(object):
     :param cmd: The command as list, one item per argument
     :type  cmd: list
     """
+
+    pretend_mode = False
+
     def __init__(self, cmd):
         self.cmd = cmd
         self._requires = set()
         self._provides = set()
         self._finished = None
         self._known_dependency_types = (
-            'snapshot', 'mirror', 'repo', 'publish'
+            'snapshot', 'mirror', 'repo', 'publish', 'virtual'
         )
+
+    def get_provides(self):
+        """Return all provides of this command."""
+        return self._provides
 
     def append(self, argument):
         """Append additional arguments to the command.
@@ -221,7 +229,7 @@ class Command(object):
             ('any', ) +
             SystemStateReader.known_dependency_types
         )
-        self._requires.add((type_, identifier))
+        self._requires.add((type_, str(identifier)))
 
     def provide(self, type_, identifier):
         """Provide a dependency for this command.
@@ -233,21 +241,33 @@ class Command(object):
         :type  identifier: usually str
         """
         assert type_ in self._known_dependency_types
-        self._provides.add((type_, identifier))
+        self._provides.add((type_, str(identifier)))
 
     def execute(self):
         """Execute the command."""
         if self._finished is not None:  # pragma: no cover
             return self._finished
 
-        lg.debug('Running command: %s', ' '.join(self.cmd))
-        self._finished = subprocess.check_call(self.cmd)
+        if not Command.pretend_mode:
+            lg.debug('Running command: %s', ' '.join(self.cmd))
+            self._finished = subprocess.check_call(self.cmd)
+        else:
+            lg.info('Pretending to run command: %s', ' '.join(self.cmd))
 
         return self._finished
 
+    def repr_cmd(self):
+        return repr(self.cmd)
+
+    def __hash__(self):
+        return freeze.recursive_hash((self.cmd, self._requires))
+
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
+
     def __repr__(self):
-        return "Command<%s \n\trequires %s,\n\tprovides %s>" % (
-            repr(self.cmd),
+        return "Command<%s requires %s, provides %s>\n" % (
+            self.repr_cmd(),
             ", ".join([repr(x) for x in self._requires]),
             ", ".join([repr(x) for x in self._provides]),
         )
@@ -266,7 +286,6 @@ class Command(object):
 
         nodes = set()
         edges = set()
-        print(commands)
 
         def result_node(type_, name):
             return (
@@ -276,11 +295,14 @@ class Command(object):
 
         def cmd_node(command):
             return (
-                '"%s" [shape=box]' % ' '.join(command.cmd),
-                '"%s"'             % ' '.join(command.cmd),
+                '"%s" [shape=box]' % command.repr_cmd(),
+                '"%s"'             % command.repr_cmd(),
             )
 
         for cmd in commands:
+            if cmd is None:
+                continue
+
             cmd_spec, cmd_identifier = cmd_node(cmd)
             nodes.add(cmd_spec)
 
@@ -315,7 +337,8 @@ class Command(object):
         :param has_dependency_cb: Optional callback the resolve external
                                   dependencies
         :type  has_dependency_cb: function"""
-        commands = [c for c in commands if c]
+
+        commands = set([c for c in commands if c is not None])
 
         lg.debug('Ordering commands: %s', [
             str(cmd) for cmd in commands
@@ -380,6 +403,59 @@ class Command(object):
         ])
 
         return scheduled
+
+
+class FunctionCommand(Command):
+
+    def __init__(self, func, *args, **kwargs):
+        super(FunctionCommand, self).__init__(None)
+
+        assert hasattr(func, '__call__')
+        self.cmd    = func
+        self.args   = args
+        self.kwargs = kwargs
+
+    def __hash__(self):
+        return freeze.recursive_hash(
+            (self.cmd, self.args, self.kwargs, self._requires)
+        )
+
+    def execute(self):
+        """Execute the command."""
+        if self._finished is not None:  # pragma: no cover
+            return self._finished
+
+        if not Command.pretend_mode:
+            lg.debug(
+                'Running code: %s(args=%s, kwargs=%s)',
+                repr(self.args),
+                repr(self.kwargs),
+            )
+
+            self.cmd(*self.args, **self.kwargs)
+
+            self._finished = True
+        else:
+            lg.info(
+                'Pretending to run code: %s(args=%s, kwargs=%s)',
+                self.repr_cmd(),
+                repr(self.args),
+                repr(self.kwargs),
+            )
+
+        return self._finished
+
+    def repr_cmd(self):
+        # We need to "id" ourselves here so that multiple commands that call a
+        # function with the same name won't be shown as being equal.
+        return '%s|%s' % (self.cmd.__name__, id(self))
+
+    def __repr__(self):
+        return "FunctionCommand<%s requires %s, provides %s>\n" % (
+            self.repr_cmd(),
+            ", ".join([repr(x) for x in self._requires]),
+            ", ".join([repr(x) for x in self._provides]),
+        )
 
 
 class SystemStateReader(object):
@@ -523,6 +599,11 @@ class SystemStateReader(object):
             return name in self.snapshots
         elif type_ == 'gpg_key':  # pragma: no cover
             return name in self.gpg_keys  # Not needed ATM
+        elif type_ == 'virtual':
+            # virtual dependencies can never be resolved by the
+            # system state reader - they are used for internal
+            # ordering only
+            return False
         else:
             raise ValueError(
                 "Unknown dependency to resolve: %s" % str(dependency)
@@ -554,6 +635,12 @@ def main(argv=None):
         help='Enable debug output',
         action='store_true',
     )
+    parser.add_argument(
+        '--pretend',
+        '-p',
+        help='Do not do anything, just print out what WOULD be done',
+        action='store_true',
+    )
     subparsers = parser.add_subparsers()
     mirror_parser = subparsers.add_parser(
         'mirror',
@@ -571,13 +658,13 @@ def main(argv=None):
         nargs='?',
         default='all'
     )
-    snapshot_parser = subparsers.add_parser(
+    snap_parser = subparsers.add_parser(
         'snapshot',
         help='manage aptly snapshots'
     )
-    snapshot_parser.set_defaults(func=snapshot)
-    snapshot_parser.add_argument('task', type=str, choices=['create'])
-    snapshot_parser.add_argument(
+    snap_parser.set_defaults(func=snapshot)
+    snap_parser.add_argument('task', type=str, choices=['create', 'update'])
+    snap_parser.add_argument(
         'snapshot_name',
         type=str,
         nargs='?',
@@ -621,6 +708,9 @@ def main(argv=None):
         if args.debug:
             root.setLevel(logging.DEBUG)
             handler.setLevel(logging.DEBUG)
+        if args.pretend:
+            Command.pretend_mode = True
+
         _logging_setup = True  # noqa
     lg.debug("Args: %s", vars(args))
 
@@ -750,7 +840,10 @@ def unit_or_list_to_list(thingy):
         return [thingy]
 
 
-def publish_cmd_create(cfg, publish_name, publish_config):
+def publish_cmd_create(cfg,
+                       publish_name,
+                       publish_config,
+                       ignore_existing=False):
     """Creates a publish command with its dependencies to be ordered and
     executed later.
 
@@ -759,7 +852,7 @@ def publish_cmd_create(cfg, publish_name, publish_config):
     :param publish_config: Configuration of the publish from the yml file.
     :type  publish_config: dict"""
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
-    if publish_fullname in state.publishes:
+    if publish_fullname in state.publishes and not ignore_existing:
         # Nothing to do, publish already created
         return
 
@@ -887,7 +980,10 @@ def clone_snapshot(origin, destination):
     return cmd
 
 
-def publish_cmd_update(cfg, publish_name, publish_config):
+def publish_cmd_update(cfg,
+                       publish_name,
+                       publish_config,
+                       ignore_existing=False):
     """Creates a publish command with its dependencies to be ordered and
     executed later.
 
@@ -926,7 +1022,7 @@ def publish_cmd_update(cfg, publish_name, publish_config):
             "No snapshot references configured in publish %s" % publish_name
         )
 
-    if set(new_snapshots) == set(current_snapshots):
+    if set(new_snapshots) == set(current_snapshots) and not ignore_existing:
         # Already pointing to the newest snapshot, nothing to do
         return
     components = unit_or_list_to_list(publish_config['components'])
@@ -1019,7 +1115,7 @@ def repo(cfg, args):
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace"""
-    lg.debug("Repositories to create: %s", (cfg['repo']))
+    lg.debug("Repositories to create: %s", cfg['repo'])
 
     repo_cmds = {
         'create': repo_cmd_create,
@@ -1062,7 +1158,7 @@ def publish(cfg, args):
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace"""
-    lg.debug("Publishes to create / update: %s", (cfg['publish']))
+    lg.debug("Publishes to create / update: %s", cfg['publish'])
 
     # aptly publish snapshot -components ... -architectures ... -distribution
     # ... -origin Ubuntu trusty-stable ubuntu/stable
@@ -1113,33 +1209,41 @@ def snapshot(cfg, args):
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace"""
-    lg.debug("Snapshots to create: %s", (cfg['snapshot'].keys()))
+    lg.debug("Snapshots to create: %s", cfg['snapshot'].keys())
 
     snapshot_cmds = {
         'create': cmd_snapshot_create,
+        'update': cmd_snapshot_update,
     }
 
     cmd_snapshot = snapshot_cmds[args.task]
 
     if args.snapshot_name == "all":
         commands = [
-            cmd_snapshot(cfg, snapshot_name, snapshot_config)
-            for snapshot_name, snapshot_config
-            in cfg['snapshot'].items()
+            cmd
+            for snapshot_name, snapshot_config in cfg['snapshot'].items()
+            for cmd in cmd_snapshot(cfg, snapshot_name, snapshot_config)
         ]
+
+        if args.debug:
+            dot_file = "/tmp/commands.dot"
+            with open(dot_file, 'w') as fh_dot:
+                fh_dot.write(Command.command_list_to_digraph(commands))
+            lg.info('Wrote command dependency tree graph to %s', dot_file)
 
         for cmd in Command.order_commands(commands, state.has_dependency):
             cmd.execute()
 
     else:
         if args.snapshot_name in cfg['snapshot']:
-            cmd = cmd_snapshot(
+            command = cmd_snapshot(
                 cfg,
                 args.snapshot_name,
                 cfg['snapshot'][args.snapshot_name]
             )
-            if cmd is not None:
-                cmd.execute()
+
+            command.execute()
+
         else:
             raise ValueError(
                 "Requested snapshot is not defined in config file: %s" % (
@@ -1200,13 +1304,175 @@ def snapshot_spec_to_name(cfg, snapshot):
         return snapshot
 
 
-def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
+def dependents_of_snapshot(snapshot_name):
+    for dependent in state.snapshot_map.get(snapshot_name, []):
+        yield dependent
+        for sub in dependents_of_snapshot(dependent):
+            yield dependent
+
+
+def rotate_snapshot(cfg, snapshot_name):
+    rotated_name = cfg['snapshot'][snapshot_name].get(
+        'rotate_via', '%s-rotated' % snapshot_name
+    )
+
+    # First, verify that our snapshot environment is in a sane state.
+    # Fixing the environment is not currently our task.
+
+    if rotated_name in state.snapshots:
+        raise Exception(
+            "Cannot update snapshot %s - rotated name %s already exists" % (
+                snapshot_name, rotated_name
+            )
+        )
+
+    cmd = Command([
+        'aptly', 'snapshot', 'rename', snapshot_name, rotated_name
+    ])
+
+    cmd.provide('virtual',  rotated_name)
+    return cmd
+
+
+def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
+    """Create commands to update all rotating snapshots.
+
+    :param   snapshot_name: Name of the snapshot to update/rotate
+    :type    snapshot_name: str
+    :param snapshot_config: Configuration of the snapshot from the yml file.
+    :type  snapshot_config: dict"""
+
+    # To update a snapshot, we need to do roughly the following steps:
+    # 1) Rename the current snapshot and all snapshots that depend on it
+    # 2) Create new version of the snapshot and all snapshots that depend on it
+    # 3) Recreate all renamed snapshots
+    # 4) Update / switch-over publishes
+    # 5) Remove the rotated temporary snapshots
+
+    if '%T' in snapshot_name:
+        # Timestamped snapshots are never rotated by design.
+        return []
+
+    affected_snapshots = [snapshot_name]
+    affected_snapshots.extend(list(dependents_of_snapshot(snapshot_name)))
+
+    rename_cmds = [
+        rotate_snapshot(cfg, snap)
+        for snap
+        in affected_snapshots
+    ]
+
+    # The "intermediate" command causes the state reader to refresh.  At the
+    # same time, it provides a collection point for dependency handling.
+    intermediate = FunctionCommand(state.read)
+    intermediate.provide('virtual', 'all-snapshots-rotated')
+
+    for cmd in rename_cmds:
+        # Ensure that our "intermediate" pseudo command comes after all
+        # the rename commands, by ensuring it depends on all their "virtual"
+        # provided items.
+        cmd_vprovides = [
+            provide
+            for ptype, provide
+            in cmd.get_provides()
+            if ptype == 'virtual'
+        ]
+        for provide in cmd_vprovides:
+            intermediate.require('virtual', provide)
+
+    # Same as before - create a focal point to "collect" dependencies
+    # after the snapshots have been rebuilt. Also reload state once again
+    intermediate2 = FunctionCommand(state.read)
+    intermediate2.provide('virtual', 'all-snapshots-rebuilt')
+
+    create_cmds = []
+    for snap in affected_snapshots:
+
+        # Well.. there's normally just one, but since we need interface
+        # consistency, cmd_snapshot_create() returns a list. And since it
+        # returns a list, we may just as well future-proof it and loop instead
+        # of assuming it's going to be a single entry (and fail horribly if
+        # this assumption changes in the future).
+        for create_cmd in cmd_snapshot_create(cfg,
+                                              snapshot_name,
+                                              cfg['snapshot'][snapshot_name],
+                                              ignore_existing=True):
+
+            # enforce cmd to run after the refresh, and thus also
+            # after all the renames
+            create_cmd.require('virtual', 'all-snapshots-rotated')
+
+            # "Focal point" - make intermediate2 run after all the commands
+            # that re-create the snapshots
+            create_cmd.provide('virtual', 'rebuilt-%s' % snapshot_name)
+            intermediate2.require('virtual', 'rebuilt-%s' % snapshot_name)
+
+            create_cmds.append(create_cmd)
+
+    # At this point, snapshots have been renamed, then recreated.
+    # After each of the steps, the system state has been re-read.
+    # So now, we're left with updating the publishes.
+
+    def is_publish_affected(publish):
+        for snap in publish['snapshots']:
+            snap_name = snapshot_spec_to_name(cfg, snap)
+            if snap_name in affected_snapshots:
+                return True
+
+        return False
+
+    all_publish_commands = [
+        publish_cmd_update(cfg,
+                           publish_name,
+                           publish_conf_entry,
+                           ignore_existing=True)
+        for publish_name, publish_conf in cfg['publish'].items()
+        for publish_conf_entry in publish_conf
+        if publish_conf_entry.get('automatic-update', 'false') is True
+        if is_publish_affected(publish_conf_entry)
+    ]
+
+    republish_cmds = [
+        c
+        for c
+        in all_publish_commands
+        if c
+    ]
+
+    # Ensure that the republish commands run AFTER the snapshots are rebuilt
+    for cmd in republish_cmds:
+        cmd.require('virtual', 'all-snapshots-rebuilt')
+
+    # TODO:
+    # - We need to cleanup all the rotated snapshots after the publishes are
+    #   rebuilt
+    # - Filter publishes, so only the non-timestamped publishes are rebuilt
+
+    return (
+        rename_cmds +
+        create_cmds +
+        republish_cmds +
+        [intermediate, intermediate2]
+    )
+
+
+def cmd_snapshot_create(cfg,
+                        snapshot_name,
+                        snapshot_config,
+                        ignore_existing=False):
     """Create a snapshot create command to be ordered and executed later.
 
     :param   snapshot_name: Name of the snapshot to create
     :type    snapshot_name: str
     :param snapshot_config: Configuration of the snapshot from the yml file.
-    :type  snapshot_config: dict"""
+    :type  snapshot_config: dict
+    :param ignore_existing: Optional, defaults to False. If set to True, still
+                            return a command object even if the requested
+                            snapshot already exists
+    :type  ignore_existing: dict
+
+    :rtype: Command
+    """
 
     # TODO: extract possible timestamp component
     # and generate *actual* snapshot name
@@ -1215,8 +1481,9 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
         snapshot_name, snapshot_config
     )
 
-    if snapshot_name in state.snapshots:
+    if snapshot_name in state.snapshots and not ignore_existing:
         return
+
     default_aptly_cmd = ['aptly', 'snapshot', 'create']
     default_aptly_cmd.append(snapshot_name)
     default_aptly_cmd.append('from')
@@ -1227,13 +1494,13 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
         )
         cmd.provide('snapshot', snapshot_name)
         cmd.require('mirror',  snapshot_config['mirror'])
-        return cmd
+        return [cmd]
 
     elif 'repo' in snapshot_config:
         cmd = Command(default_aptly_cmd + ['repo', snapshot_config['repo']])
         cmd.provide('snapshot', snapshot_name)
         cmd.require('repo',     snapshot_config['repo'])
-        return cmd
+        return [cmd]
 
     elif 'filter' in snapshot_config:
         cmd = Command([
@@ -1249,7 +1516,7 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
             'snapshot',
             snapshot_spec_to_name(cfg, snapshot_config['filter']['source'])
         )
-        return cmd
+        return [cmd]
 
     elif 'merge' in snapshot_config:
         cmd = Command([
@@ -1265,7 +1532,7 @@ def cmd_snapshot_create(cfg, snapshot_name, snapshot_config):
             cmd.append(source_name)
             cmd.require('snapshot', source_name)
 
-        return cmd
+        return [cmd]
 
     else:  # pragma: no cover
         raise ValueError(
