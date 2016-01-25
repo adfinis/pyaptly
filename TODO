@@ -1,0 +1,6 @@
+TODO
+====
+
+* Cleanup of rotated snapshots after snapshot-update
+* rotated snapshots should be identified by configuration option, not just by
+  "not being timestamped

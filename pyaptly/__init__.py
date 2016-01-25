@@ -1372,6 +1372,9 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     affected_snapshots = [snapshot_name]
     affected_snapshots.extend(list(dependents_of_snapshot(snapshot_name)))
 
+    # TODO: rotated snapshots should be identified by configuration option, not
+    # just by "not being timestamped
+
     rename_cmds = [
         rotate_snapshot(cfg, snap)
         for snap
