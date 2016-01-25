@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 """Aptly mirror/snapshot managment automation."""
 import argparse
+import collections
 import datetime
 import freeze
 import logging
@@ -344,8 +345,13 @@ class Command(object):
             str(cmd) for cmd in commands
         ])
 
-        have_requirements = set()
+        have_requirements = collections.defaultdict(lambda: 0)
+        required_number   = collections.defaultdict(lambda: 0)
         scheduled  = []
+
+        for cmd in commands:
+            for provide in cmd._provides:
+                required_number[provide] += 1
 
         something_changed = True
         while something_changed:
@@ -357,7 +363,7 @@ class Command(object):
 
                 can_schedule = True
                 for req in cmd._requires:
-                    if req not in have_requirements:
+                    if have_requirements[req] < required_number[req]:
                         lg.debug(
                             "%s: dependency %s not fulfilled, "
                             "checking aptly state" % (cmd, req)
@@ -379,7 +385,9 @@ class Command(object):
                         "%s: all dependencies fulfilled" % cmd
                     )
                     scheduled.append(cmd)
-                    have_requirements = have_requirements.union(cmd._provides)
+                    for provide in cmd._provides:
+                        have_requirements[provide] += 1
+
                     something_changed = True
 
         unresolved = [
