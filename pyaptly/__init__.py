@@ -1326,7 +1326,10 @@ def dependents_of_snapshot(snapshot_name):
 
 def rotate_snapshot(cfg, snapshot_name):
     rotated_name = cfg['snapshot'][snapshot_name].get(
-        'rotate_via', '%s-rotated' % snapshot_name
+        'rotate_via', '%s-rotated-%s' % (
+            snapshot_name,
+            format_timestamp(datetime.datetime.now())
+        )
     )
 
     # First, verify that our snapshot environment is in a sane state.
@@ -1414,6 +1417,19 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
             # enforce cmd to run after the refresh, and thus also
             # after all the renames
             create_cmd.require('virtual', 'all-snapshots-rotated')
+
+            # Evil hack - we must do the dependencies ourselves, to avoid
+            # getting a circular graph
+            create_cmd._requires = set([
+                (type_, req)
+                for type_, req
+                in create_cmd._requires
+                if type_ != 'snapshot'
+            ])
+
+            create_cmd.provide('virtual', 'readyness-for-%s' % snapshot_name)
+            for follower in dependents_of_snapshot(snapshot_name):
+                create_cmd.require('virtual', 'readyness-for-%s' % follower)
 
             # "Focal point" - make intermediate2 run after all the commands
             # that re-create the snapshots
