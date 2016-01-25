@@ -1219,22 +1219,22 @@ def snapshot(cfg, args):
     cmd_snapshot = snapshot_cmds[args.task]
 
     if args.snapshot_name == "all":
-        for snapshot_name, snapshot_config in cfg['snapshot'].items():
-            commands = [
-                cmd
-                for cmd in cmd_snapshot(cfg, snapshot_name, snapshot_config)
-            ]
+        commands = [
+            cmd
+            for snapshot_name, snapshot_config in cfg['snapshot'].items()
+            for cmd in cmd_snapshot(cfg, snapshot_name, snapshot_config)
+        ]
 
-            if args.debug:
-                dot_file = "/tmp/commands-%s.dot" % snapshot_name
-                with open(dot_file, 'w') as fh_dot:
-                    fh_dot.write(Command.command_list_to_digraph(commands))
-                lg.info('Wrote command dependency tree graph to %s', dot_file)
+        if args.debug:
+            dot_file = "/tmp/commands.dot"
+            with open(dot_file, 'w') as fh_dot:
+                fh_dot.write(Command.command_list_to_digraph(commands))
+            lg.info('Wrote command dependency tree graph to %s', dot_file)
 
-            if len(commands) > 0:
-                for cmd in Command.order_commands(commands,
-                                                  state.has_dependency):
-                    cmd.execute()
+        if len(commands) > 0:
+            for cmd in Command.order_commands(commands,
+                                              state.has_dependency):
+                cmd.execute()
 
     else:
         if args.snapshot_name in cfg['snapshot']:
@@ -1484,7 +1484,7 @@ def cmd_snapshot_create(cfg,
     )
 
     if snapshot_name in state.snapshots and not ignore_existing:
-        return
+        return []
 
     default_aptly_cmd = ['aptly', 'snapshot', 'create']
     default_aptly_cmd.append(snapshot_name)
