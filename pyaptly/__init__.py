@@ -1219,20 +1219,20 @@ def snapshot(cfg, args):
     cmd_snapshot = snapshot_cmds[args.task]
 
     if args.snapshot_name == "all":
-        commands = [
-            cmd
-            for snapshot_name, snapshot_config in cfg['snapshot'].items()
-            for cmd in cmd_snapshot(cfg, snapshot_name, snapshot_config)
-        ]
+        for snapshot_name, snapshot_config in cfg['snapshot'].items():
+            commands = [
+                cmd
+                for cmd in cmd_snapshot(cfg, snapshot_name, snapshot_config)
+            ]
 
-        if args.debug:
-            dot_file = "/tmp/commands.dot"
-            with open(dot_file, 'w') as fh_dot:
-                fh_dot.write(Command.command_list_to_digraph(commands))
-            lg.info('Wrote command dependency tree graph to %s', dot_file)
+            if args.debug:
+                dot_file = "/tmp/commands-%s.dot" % snapshot_name
+                with open(dot_file, 'w') as fh_dot:
+                    fh_dot.write(Command.command_list_to_digraph(commands))
+                lg.info('Wrote command dependency tree graph to %s', dot_file)
 
-        for cmd in Command.order_commands(commands, state.has_dependency):
-            cmd.execute()
+            for cmd in Command.order_commands(commands, state.has_dependency):
+                cmd.execute()
 
     else:
         if args.snapshot_name in cfg['snapshot']:
