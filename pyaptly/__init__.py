@@ -1246,13 +1246,16 @@ def snapshot(cfg, args):
 
     else:
         if args.snapshot_name in cfg['snapshot']:
-            command = cmd_snapshot(
+            commands = cmd_snapshot(
                 cfg,
                 args.snapshot_name,
                 cfg['snapshot'][args.snapshot_name]
             )
 
-            command.execute()
+            if len(commands) > 0:
+                for cmd in Command.order_commands(commands,
+                                                  state.has_dependency):
+                    cmd.execute()
 
         else:
             raise ValueError(
