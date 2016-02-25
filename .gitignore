@@ -9,3 +9,4 @@ __pycache__
 /build
 /doc/_build
 .hypothesis
+/.deps
