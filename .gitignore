@@ -11,3 +11,5 @@ __pycache__
 .hypothesis
 /.deps
 /.gnupg
+/.aptly.conf
+/.aptly
