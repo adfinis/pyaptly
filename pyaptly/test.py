@@ -113,11 +113,19 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     :param     freeze: str
     :rtype:            (dict, str)
     """
+    if "pyaptly.src" not in os.environ['HOME']:
+        raise ValueError(
+            "Not safe to test here. Either you haven't set HOME to the "
+            "repository path %s. Or you havn't checked out the repository "
+            "as pyaptly.src." % os.path.abspath('.')
+        )
     try:
+        old_home = os.environ['HOME']
+        os.environ['HOME'] = "/tmp/"
         file_ = None
         with freezegun.freeze_time(freeze):
             try:
-                shutil.rmtree("/home/vagrant/.aptly")
+                shutil.rmtree("/tmp/.aptly")
             except OSError:  # pragma: no cover
                 pass
             input_, file_ = create_config(test_input)
@@ -139,5 +147,6 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
                                 pass
             yield (input_, file_)
     finally:
+        os.environ['HOME'] = old_home
         if file_:
             os.unlink(file_)

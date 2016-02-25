@@ -37,10 +37,22 @@ ubuntu/stable.
 Testing
 -------
 
+Autoamtic
+
 .. code:: shell
 
    git submodule update --init --recursive
    make local-test
+
+Manual. There is a safity check in tests. They won't work if you don't set
+$HOME.
+
+.. code:: shell
+
+   git submodule update --init --recursive
+   export HOME="$(pwd)"
+   export PATH="$HOME/aptly_0.9.6_linux_amd64/"
+   py.test -x
 
 Vagrant Box
 -----------
