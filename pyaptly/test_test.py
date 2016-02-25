@@ -80,7 +80,7 @@ class TestTest(unittest.TestCase):
         if isinstance(data, dict):
             return None
         return data
-
+asdf
     def rand_path(self, data):
         path = []
         while True:
