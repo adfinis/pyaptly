@@ -10,3 +10,4 @@ __pycache__
 /doc/_build
 .hypothesis
 /.deps
+/.gnupg
