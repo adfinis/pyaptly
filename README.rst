@@ -40,7 +40,7 @@ Testing
 .. code:: shell
 
    git submodule update --init --recursive
-   make test
+   make local-test
 
 Vagrant Box
 -----------
