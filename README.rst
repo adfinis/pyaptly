@@ -50,8 +50,16 @@ $HOME.
 .. code:: shell
 
    git submodule update --init --recursive
+   source testenv
+   py.test -x
+
+or
+
+.. code:: shell
+
+   git submodule update --init --recursive
    export HOME="$(pwd)"
-   export PATH="$HOME/aptly_0.9.6_linux_amd64/"
+   export PATH="$HOME/aptly_0.9.6_linux_amd64/:$PATH"
    py.test -x
 
 Vagrant Box
