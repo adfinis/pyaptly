@@ -16,9 +16,13 @@ _test_base = os.path.dirname(
 yml_st = st.recursive(
     st.floats(-1, 1) | st.booleans() |
     st.text() | st.none() | st.binary(),
-    lambda children: st.lists(children) | st.dictionaries(
+    lambda children: st.lists(
+        children, average_size=5, max_size=15
+    ) | st.dictionaries(
         st.text(),
-        children
+        children,
+        average_size=5,
+        max_size=15
     )
 )
 
@@ -43,9 +47,9 @@ class TestTest(unittest.TestCase):
         assert 'fakerepo01' not in yml['mirror']
 
     @test.hypothesis_min_ver
-    @given(yml_st, yml_st)
-    @example({'1': 'Huhu'}, {'1': 'None'})
-    def test_merge(self, a, b):
+    @given(yml_st, yml_st, st.random_module())
+    @example({'1': 'Huhu'}, {'1': 'None'}, st.random_module())
+    def test_merge(self, a, b, rand):
         """Test if merge has the expected result."""
         res  = test.merge(a, b)
         for _ in range(10):
