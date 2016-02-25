@@ -3,11 +3,12 @@
 import argparse
 import collections
 import datetime
-import freeze
 import logging
 import re
 import subprocess
 import sys
+
+import freeze
 
 import yaml
 
@@ -1274,8 +1275,8 @@ def format_timestamp(timestamp):
 
 
 back_reference_map = {
-    "current"  : 0,
-    "previous" : 1,
+    "current":  0,
+    "previous": 1,
 }
 
 
@@ -1346,7 +1347,7 @@ def rotate_snapshot(cfg, snapshot_name):
         'aptly', 'snapshot', 'rename', snapshot_name, rotated_name
     ])
 
-    cmd.provide('virtual',  rotated_name)
+    cmd.provide('virtual', rotated_name)
     return cmd
 
 
@@ -1525,7 +1526,7 @@ def cmd_snapshot_create(cfg,
             default_aptly_cmd + ['mirror', snapshot_config['mirror']]
         )
         cmd.provide('snapshot', snapshot_name)
-        cmd.require('mirror',  snapshot_config['mirror'])
+        cmd.require('mirror', snapshot_config['mirror'])
         return [cmd]
 
     elif 'repo' in snapshot_config:
