@@ -37,6 +37,6 @@ def test_dependency_callback_file():
     try:
         state.has_dependency(['turbo', 'banana'])
     except ValueError as e:
-        assert "Unknown dependency" in e.message
+        assert "Unknown dependency" in e.args[0]
         error = True
     assert error

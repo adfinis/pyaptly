@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 """Aptly mirror/snapshot managment automation."""
 import argparse
+import codecs
 import collections
 import datetime
 import logging
@@ -182,7 +183,7 @@ def call_output(args, input_=None):
             p.returncode,
             args,
         )
-    return (output, err)
+    return (output.decode("UTF-8"), err.decode("UTF-8"))
 
 
 class Command(object):
@@ -722,7 +723,7 @@ def main(argv=None):
         _logging_setup = True  # noqa
     lg.debug("Args: %s", vars(args))
 
-    with open(args.config, 'r') as cfgfile:
+    with codecs.open(args.config, 'r', encoding="UTF-8") as cfgfile:
         cfg = yaml.load(cfgfile)
     state.read()
 
@@ -1235,7 +1236,7 @@ def snapshot(cfg, args):
 
         if args.debug:
             dot_file = "/tmp/commands.dot"
-            with open(dot_file, 'w') as fh_dot:
+            with codecs.open(dot_file, 'w', "UTF-8") as fh_dot:
                 fh_dot.write(Command.command_list_to_digraph(commands))
             lg.info('Wrote command dependency tree graph to %s', dot_file)
 

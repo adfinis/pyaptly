@@ -83,7 +83,7 @@ def test_weekly_examples():
     )
     time        = datetime.time(
         hour    = 23,
-        minute  = 00
+        minute  = 0
     )
     day_of_week = 2
     rounded = date_round_weekly(date, day_of_week, time)
@@ -93,10 +93,10 @@ def test_weekly_examples():
         month   = 11,
         day     = 3,
         hour    = 23,
-        minute  = 01,
+        minute  = 1,
     )
     rounded = date_round_weekly(date, day_of_week, time)
-    assert datetime.datetime(2015, 11, 03, 23, 0) == rounded
+    assert datetime.datetime(2015, 11, 3, 23, 0) == rounded
 
 
 @test.hypothesis_min_ver

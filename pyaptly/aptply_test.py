@@ -18,15 +18,17 @@ except ImportError:
 
 _test_base = os.path.dirname(
     os.path.abspath(__file__)
-)
+).encode("UTF-8")
 
 
+@contextlib.contextmanager
 def mock_subprocess():
     """Mock subprocess that no commands are executed"""
-    return contextlib.nested(
-        mock.patch("subprocess.check_call"),
-        mock.patch("pyaptly.call_output"),
-    )
+    call = mock.patch("subprocess.check_call")
+    output = mock.patch("pyaptly.call_output")
+    yield (call.start(), output.start())
+    call.stop()
+    output.stop()
 
 
 def test_debug():
@@ -36,7 +38,7 @@ def test_debug():
         args = [
             '-d',
             '-c',
-            os.path.join(_test_base, 'test01.yml'),
+            os.path.join(_test_base, b'test01.yml').decode("UTF-8"),
             'mirror',
             'create'
         ]
@@ -48,7 +50,7 @@ def test_mirror_create():
     """Test if createing mirrors works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "mirror-google.yml",
+            b"mirror-google.yml",
     )) as (tyml, config):
         args = [
             '-c',
@@ -106,7 +108,7 @@ def test_mirror_update():
     """Test if updating mirrors works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "mirror-no-google.yml",
+            b"mirror-no-google.yml",
     )) as (tyml, config):
         do_mirror_update(config)
 
@@ -115,7 +117,7 @@ def test_mirror_update_inexistent():
     """Test if updating an inexistent mirror causes an error."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "mirror-no-google.yml",
+            b"mirror-no-google.yml",
     )) as (tyml, config):
         do_mirror_update(config)
         args = [
@@ -137,7 +139,7 @@ def test_mirror_update_single():
     """Test if updating a single mirror works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "mirror-no-google.yml",
+            b"mirror-no-google.yml",
     )) as (tyml, config):
         do_mirror_update(config)
         args = [
@@ -172,7 +174,7 @@ def test_snapshot_create_inexistent():
     """Test if creating an inexistent snapshot raises an error."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "snapshot.yml",
+            b"snapshot.yml",
     )) as (tyml, config):
         do_mirror_update(config)
         args = [
@@ -194,7 +196,7 @@ def test_snapshot_create_single():
     """Test if single snapshot create works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "snapshot.yml",
+            b"snapshot.yml",
     )) as (tyml, config):
         do_mirror_update(config)
         args = [
@@ -216,7 +218,7 @@ def test_snapshot_create_basic():
     """Test if snapshot create works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "snapshot.yml",
+            b"snapshot.yml",
     )) as (tyml, config):
         state = do_snapshot_create(config)
         assert set(
@@ -228,7 +230,7 @@ def test_snapshot_create_repo():
     """Test if repo snapshot create works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "snapshot_repo.yml",
+            b"snapshot_repo.yml",
     )) as (tyml, config):
         do_repo_create(config)
         args = [
@@ -250,7 +252,7 @@ def test_snapshot_create_merge():
     """Test if snapshot merge create works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "snapshot_merge.yml",
+            b"snapshot_merge.yml",
     )) as (tyml, config):
         state = do_snapshot_create(config)
         assert set(
@@ -275,7 +277,7 @@ def test_snapshot_create_filter():
     """Test if snapshot filter create works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "snapshot_filter.yml",
+            b"snapshot_filter.yml",
     )) as (tyml, config):
         do_snapshot_create(config)
         data, _ = call_output([
@@ -316,7 +318,7 @@ def test_publish_create_single():
     """Test if creating a single publish works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "publish.yml",
+            b"publish.yml",
     )) as (tyml, config):
         do_snapshot_create(config)
         args = [
@@ -342,7 +344,7 @@ def test_publish_create_inexistent():
     """Test if creating inexistent publish raises an error."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "publish.yml",
+            b"publish.yml",
     )) as (tyml, config):
         do_snapshot_create(config)
         args = [
@@ -364,7 +366,7 @@ def test_publish_create_repo():
     """Test if creating repo publishes works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "publish_repo.yml",
+            b"publish_repo.yml",
     )) as (tyml, config):
         do_repo_create(config)
         args = [
@@ -393,7 +395,7 @@ def test_publish_create_basic():
     """Test if creating publishes works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "publish.yml",
+            b"publish.yml",
     )) as (tyml, config):
         do_publish_create(config)
 
@@ -424,7 +426,7 @@ def test_publish_create_republish():
     """Test if creating republishes works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "publish_publish.yml",
+            b"publish_publish.yml",
     )) as (tyml, config):
         do_publish_create_republish(config)
 
@@ -433,7 +435,7 @@ def test_publish_update_republish():
     """Test if update republishes works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "publish_publish.yml",
+            b"publish_publish.yml",
     )) as (tyml, config):
         do_publish_create_republish(config)
         with freezegun.freeze_time("2012-10-11 10:10:10"):
@@ -472,7 +474,7 @@ def test_publish_updating_basic():
     """Test if updating publishes works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "publish.yml",
+            b"publish.yml",
     )) as (tyml, config):
         do_publish_create(config)
         with freezegun.freeze_time("2012-10-11 10:10:10"):
@@ -531,7 +533,7 @@ def test_repo_create_single():
     """Test if creating a single repo works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "repo.yml",
+            b"repo.yml",
     )) as (tyml, config):
         args = [
             '-c',
@@ -550,7 +552,7 @@ def test_repo_create_inexistent():
     """Test if creating an inexistent repo causes an error."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "repo.yml",
+            b"repo.yml",
     )) as (tyml, config):
         args = [
             '-c',
@@ -571,6 +573,6 @@ def test_repo_create_basic():
     """Test if creating repositories works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "repo.yml",
+            b"repo.yml",
     )) as (tyml, config):
         do_repo_create(config)

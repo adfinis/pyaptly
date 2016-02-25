@@ -65,7 +65,8 @@ setup(
     },
     install_requires = [
         "pyyaml",
-        "freeze"
+        "freeze",
+        "six"
     ],
     cmdclass = {
         'install': CustomInstallCommand,

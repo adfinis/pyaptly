@@ -11,7 +11,7 @@ from . import test
 
 _test_base = os.path.dirname(
     os.path.abspath(__file__)
-)
+).encode("UTF-8")
 
 yml_st = st.recursive(
     st.floats(-1, 1) | st.booleans() |
@@ -32,7 +32,7 @@ class TestTest(unittest.TestCase):
         """Test if reading yml files works without errors."""
         path = os.path.join(
             _test_base,
-            "merge.yml"
+            b"merge.yml"
         )
         yml = test.read_yml(path)
         assert yml['mirror']['fakerepo01'] is not None
@@ -41,7 +41,7 @@ class TestTest(unittest.TestCase):
         """Test if merges can delete fields"""
         path = os.path.join(
             _test_base,
-            "delete_merge.yml"
+            b"delete_merge.yml"
         )
         yml = test.read_yml(path)
         assert 'fakerepo01' not in yml['mirror']
@@ -87,7 +87,7 @@ class TestTest(unittest.TestCase):
             if isinstance(data, dict):
                 keys = list(data.keys())
                 if keys:
-                    k = random.choice(data.keys())
+                    k = random.choice(list(data.keys()))
                     path.append(k)
                     data = data[k]
                 else:

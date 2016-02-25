@@ -1,5 +1,6 @@
 """Tools for testing pyaptly"""
 
+import codecs
 import contextlib
 import os
 import shutil
@@ -25,14 +26,14 @@ def read_yml(file_):
     :param file_: file to read
     :type  file_: str"""
     directory = os.path.dirname(file_)
-    with open(file_) as f:
+    with codecs.open(file_, encoding="UTF-8") as f:
         main_yml = dict(yaml.load(f.read()))
     merges = []
     if "merge" in main_yml:
         for merge_path in main_yml['merge']:
             path = os.path.join(
                 directory,
-                merge_path,
+                merge_path.encode("UTF-8"),
             )
             merges.append(read_yml(path))
         del main_yml['merge']
@@ -53,7 +54,7 @@ def merge(a, b):
     if isinstance(a, dict) and isinstance(b, dict):
         d = dict(a)
         d.update(dict(((k, merge(a.get(k, None), b[k])) for k in b)))
-        for k, v in d.items():
+        for k, v in list(d.items()):
             if v == "None":
                 del d[k]
         return d
@@ -100,7 +101,9 @@ def create_config(test_input):
                 if 'distribution' not in item:
                     item['distribution'] = "main"
     try:
-        file_ = tempfile.NamedTemporaryFile(delete=False)
+        file_ = codecs.getwriter("UTF-8")(
+            tempfile.NamedTemporaryFile(delete=False)
+        )
         yaml.dump(input_, file_)
     finally:
         file_.close()
@@ -126,22 +129,22 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
             "repository path %s. Or you havn't checked out the repository "
             "as pyaptly.src." % os.path.abspath('.')
         )
+    file_ = None
     try:
-        old_home = os.environ['HOME']
+        old_home = os.environ['HOME'].encode("UTF-8")
         os.environ['HOME'] = "/tmp"
-        file_ = None
         with freezegun.freeze_time(freeze):
             try:
-                shutil.rmtree("/tmp/.aptly")
+                shutil.rmtree(b"/tmp/.aptly")
             except OSError:  # pragma: no cover
                 pass
             try:
-                shutil.rmtree("/tmp/.gnupg")
+                shutil.rmtree(b"/tmp/.gnupg")
             except OSError:  # pragma: no cover
                 pass
             shutil.copytree(
-                "%s/.gnupg/" % old_home,
-                "/tmp/.gnupg"
+                b"%s/.gnupg/" % old_home,
+                b"/tmp/.gnupg"
             )
             input_, file_ = create_config(test_input)
             try:
@@ -158,6 +161,6 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
                 pass
             yield (input_, file_)
     finally:
-        os.environ['HOME'] = old_home
+        os.environ['HOME'] = old_home.decode("UTF-8")
         if file_:
             os.unlink(file_)
