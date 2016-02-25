@@ -9,7 +9,6 @@ import subprocess
 import sys
 
 import freeze
-
 import yaml
 
 _logging_setup = False
