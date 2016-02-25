@@ -9,19 +9,16 @@ test26:
   stage: build
   script:
     - pyenv local 2.6.9
-    - pip freeze
     - make test
 
 test27:
   stage: build
   script:
     - pyenv local 2.7.11
-    - pip freeze
     - make test
 
 test3:
   stage: build
   script:
     - pyenv local 3.5.1
-    - pip freeze
     - make test
