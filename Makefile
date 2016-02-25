@@ -1,3 +1,4 @@
+.PHONY: webserver
 PROJECT := pyaptly
 
 export HOME := $(shell pwd)
@@ -5,7 +6,7 @@ export PATH := $(HOME)/aptly_0.9.6_linux_amd64/:$(PATH)
 
 include pyproject/Makefile
 
-aptly-test: .aptly/public test
+local-test: webserver test
 
 .gnupg:
 	gpg --import < vagrant/key.pub
@@ -19,8 +20,13 @@ aptly-test: .aptly/public test
 	aptly repo add fakerepo02 vagrant/*.deb
 
 .aptly/public: .aptly .gnupg
-	aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo01 fakerepo01
-	aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo02 fakerepo02
+	aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo01 fakerepo01; true
+	aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo02 fakerepo02; true
+	touch .aptly/public
+
+webserver: .aptly/public
+	pkill "python -m SimpleHTTPServer 8421"; true
+	cd .aptly/public && python -m SimpleHTTPServer 8421 &
 
 remote-test:
 	vagrant up

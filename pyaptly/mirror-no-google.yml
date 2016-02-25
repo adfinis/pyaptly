@@ -1,7 +1,7 @@
 mirror:
   fakerepo01: 
-    archive: "http://localhost/fakerepo01"
+    archive: "http://localhost:8421/fakerepo01"
     gpg-keys: ["437D05B5"]
   fakerepo02:
-    archive: "http://localhost/fakerepo02"
+    archive: "http://localhost:8421/fakerepo02"
     gpg-keys: ["437D05B5"]
