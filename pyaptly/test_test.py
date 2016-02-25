@@ -42,6 +42,7 @@ class TestTest(unittest.TestCase):
         yml = test.read_yml(path)
         assert 'fakerepo01' not in yml['mirror']
 
+    @test.hypothesis_min_ver
     @given(yml_st, yml_st)
     @example({'1': 'Huhu'}, {'1': 'None'})
     def test_merge(self, a, b):

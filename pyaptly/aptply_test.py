@@ -48,7 +48,7 @@ def test_mirror_create():
     """Test if createing mirrors works."""
     with test.clean_and_config(os.path.join(
             _test_base,
-            "mirror.yml",
+            "mirror-google.yml",
     )) as (tyml, config):
         args = [
             '-c',

@@ -4,12 +4,19 @@ import contextlib
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 
 import freezegun
+import pytest
 import yaml
 
 import pyaptly
+
+hypothesis_min_ver = pytest.mark.skipif(
+    sys.version_info < (2, 7),
+    reason="requires python2.7"
+)
 
 
 def read_yml(file_):
@@ -121,30 +128,34 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
         )
     try:
         old_home = os.environ['HOME']
-        os.environ['HOME'] = "/tmp/"
+        os.environ['HOME'] = "/tmp"
         file_ = None
         with freezegun.freeze_time(freeze):
             try:
                 shutil.rmtree("/tmp/.aptly")
             except OSError:  # pragma: no cover
                 pass
+            try:
+                shutil.rmtree("/tmp/.gnupg")
+            except OSError:  # pragma: no cover
+                pass
+            shutil.copytree(
+                "%s/.gnupg/" % old_home,
+                "/tmp/.gnupg"
+            )
             input_, file_ = create_config(test_input)
-            if 'mirror' in input_:
-                for mirror in input_['mirror'].values():
-                    if 'gpg-keys' in mirror:
-                        for key in mirror['gpg-keys']:
-                            try:
-                                subprocess.check_call([
-                                    'gpg',
-                                    '--keyring',
-                                    'trustedkeys.gpg',
-                                    '--batch',
-                                    '--yes',
-                                    '--delete-key',
-                                    key,
-                                ])
-                            except subprocess.CalledProcessError:
-                                pass
+            try:
+                subprocess.check_call([
+                    'gpg',
+                    '--keyring',
+                    'trustedkeys.gpg',
+                    '--batch',
+                    '--yes',
+                    '--delete-key',
+                    '7FAC5991',
+                ])
+            except subprocess.CalledProcessError:
+                pass
             yield (input_, file_)
     finally:
         os.environ['HOME'] = old_home

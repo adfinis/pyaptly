@@ -3,22 +3,22 @@ before_script:
   - git submodule update --init --recursive
 
 stages:
-  - build
+  - test
 
 test26:
-  stage: build
+  stage: test
   script:
     - pyenv local 2.6.9
     - make local-test
 
 test27:
-  stage: build
+  stage: test
   script:
     - pyenv local 2.7.11
     - make local-test
 
 test3:
-  stage: build
+  stage: test
   script:
     - pyenv local 3.5.1
     - make local-test

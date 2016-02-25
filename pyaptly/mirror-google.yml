@@ -1,0 +1,6 @@
+mirror:
+  google-chrome: 
+    archive: "http://dl.google.com/linux/chrome/deb/"
+    distribution: "stable"
+    gpg-keys: ["7FAC5991"]
+    gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]

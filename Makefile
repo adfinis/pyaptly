@@ -26,8 +26,8 @@ local-test: webserver test
 	touch .aptly/public
 
 webserver: .aptly/public
-	pkill "python -m SimpleHTTPServer 8421"; true
-	cd .aptly/public && python -m SimpleHTTPServer 8421 &
+	pkill -f -x "python -m SimpleHTTPServer 8421"; true
+	cd .aptly/public && python -m SimpleHTTPServer 8421 > /dev/null 2> /dev/null &
 
 remote-test:
 	vagrant up

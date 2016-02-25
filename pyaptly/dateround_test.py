@@ -6,10 +6,11 @@ from hypothesis import given
 from hypothesis.extra.datetime import datetimes, times
 from hypothesis.strategies import integers
 
-from . import (date_round_daily, date_round_weekly, iso_to_gregorian,
+from . import (date_round_daily, date_round_weekly, iso_to_gregorian, test,
                time_delta_helper, time_remove_tz)
 
 
+@test.hypothesis_min_ver
 @given(datetimes())
 def test_is_to_gregorian(date):
     """Test if a roundtrip of isoclander() -> iso_to_gregorian() is correct"""
@@ -20,6 +21,7 @@ def test_is_to_gregorian(date):
     assert date.day   == new_date.day
 
 
+@test.hypothesis_min_ver
 @given(
     datetimes(min_year=2),
     integers(min_value=1, max_value=7),
@@ -97,6 +99,7 @@ def test_weekly_examples():
     assert datetime.datetime(2015, 11, 03, 23, 0) == rounded
 
 
+@test.hypothesis_min_ver
 @given(datetimes(), times())
 def test_round_daily(date, time):
     """Test if the round function rounds the expected delta"""

@@ -20,18 +20,6 @@ def test_call_output_error():
     assert error
 
 
-def test_command_order_fail():
-    """Test if unresolvable commands fail correctly."""
-    a = Command(['ls'])
-    a.require("snapshot", "banana")
-    error = False
-    try:
-        Command.order_commands([a])
-    except ValueError:
-        error = True
-    assert error
-
-
 def test_command_dependency_fail():
     """Test if bad dependencies fail correctly."""
     a = Command(['ls'])
