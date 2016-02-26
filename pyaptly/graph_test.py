@@ -12,7 +12,7 @@ range_intagers_st = st.integers(min_value=0, max_value=RES_COUNT)
 
 
 @st.composite
-def provide_require_st(draw):
+def provide_require_st(draw, filter_=True):
     commands = draw(range_intagers_st)
     provides = draw(
         st.lists(
@@ -31,7 +31,10 @@ def provide_require_st(draw):
                 max_prov = max(command)
             else:
                 max_prov = 0
-            provides_filter = [x for x in provides_set if x > max_prov]
+            if filter_:
+                provides_filter = [x for x in provides_set if x > max_prov]
+            else:
+                provides_filter = provides_set
             if provides_filter:
                 sample = st.sampled_from(provides_filter)
                 requires.append(draw(st.lists(sample)))
@@ -65,6 +68,17 @@ def test_graph_basic(tree, rnd):
     """Test our test method, create a basic graph using hypthesis and run some
     basic tests against it."""
     run_graph(tree)
+
+
+@test.hypothesis_min_ver
+@given(provide_require_st(False), st.random_module())
+def test_graph_cycles(tree, rnd):
+    """Test reacts correctly on trees with cycles."""
+    try:
+        run_graph(tree)
+    except ValueError as e:
+        if "Commands with unresolved deps" not in e.args[0]:
+            raise e
 
 
 @test.hypothesis_min_ver

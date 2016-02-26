@@ -398,7 +398,7 @@ class Command(object):
         ]
 
         if len(unresolved) > 0:
-            raise ValueError('Commands with unresolved deps: %s', [
+            raise ValueError('Commands with unresolved deps: %s' % [
                 str(cmd) for cmd in unresolved
             ])
 
