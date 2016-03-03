@@ -109,5 +109,5 @@ def run_graph(tree):
     assert len(commands) == len(ordered)
     provided = set()
     for command in ordered:
-        command._requires.issubset(provided)
+        assert command._requires.issubset(provided)
         provided.update(command._provides)
