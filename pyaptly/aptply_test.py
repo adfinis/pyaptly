@@ -6,7 +6,7 @@ import os
 import freezegun
 import testfixtures
 
-from pyaptly import SystemStateReader, call_output, main
+from pyaptly import Command, SystemStateReader, call_output, main
 
 from . import test
 
@@ -44,6 +44,29 @@ def test_debug():
         ]
         main(args)
         assert logging.getLogger().level == logging.DEBUG
+
+
+def test_pretend():
+    """Test if pretend is enabled with -p"""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"publish.yml",
+    )) as (tyml, config):
+        do_snapshot_create(config)
+        args = [
+            '-p',
+            '-c',
+            config,
+            'publish',
+            'create',
+            'fakerepo01',
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set() == state.publishes
+        assert {} == state.publish_map
+        assert Command.pretend_mode
 
 
 def test_mirror_create():

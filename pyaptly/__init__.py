@@ -205,7 +205,7 @@ class Command(object):
             'snapshot', 'mirror', 'repo', 'publish', 'virtual'
         )
 
-    def get_provides(self):
+    def get_provides(self):  # pragma: no cover
         """Return all provides of this command."""
         return self._provides
 
@@ -275,7 +275,7 @@ class Command(object):
         )
 
     @staticmethod
-    def command_list_to_digraph(commands):
+    def command_list_to_digraph(commands):  # pragma: no cover
         """Generate dot source for a digraph - suitable for generating
         diagrams.
 
@@ -426,7 +426,7 @@ class FunctionCommand(Command):
 
     def __hash__(self):
         return freeze.recursive_hash(
-            (self.cmd, self.args, self.kwargs, self._requires)
+            (id(self.cmd), self.args, self.kwargs, self._requires)
         )
 
     def execute(self):
@@ -717,8 +717,10 @@ def main(argv=None):
         if args.debug:
             root.setLevel(logging.DEBUG)
             handler.setLevel(logging.DEBUG)
-        if args.pretend:
-            Command.pretend_mode = True
+    if args.pretend:
+        Command.pretend_mode = True
+    else:
+        Command.pretend_mode = False
 
         _logging_setup = True  # noqa
     lg.debug("Args: %s", vars(args))

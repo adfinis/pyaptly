@@ -4,7 +4,7 @@ import random
 from hypothesis import strategies as st
 from hypothesis import given
 
-from . import Command, test
+from . import Command, FunctionCommand, test
 
 RES_COUNT = 35
 
@@ -17,6 +17,13 @@ def provide_require_st(draw, filter_=True):
     provides = draw(
         st.lists(
             st.lists(range_intagers_st),
+            min_size = commands,
+            max_size = commands
+        )
+    )
+    is_func = draw(
+        st.lists(
+            st.booleans(),
             min_size = commands,
             max_size = commands
         )
@@ -42,7 +49,7 @@ def provide_require_st(draw, filter_=True):
                 requires.append([])
     else:
         requires = [[]] * commands
-    return (provides, requires)
+    return (provides, requires, is_func)
 
 
 def print_example():
@@ -89,7 +96,7 @@ def test_graph_cycles(tree, rnd):
 )
 def test_graph_island(tree0, tree1, rnd):
     """Test with two independant graphs which can form a island"""
-    tree = (tree0[0] + tree1[0], tree0[1] + tree1[1])
+    tree = (tree0[0] + tree1[0], tree0[1] + tree1[1], tree0[2] + tree1[2])
     run_graph(tree)
 
 
@@ -99,7 +106,13 @@ def run_graph(tree):
     index = list(range(len(tree[0])))
     random.shuffle(index)
     for i in index:
-        cmd = Command(i)
+        def dummy():
+            return i
+
+        if tree[2][i]:
+            cmd = FunctionCommand(dummy)
+        else:
+            cmd = Command(i)
         for provides in tree[0][i]:
             cmd.provide("virtual", provides)
         for requires in tree[1][i]:
