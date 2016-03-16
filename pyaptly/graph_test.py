@@ -2,11 +2,12 @@
 import random
 import sys
 
+from . import Command, FunctionCommand, test
+
 if not sys.version_info < (2, 7):
     from hypothesis import strategies as st
     from hypothesis import given
 
-from . import Command, FunctionCommand, test
 
 if sys.version_info < (2, 7):
     import mock
