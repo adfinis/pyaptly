@@ -1449,12 +1449,12 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     # After each of the steps, the system state has been re-read.
     # So now, we're left with updating the publishes.
 
-    def is_publish_affected(publish):
-        for snap in publish['snapshots']:
-            snap_name = snapshot_spec_to_name(cfg, snap)
-            if snap_name in affected_snapshots:
-                return True
-
+    def is_publish_affected(name, publish):
+        if name in state.publishes:
+            for snap in publish['snapshots']:
+                snap_name = snapshot_spec_to_name(cfg, snap)
+                if snap_name in affected_snapshots:
+                    return True
         return False
 
     if 'publish' in cfg:
@@ -1466,7 +1466,7 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
             for publish_name, publish_conf in cfg['publish'].items()
             for publish_conf_entry in publish_conf
             if publish_conf_entry.get('automatic-update', 'false') is True
-            if is_publish_affected(publish_conf_entry)
+            if is_publish_affected(publish_name, publish_conf_entry)
         ]
     else:
         all_publish_commands = []

@@ -1,0 +1,27 @@
+publish:
+  fakerepo01/current:
+    -
+      distribution: "stable"
+      architectures: ["amd64"]
+      components: ["main"]
+      snapshots:
+        - fakerepo01-current
+      automatic-update: true
+  fakerepo02/current:
+    -
+      distribution: "stable"
+      architectures: ["amd64"]
+      components: ["main"]
+      snapshots:
+        - fakerepo02-current
+      automatic-update: true
+  fake/current:
+    -
+      distribution: "stable"
+      architectures: ["amd64"]
+      components: ["main"]
+      snapshots:
+        - fake-current
+      automatic-update: true
+merge:
+  - "snapshot-current.yml"

@@ -1,0 +1,11 @@
+snapshot:
+  fakerepo01-current:
+    mirror: "fakerepo01"
+  fakerepo02-current:
+    mirror: "fakerepo02"
+  fake-current:
+    merge:
+      - fakerepo01-current
+      - fakerepo02-current
+merge:
+  - "mirror-no-google.yml"

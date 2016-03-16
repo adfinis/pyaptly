@@ -469,6 +469,31 @@ def do_publish_create(config):
     assert expect == state.publish_map
 
 
+def do_publish_create_rotating(config):
+    """Test if creating publishes works."""
+    do_snapshot_update_rotating(config)
+    args = [
+        '-c',
+        config,
+        'publish',
+        'create'
+    ]
+    main(args)
+    state = SystemStateReader()
+    state.read()
+    assert set([
+        'fakerepo01/current stable',
+        'fake/current stable',
+        'fakerepo02/current stable',
+    ]) == state.publishes
+    expect = {
+        u'fake/current stable': set([u'fake-current']),
+        u'fakerepo01/current stable': set([u'fakerepo01-current']),
+        u'fakerepo02/current stable': set([u'fakerepo02-current'])
+    }
+    assert expect == state.publish_map
+
+
 def test_publish_create_single():
     """Test if creating a single publish works."""
     with test.clean_and_config(os.path.join(
@@ -553,6 +578,15 @@ def test_publish_create_basic():
             b"publish.yml",
     )) as (tyml, config):
         do_publish_create(config)
+
+
+def test_publish_create_rotating():
+    """Test if creating rotating publishes works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"publish-current.yml",
+    )) as (tyml, config):
+        do_publish_create_rotating(config)
 
 
 def do_publish_create_republish(config):
