@@ -580,6 +580,56 @@ def test_publish_create_basic():
         do_publish_create(config)
 
 
+def test_publish_update_rotating():
+    """Test if update rotating publishes works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"publish-current.yml",
+    )) as (tyml, config):
+        do_publish_create_rotating(config)
+        with freezegun.freeze_time("2012-10-11 10:10:10"):
+            args = [
+                '-c',
+                config,
+                'publish',
+                'update',
+            ]
+            main(args)
+            state = SystemStateReader()
+            state.read()
+            expect = {
+                u'fake/current stable': set([u'fake-current']),
+                u'fakerepo01/current stable': set([u'fakerepo01-current']),
+                u'fakerepo02/current stable': set([u'fakerepo02-current'])
+            }
+            assert expect == state.publish_map
+
+
+def test_publish_snapshot_update_rotating():
+    """Test if update rotating publishes via snapshot works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"publish-current.yml",
+    )) as (tyml, config):
+        do_publish_create_rotating(config)
+        with freezegun.freeze_time("2012-10-11 10:10:10"):
+            args = [
+                '-c',
+                config,
+                'snapshot',
+                'update',
+            ]
+            main(args)
+            state = SystemStateReader()
+            state.read()
+            expect = {
+                u'fake/current stable': set([u'fake-current']),
+                u'fakerepo01/current stable': set([u'fakerepo01-current']),
+                u'fakerepo02/current stable': set([u'fakerepo02-current'])
+            }
+            assert expect == state.publish_map
+
+
 def test_publish_create_rotating():
     """Test if creating rotating publishes works."""
     with test.clean_and_config(os.path.join(

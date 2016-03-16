@@ -1,13 +1,23 @@
 """Dateround tests"""
 
 import datetime
+import sys
 
-from hypothesis import given
-from hypothesis.extra.datetime import datetimes, times
-from hypothesis.strategies import integers
+from . import (date_round_daily, date_round_weekly, iso_to_gregorian,  # noqa
+               test, time_delta_helper, time_remove_tz)
 
-from . import (date_round_daily, date_round_weekly, iso_to_gregorian, test,
-               time_delta_helper, time_remove_tz)
+if not sys.version_info < (2, 7):
+    from hypothesis import given  # noqa
+    from hypothesis.extra.datetime import datetimes, times  # noqa
+    from hypothesis.strategies import integers  # noqa
+
+
+if sys.version_info < (2, 7):
+    import mock
+    given = mock.MagicMock()  # noqa
+    datetimes = mock.MagicMock()  # noqa
+    times = mock.MagicMock()  # noqa
+    integers = mock.MagicMock()  # noqa
 
 
 @test.hypothesis_min_ver

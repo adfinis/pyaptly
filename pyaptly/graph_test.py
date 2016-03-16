@@ -1,10 +1,18 @@
 """Testing dependency graphs"""
 import random
+import sys
 
-from hypothesis import strategies as st
-from hypothesis import given
+if not sys.version_info < (2, 7):
+    from hypothesis import strategies as st
+    from hypothesis import given
 
 from . import Command, FunctionCommand, test
+
+if sys.version_info < (2, 7):
+    import mock
+    given = mock.MagicMock()  # noqa
+    example = mock.MagicMock()  # noqa
+    st = mock.MagicMock()  # noqa
 
 RES_COUNT = 35
 

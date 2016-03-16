@@ -1450,7 +1450,10 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     # So now, we're left with updating the publishes.
 
     def is_publish_affected(name, publish):
-        if name in state.publishes:
+        if "%s %s" % (
+                name,
+                publish['distribution']
+        ) in state.publishes:
             for snap in publish['snapshots']:
                 snap_name = snapshot_spec_to_name(cfg, snap)
                 if snap_name in affected_snapshots:

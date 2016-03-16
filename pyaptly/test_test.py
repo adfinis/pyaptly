@@ -2,12 +2,21 @@
 
 import os
 import random
+import sys
 import unittest
 
-import hypothesis.strategies as st
-from hypothesis import example, given
-
 from . import test
+
+if not sys.version_info < (2, 7):
+    import hypothesis.strategies as st
+    from hypothesis import example, given  # noqa
+
+
+if sys.version_info < (2, 7):
+    import mock
+    given = mock.MagicMock()  # noqa
+    example = mock.MagicMock()  # noqa
+    st = mock.MagicMock()  # noqa
 
 _test_base = os.path.dirname(
     os.path.abspath(__file__)
