@@ -437,6 +437,7 @@ class FunctionCommand(Command):
         if not Command.pretend_mode:
             lg.debug(
                 'Running code: %s(args=%s, kwargs=%s)',
+                self.cmd.__name__,
                 repr(self.args),
                 repr(self.kwargs),
             )
@@ -1236,7 +1237,7 @@ def snapshot(cfg, args):
             for cmd in cmd_snapshot(cfg, snapshot_name, snapshot_config)
         ]
 
-        if args.debug:
+        if args.debug:  # pragma: no cover
             dot_file = "/tmp/commands.dot"
             with codecs.open(dot_file, 'w', "UTF-8") as fh_dot:
                 fh_dot.write(Command.command_list_to_digraph(commands))
@@ -1456,16 +1457,19 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
 
         return False
 
-    all_publish_commands = [
-        publish_cmd_update(cfg,
-                           publish_name,
-                           publish_conf_entry,
-                           ignore_existing=True)
-        for publish_name, publish_conf in cfg['publish'].items()
-        for publish_conf_entry in publish_conf
-        if publish_conf_entry.get('automatic-update', 'false') is True
-        if is_publish_affected(publish_conf_entry)
-    ]
+    if 'publish' in cfg:
+        all_publish_commands = [
+            publish_cmd_update(cfg,
+                               publish_name,
+                               publish_conf_entry,
+                               ignore_existing=True)
+            for publish_name, publish_conf in cfg['publish'].items()
+            for publish_conf_entry in publish_conf
+            if publish_conf_entry.get('automatic-update', 'false') is True
+            if is_publish_affected(publish_conf_entry)
+        ]
+    else:
+        all_publish_commands = []
 
     republish_cmds = [
         c

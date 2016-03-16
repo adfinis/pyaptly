@@ -237,6 +237,138 @@ def test_snapshot_create_single():
         ).issubset(state.snapshots)
 
 
+def test_snapshot_create_rotating():
+    """Test if rotating snapshot create works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"snapshot-current.yml",
+    )) as (tyml, config):
+        do_mirror_update(config)
+        args = [
+            '-c',
+            config,
+            'snapshot',
+            'create',
+        ]
+        main(args)
+        state = SystemStateReader()
+        state.read()
+        assert set(
+            [
+                'fake-current',
+                'fakerepo01-current',
+                'fakerepo02-current',
+            ]
+        ).issubset(state.snapshots)
+
+
+def test_snapshot_update_rotating():
+    """Test if rotating snapshot update works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"snapshot-current.yml",
+    )) as (tyml, config):
+        do_snapshot_update_rotating(config)
+
+
+def test_snapshot_update_twice_rotating():
+    """Test if rotating snapshot update works."""
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"snapshot-current.yml",
+    )) as (tyml, config):
+        do_snapshot_update_rotating(config)
+        with freezegun.freeze_time("2012-11-10 10:10:10"):
+            args = [
+                '-c',
+                config,
+                'snapshot',
+                'update',
+            ]
+            main(args)
+            state = SystemStateReader()
+            state.read()
+            assert set(
+                [
+                    'fake-current',
+                    'fakerepo01-current-rotated-20121010T1010Z',
+                    'fakerepo02-current-rotated-20121010T1010Z',
+                    'fakerepo01-current-rotated-20121110T1010Z',
+                    'fakerepo02-current-rotated-20121110T1010Z',
+                ]
+            ).issubset(state.snapshots)
+            expected = {
+                u'fake-current': set([
+                    u'fakerepo01-current', u'fakerepo02-current'
+                ]),
+                u'fake-current-rotated-20121010T1010Z': set([
+                    u'fakerepo01-current',
+                    u'fakerepo02-current'
+                ]),
+                u'fake-current-rotated-20121110T1010Z': set([
+                    u'fakerepo01-current',
+                    u'fakerepo02-current'
+                ]),
+                u'fakerepo01-current': set([]),
+                u'fakerepo01-current-rotated-20121010T1010Z': set([]),
+                u'fakerepo01-current-rotated-20121110T1010Z': set([]),
+                u'fakerepo02-current': set([]),
+                u'fakerepo02-current-rotated-20121010T1010Z': set([]),
+                u'fakerepo02-current-rotated-20121110T1010Z': set([])
+            }
+            assert state.snapshot_map == expected
+
+
+def do_snapshot_update_rotating(config):
+    """Helper for rotating snapshot tests"""
+    do_mirror_update(config)
+    args = [
+        '-c',
+        config,
+        'snapshot',
+        'create',
+    ]
+    main(args)
+    state = SystemStateReader()
+    state.read()
+    assert set(
+        [
+            'fake-current',
+            'fakerepo01-current',
+            'fakerepo02-current',
+        ]
+    ).issubset(state.snapshots)
+    args = [
+        '-c',
+        config,
+        'snapshot',
+        'update',
+    ]
+    main(args)
+    state.read()
+    assert set(
+        [
+            'fake-current',
+            'fakerepo01-current-rotated-20121010T1010Z',
+            'fakerepo02-current-rotated-20121010T1010Z',
+        ]
+    ).issubset(state.snapshots)
+    expected = {
+        u'fake-current': set([
+            u'fakerepo01-current', u'fakerepo02-current'
+        ]),
+        u'fake-current-rotated-20121010T1010Z': set([
+            u'fakerepo01-current',
+            u'fakerepo02-current'
+        ]),
+        u'fakerepo01-current': set([]),
+        u'fakerepo01-current-rotated-20121010T1010Z': set([]),
+        u'fakerepo02-current': set([]),
+        u'fakerepo02-current-rotated-20121010T1010Z': set([]),
+    }
+    assert state.snapshot_map == expected
+
+
 def test_snapshot_create_basic():
     """Test if snapshot create works."""
     with test.clean_and_config(os.path.join(
