@@ -12,7 +12,7 @@ from . import test
 
 try:
     import unittest.mock as mock
-except ImportError:
+except ImportError:  # pragma: no cover
     import mock
 
 

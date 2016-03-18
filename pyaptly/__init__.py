@@ -145,7 +145,7 @@ def date_round_daily(date, time=None):
     :rtype:      :py:class:`datetime.datetime`"""
     if time:
         time         = time_remove_tz(time)
-    else:
+    else:  # pragma: no cover
         time         = datetime.time(hour=0, minute=0)
     delta            = datetime.timedelta(
         hours        = time.hour,
