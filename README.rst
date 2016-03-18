@@ -5,6 +5,10 @@ Pyaptly
 Automates the creation and managment of aptly mirrors and snapshots based on yml
 input files.
 
+Documentation_
+
+.. _Documentation: https://docs.adfinis-sygroup.ch/roche/pyaptly/
+
 Example commands
 ----------------
 
