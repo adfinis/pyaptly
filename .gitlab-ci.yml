@@ -10,6 +10,7 @@ doc:
   stage: doc
   script:
     - pyenv local 3.5.1
+    - make all-deps
     - make doc
     - rsync -av --delete doc/_build/html/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/roche/pyaptly/
 
