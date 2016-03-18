@@ -6,9 +6,6 @@ export PATH := $(HOME)/aptly_0.9.6_linux_amd64/:$(PATH)
 
 include pyproject/Makefile
 
-pytest: install-edit .deps/coverage .deps/hypothesis .deps/pytest .deps/pytest_cov .deps/pytest_catchlog .deps/freeze .deps/testfixtures
-	py.test --cov-report term-missing --cov=$(PROJECT) --cov-fail-under=80 --no-cov-on-fail $(PROJECT)
-
 local-test: webserver test
 
 .gnupg:

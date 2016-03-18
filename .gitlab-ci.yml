@@ -9,7 +9,8 @@ test26:
   stage: test
   script:
     - pyenv local 2.6.9
-    - make local-test
+    - make webserver
+    - make pytest-no-cov
 
 test27:
   stage: test

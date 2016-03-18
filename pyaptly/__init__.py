@@ -601,9 +601,9 @@ class SystemStateReader(object):
         :type  dependency: list"""
         type_, name = dependency
 
-        if type_ == 'repo':
+        if type_ == 'repo':  # pragma: no cover
             return name in self.repos
-        if type_ == 'mirror':
+        if type_ == 'mirror':  # pragma: no cover
             return name in self.mirrors
         elif type_ == 'snapshot':
             return name in self.snapshots
@@ -1324,7 +1324,7 @@ def snapshot_spec_to_name(cfg, snapshot):
 def dependents_of_snapshot(snapshot_name):
     for dependent in state.snapshot_map.get(snapshot_name, []):
         yield dependent
-        for sub in dependents_of_snapshot(dependent):
+        for sub in dependents_of_snapshot(dependent):  # pragma: no cover
             yield dependent
 
 
@@ -1339,7 +1339,7 @@ def rotate_snapshot(cfg, snapshot_name):
     # First, verify that our snapshot environment is in a sane state.
     # Fixing the environment is not currently our task.
 
-    if rotated_name in state.snapshots:
+    if rotated_name in state.snapshots:  # pragma: no cover
         raise Exception(
             "Cannot update snapshot %s - rotated name %s already exists" % (
                 snapshot_name, rotated_name
@@ -1369,7 +1369,7 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     # 4) Update / switch-over publishes
     # 5) Remove the rotated temporary snapshots
 
-    if '%T' in snapshot_name:
+    if '%T' in snapshot_name:  # pragma: no cover
         # Timestamped snapshots are never rotated by design.
         return []
 
