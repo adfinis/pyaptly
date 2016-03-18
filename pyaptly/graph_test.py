@@ -9,7 +9,7 @@ if not sys.version_info < (2, 7):
     from hypothesis import given
 
 
-if sys.version_info < (2, 7):
+if sys.version_info < (2, 7):  # pragma: no cover
     import mock
     given = mock.MagicMock()  # noqa
     example = mock.MagicMock()  # noqa
@@ -61,7 +61,7 @@ def provide_require_st(draw, filter_=True):
     return (provides, requires, is_func)
 
 
-def print_example():
+def print_example():  # pragma: no cover
     example = provide_require_st().example()
     print("""
     digraph g {
@@ -92,7 +92,7 @@ def test_graph_cycles(tree, rnd):
     """Test reacts correctly on trees with cycles."""
     try:
         run_graph(tree)
-    except ValueError as e:
+    except ValueError as e:  # pragma: no cover
         if "Commands with unresolved deps" not in e.args[0]:
             raise e
 
@@ -115,7 +115,7 @@ def run_graph(tree):
     index = list(range(len(tree[0])))
     random.shuffle(index)
     for i in index:
-        def dummy():
+        def dummy():  # pragma: no cover
             return i
 
         if tree[2][i]:

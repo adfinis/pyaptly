@@ -445,7 +445,7 @@ class FunctionCommand(Command):
             self.cmd(*self.args, **self.kwargs)
 
             self._finished = True
-        else:
+        else:  # pragma: no cover
             lg.info(
                 'Pretending to run code: %s(args=%s, kwargs=%s)',
                 self.repr_cmd(),

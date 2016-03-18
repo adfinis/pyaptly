@@ -12,7 +12,7 @@ if not sys.version_info < (2, 7):
     from hypothesis.strategies import integers  # noqa
 
 
-if sys.version_info < (2, 7):
+if sys.version_info < (2, 7):  # pragma: no cover
     import mock
     given = mock.MagicMock()  # noqa
     datetimes = mock.MagicMock()  # noqa

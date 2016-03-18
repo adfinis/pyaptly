@@ -12,7 +12,7 @@ if not sys.version_info < (2, 7):
     from hypothesis import example, given  # noqa
 
 
-if sys.version_info < (2, 7):
+if sys.version_info < (2, 7):  # pragma: no cover
     import mock
     given = mock.MagicMock()  # noqa
     example = mock.MagicMock()  # noqa
