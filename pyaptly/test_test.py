@@ -77,7 +77,7 @@ class TestTest(unittest.TestCase):
                 path, data_a = self.rand_path(a)
                 try:
                     data_res     = self.get_path(path, res)
-                    if data_a != data_res:
+                    if data_a != data_res:  # pragma: no cover
                         data_b = self.get_path(path, b)
                         assert data_res == data_b
                 except (TypeError, KeyError):
