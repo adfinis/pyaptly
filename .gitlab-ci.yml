@@ -8,6 +8,7 @@ stages:
 
 doc:
   stage: doc
+  script:
     - pyenv local 3.5.1
     - make doc
     - rsync -avz doc/_build/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/roche/pyaptly/
