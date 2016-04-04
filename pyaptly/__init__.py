@@ -206,7 +206,9 @@ class Command(object):
         )
 
     def get_provides(self):  # pragma: no cover
-        """Return all provides of this command."""
+        """Return all provides of this command.
+
+        :rtype: set()"""
         return self._provides
 
     def append(self, argument):
@@ -246,7 +248,9 @@ class Command(object):
         self._provides.add((type_, str(identifier)))
 
     def execute(self):
-        """Execute the command."""
+        """Execute the command. Return the return value of the command.
+
+        :rtype: integer"""
         if self._finished is not None:  # pragma: no cover
             return self._finished
 
@@ -259,12 +263,21 @@ class Command(object):
         return self._finished
 
     def repr_cmd(self):
+        """Return repr of the command.
+
+        :rtype: str"""
         return repr(self.cmd)
 
     def __hash__(self):
-        return freeze.recursive_hash((self.cmd, self._requires))
+        """Hash of the command.
+
+        :rtype: integer"""
+        return freeze.recursive_hash(
+            (self.cmd, self._requires, self._provides)
+        )
 
     def __eq__(self, other):
+        """Equalitity based on the hash, might collide... hmm"""
         return self.__hash__() == other.__hash__()
 
     def __repr__(self):
@@ -282,20 +295,22 @@ class Command(object):
         The requires and provides from the commands build nodes, the commands
         themselves act as connectors.
 
-        :param          commands: The commands to draw a diagram with
-        :type           commands: list
+        :param  commands: The commands to draw a diagram with
+        :type   commands: list
         """
 
         nodes = set()
         edges = set()
 
         def result_node(type_, name):
+            """Get the dot representation of a result node."""
             return (
                 '"%s %s" [shape=ellipse]' % (type_, name),
                 '"%s %s"'                 % (type_, name),
             )
 
         def cmd_node(command):
+            """Get the dot representation of a command node."""
             return (
                 '"%s" [shape=box]' % command.repr_cmd(),
                 '"%s"'             % command.repr_cmd(),
@@ -415,6 +430,13 @@ class Command(object):
 
 
 class FunctionCommand(Command):
+    """Repesents a function command and is used to resolve dependencies between
+    such commands. This command executes the given function. *args and **kwargs
+    are passed through.
+
+    :param func: The function to execute
+    :type  func: callable
+    """
 
     def __init__(self, func, *args, **kwargs):
         super(FunctionCommand, self).__init__(None)
@@ -426,11 +448,17 @@ class FunctionCommand(Command):
 
     def __hash__(self):
         return freeze.recursive_hash(
-            (id(self.cmd), self.args, self.kwargs, self._requires)
+            (
+                id(self.cmd),
+                self.args,
+                self.kwargs,
+                self._requires,
+                self._provides
+            )
         )
 
     def execute(self):
-        """Execute the command."""
+        """Execute the command. (Call the function)."""
         if self._finished is not None:  # pragma: no cover
             return self._finished
 
@@ -456,6 +484,9 @@ class FunctionCommand(Command):
         return self._finished
 
     def repr_cmd(self):
+        """Return repr of the command.
+
+        :rtype: str"""
         # We need to "id" ourselves here so that multiple commands that call a
         # function with the same name won't be shown as being equal.
         return '%s|%s' % (self.cmd.__name__, id(self))
@@ -859,6 +890,8 @@ def publish_cmd_create(cfg,
     """Creates a publish command with its dependencies to be ordered and
     executed later.
 
+    :param            cfg: pyaptly config
+    :type             cfg: dict
     :param   publish_name: Name of the publish to create
     :type    publish_name: str
     :param publish_config: Configuration of the publish from the yml file.
@@ -999,6 +1032,8 @@ def publish_cmd_update(cfg,
     """Creates a publish command with its dependencies to be ordered and
     executed later.
 
+    :param            cfg: pyaptly config
+    :type             cfg: dict
     :param   publish_name: Name of the publish to update
     :type    publish_name: str
     :param publish_config: Configuration of the publish from the yml file.
@@ -1079,6 +1114,8 @@ def publish_cmd_update(cfg,
 def repo_cmd_create(cfg, repo_name, repo_config):
     """Create a repo create command to be ordered and executed later.
 
+    :param         cfg: pyaptly config
+    :type          cfg: dict
     :param   repo_name: Name of the repo to create
     :type    repo_name: str
     :param repo_config: Configuration of the repo from the yml file.
@@ -1322,6 +1359,9 @@ def snapshot_spec_to_name(cfg, snapshot):
 
 
 def dependents_of_snapshot(snapshot_name):
+    """Yield a flat list of dependents from the current state.
+
+    :rtype: generator"""
     for dependent in state.snapshot_map.get(snapshot_name, []):
         yield dependent
         for sub in dependents_of_snapshot(dependent):  # pragma: no cover
@@ -1329,6 +1369,13 @@ def dependents_of_snapshot(snapshot_name):
 
 
 def rotate_snapshot(cfg, snapshot_name):
+    """Creates a command to rotate a snapshot in order to be able to update a
+    current publish.
+
+    :param           cfg: pyaptly config
+    :type            cfg: dict
+    :param snapshot_name: the snapshot to rotate
+    :type  snapshot_name: str"""
     rotated_name = cfg['snapshot'][snapshot_name].get(
         'rotate_via', '%s-rotated-%s' % (
             snapshot_name,
@@ -1357,6 +1404,8 @@ def rotate_snapshot(cfg, snapshot_name):
 def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     """Create commands to update all rotating snapshots.
 
+    :param             cfg: pyaptly config
+    :type              cfg: dict
     :param   snapshot_name: Name of the snapshot to update/rotate
     :type    snapshot_name: str
     :param snapshot_config: Configuration of the snapshot from the yml file.
@@ -1504,6 +1553,8 @@ def cmd_snapshot_create(cfg,
                         ignore_existing=False):
     """Create a snapshot create command to be ordered and executed later.
 
+    :param             cfg: pyaptly config
+    :type              cfg: dict
     :param   snapshot_name: Name of the snapshot to create
     :type    snapshot_name: str
     :param snapshot_config: Configuration of the snapshot from the yml file.
@@ -1627,8 +1678,8 @@ def add_gpg_keys(mirror_config):
     """
     keys_urls = {}
     if 'gpg-keys' in mirror_config:
-        keys = mirror_config['gpg-keys']
-        if 'gpg-urls' in mirror_config:
+        keys = unit_or_list_to_list(mirror_config['gpg-keys'])
+        if 'gpg-urls' in unit_or_list_to_list(mirror_config):
             urls = mirror_config['gpg-urls']
             urls_len = len(urls)
             for x in range(len(keys)):
@@ -1674,6 +1725,8 @@ def add_gpg_keys(mirror_config):
 def cmd_mirror_create(cfg, mirror_name, mirror_config):
     """Create a mirror create command to be ordered and executed later.
 
+    :param           cfg: The configuration yml as dict
+    :type            cfg: dict
     :param   mirror_name: Name of the mirror to create
     :type    mirror_name: str
     :param mirror_config: Configuration of the snapshot from the yml file.
@@ -1693,7 +1746,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     if 'udeb' in mirror_config and mirror_config['udeb']:
         aptly_cmd.append('-with-udebs')
 
-    if 'architectures' in mirror_config:
+    if 'architectures' in unit_or_list_to_list(mirror_config):
         aptly_cmd.append('-architectures={0}'.format(
             ','.join(unit_or_list_to_list(mirror_config['architectures']))
         ))
@@ -1710,6 +1763,8 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
 def cmd_mirror_update(cfg, mirror_name, mirror_config):
     """Create a mirror update command to be ordered and executed later.
 
+    :param           cfg: pyaptly config
+    :type            cfg: dict
     :param   mirror_name: Name of the mirror to create
     :type    mirror_name: str
     :param mirror_config: Configuration of the snapshot from the yml file.

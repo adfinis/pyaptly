@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 3
 
    README
+   format
    modules
 
 
