@@ -1679,8 +1679,8 @@ def add_gpg_keys(mirror_config):
     keys_urls = {}
     if 'gpg-keys' in mirror_config:
         keys = unit_or_list_to_list(mirror_config['gpg-keys'])
-        if 'gpg-urls' in unit_or_list_to_list(mirror_config):
-            urls = mirror_config['gpg-urls']
+        if 'gpg-urls' in mirror_config:
+            urls = unit_or_list_to_list(mirror_config['gpg-urls'])
             urls_len = len(urls)
             for x in range(len(keys)):
                 if x < urls_len:
@@ -1746,7 +1746,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     if 'udeb' in mirror_config and mirror_config['udeb']:
         aptly_cmd.append('-with-udebs')
 
-    if 'architectures' in unit_or_list_to_list(mirror_config):
+    if 'architectures' in mirror_config:
         aptly_cmd.append('-architectures={0}'.format(
             ','.join(unit_or_list_to_list(mirror_config['architectures']))
         ))
