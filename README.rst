@@ -7,7 +7,7 @@ input files.
 
 Documentation_
 
-.. _Documentation: https://docs.adfinis-sygroup.ch/roche/pyaptly/
+.. _Documentation: https://docs.adfinis-sygroup.ch/rochediag/pyaptly/
 
 Example commands
 ----------------
