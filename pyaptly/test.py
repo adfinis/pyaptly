@@ -146,6 +146,12 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
                 b"%s/.gnupg/" % old_home,
                 b"/tmp/.gnupg"
             )
+            subprocess.check_call([
+                b'chmod',
+                b'-R',
+                b'og-rwx',
+                b"/tmp/.gnupg"
+            ])
             input_, file_ = create_config(test_input)
             try:
                 subprocess.check_call([
