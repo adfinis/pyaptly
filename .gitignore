@@ -13,3 +13,4 @@ __pycache__
 /.gnupg
 /.aptly.conf
 /.aptly
+/.local

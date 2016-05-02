@@ -1,2 +1,2 @@
 export HOME="$(pwd)"
-export PATH="$HOME/aptly_0.9.6_linux_amd64/:$PATH"
+export PATH="$HOME/.aptly-bin/:$PATH"

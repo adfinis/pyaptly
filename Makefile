@@ -2,11 +2,11 @@
 PROJECT := pyaptly
 
 export HOME := $(shell pwd)
-export PATH := $(HOME)/aptly_0.9.6_linux_amd64/:$(PATH)
+export PATH := $(HOME)/.aptly-bin/:$(PATH)
 
 include pyproject/Makefile
 
-local-test: webserver test
+test-local: webserver test
 
 .gnupg:
 	bash -c '[[ "$$HOME" == *"pyaptly.src"* ]]'
