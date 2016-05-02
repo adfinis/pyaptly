@@ -10,6 +10,7 @@ test-local: webserver test
 
 .gnupg:
 	bash -c '[[ "$$HOME" == *"pyaptly"* ]]'
+	gpg -k
 	gpg --yes --import < vagrant/key.pub
 	gpg --yes --import < vagrant/key.sec
 	gpg --yes --batch --no-default-keyring --keyring trustedkeys.gpg --import < vagrant/key.pub

@@ -132,26 +132,26 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     file_ = None
     try:
         old_home = os.environ['HOME'].encode("UTF-8")
-        os.environ['HOME'] = "/tmp"
+        new_home = os.path.join(old_home, ".work")
+        try:
+            shutil.rmtree(new_home)
+        except OSError:  # pragma: no cover
+            pass
+        os.mkdir(new_home)
+        os.environ['HOME'] = new_home
         with freezegun.freeze_time(freeze):
             try:
-                shutil.rmtree(b"/tmp/.aptly")
+                shutil.rmtree(b"%s/.aptly" % new_home)
             except OSError:  # pragma: no cover
                 pass
             try:
-                shutil.rmtree(b"/tmp/.gnupg")
+                shutil.rmtree(b"%s/.gnupg" % new_home)
             except OSError:  # pragma: no cover
                 pass
             shutil.copytree(
                 b"%s/.gnupg/" % old_home,
-                b"/tmp/.gnupg"
+                b"%s/.gnupg" % new_home
             )
-            subprocess.check_call([
-                b'chmod',
-                b'-R',
-                b'og-rwx',
-                b"/tmp/.gnupg"
-            ])
             input_, file_ = create_config(test_input)
             try:
                 subprocess.check_call([
@@ -170,3 +170,4 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
         os.environ['HOME'] = old_home.decode("UTF-8")
         if file_:
             os.unlink(file_)
+        shutil.rmtree(new_home)
