@@ -148,27 +148,27 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
         environb[b'HOME'] = new_home
         with freezegun.freeze_time(freeze):
             try:
-                shutil.rmtree(b"%s/.aptly" % new_home)
+                shutil.rmtree("%s/.aptly" % new_home.decode("UTF-8"))
             except OSError:  # pragma: no cover
                 pass
             try:
-                shutil.rmtree(b"%s/.gnupg" % new_home)
+                shutil.rmtree("%s/.gnupg" % new_home.decode("UTF-8"))
             except OSError:  # pragma: no cover
                 pass
             shutil.copytree(
-                b"%s/.gnupg/" % old_home,
-                b"%s/.gnupg" % new_home
+                "%s/.gnupg/" % old_home.decode("UTF-8"),
+                "%s/.gnupg" % new_home.decode("UTF-8")
             )
             input_, file_ = create_config(test_input)
             try:
                 subprocess.check_call([
-                    'gpg',
-                    '--keyring',
-                    'trustedkeys.gpg',
-                    '--batch',
-                    '--yes',
-                    '--delete-key',
-                    '7FAC5991',
+                    b'gpg',
+                    b'--keyring',
+                    b'trustedkeys.gpg',
+                    b'--batch',
+                    b'--yes',
+                    b'--delete-key',
+                    b'7FAC5991',
                 ])
             except subprocess.CalledProcessError:
                 pass
