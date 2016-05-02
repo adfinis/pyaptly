@@ -4,6 +4,7 @@ import codecs
 import contextlib
 import os
 import shutil
+import six
 import subprocess
 import sys
 import tempfile
@@ -18,6 +19,11 @@ hypothesis_min_ver = pytest.mark.skipif(
     sys.version_info < (2, 7),
     reason="requires python2.7"
 )
+
+if six.PY2:  # pragma: no cover
+    environb = os.environ
+else:
+    environb = os.environb
 
 
 def read_yml(file_):
@@ -123,7 +129,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     :param     freeze: str
     :rtype:            (dict, str)
     """
-    if "pyaptly" not in os.environ['HOME']:  # pragma: no cover
+    if b"pyaptly" not in environb[b'HOME']:  # pragma: no cover
         raise ValueError(
             "Not safe to test here. Either you haven't set HOME to the "
             "repository path %s. Or you havn't checked out the repository "
@@ -132,14 +138,14 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     file_ = None
     new_home = None
     try:
-        old_home = os.environ['HOME'].encode("UTF-8")
+        old_home = environb[b'HOME']
         new_home = os.path.join(old_home, b".work")
         try:
             shutil.rmtree(new_home)
         except OSError:  # pragma: no cover
             pass
         os.mkdir(new_home)
-        os.environ['HOME'] = new_home
+        environb[b'HOME'] = new_home
         with freezegun.freeze_time(freeze):
             try:
                 shutil.rmtree(b"%s/.aptly" % new_home)
@@ -168,7 +174,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
                 pass
             yield (input_, file_)
     finally:
-        os.environ['HOME'] = old_home.decode("UTF-8")
+        environb[b'HOME'] = old_home
         if file_:
             os.unlink(file_)
         if new_home:

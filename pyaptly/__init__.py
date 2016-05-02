@@ -6,6 +6,8 @@ import collections
 import datetime
 import logging
 import re
+import os
+import six
 import subprocess
 import sys
 
@@ -14,12 +16,16 @@ import yaml
 
 _logging_setup = False
 
+if six.PY2:
+    environb = os.environ  # pragma: no cover
+else:
+    environb = os.environb
+
 
 def init_hypothesis():
     """Initialize hypotesis profile is hypothesis is available"""
     try:  # pragma: no cover:w
-        import os
-        if 'HYPOTHESIS_PROFILE' in os.environ:
+        if b'HYPOTHESIS_PROFILE' in environb:
             from hypothesis import Settings
             Settings.register_profile("ci", Settings(
                 max_examples=10000
