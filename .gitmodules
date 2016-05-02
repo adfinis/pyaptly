@@ -6,4 +6,4 @@
 	url = https://github.com/wolfcw/libfaketime.git
 [submodule "doc/adsy-sphinx-template.src"]
 	path = doc/adsy-sphinx-template.src
-	url = https://git.adfinis-sygroup.ch/ad-sy/adsy-sphinx-template.src.git
+	url = https://github.com/adfinis-sygroup/adsy-sphinx-template.git
