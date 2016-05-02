@@ -123,11 +123,11 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     :param     freeze: str
     :rtype:            (dict, str)
     """
-    if "pyaptly.src" not in os.environ['HOME']:  # pragma: no cover
+    if "pyaptly" not in os.environ['HOME']:  # pragma: no cover
         raise ValueError(
             "Not safe to test here. Either you haven't set HOME to the "
             "repository path %s. Or you havn't checked out the repository "
-            "as pyaptly.src." % os.path.abspath('.')
+            "as pyaptly." % os.path.abspath('.')
         )
     file_ = None
     try:

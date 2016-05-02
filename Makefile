@@ -9,7 +9,7 @@ include pyproject/Makefile
 test-local: webserver test
 
 .gnupg:
-	bash -c '[[ "$$HOME" == *"pyaptly.src"* ]]'
+	bash -c '[[ "$$HOME" == *"pyaptly"* ]]'
 	gpg --import < vagrant/key.pub
 	gpg --import < vagrant/key.sec
 	gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < vagrant/key.pub
