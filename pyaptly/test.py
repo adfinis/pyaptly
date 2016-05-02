@@ -130,6 +130,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
             "as pyaptly." % os.path.abspath('.')
         )
     file_ = None
+    new_home = None
     try:
         old_home = os.environ['HOME'].encode("UTF-8")
         new_home = os.path.join(old_home, ".work")
@@ -170,4 +171,5 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
         os.environ['HOME'] = old_home.decode("UTF-8")
         if file_:
             os.unlink(file_)
-        shutil.rmtree(new_home)
+        if new_home:
+            shutil.rmtree(new_home)
