@@ -11,11 +11,9 @@ test-local: webserver test
 .gnupg:
 	bash -c '[[ "$$HOME" == *"pyaptly"* ]]'
 	gpg -k
-	echo "personal-digest-preferences SHA512 SHA384 SHA256 SHA224" >> .gnupg/gpg.conf
-	echo "default-preference-list SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 BZIP2 ZLIB ZIP Uncompressed" >> .gnupg/gpg.conf
-	gpg --yes --import < vagrant/key.pub
-	gpg --yes --import < vagrant/key.sec
-	gpg --yes --batch --no-default-keyring --keyring trustedkeys.gpg --import < vagrant/key.pub
+	gpg --batch --import < vagrant/key.pub
+	gpg --batch --import < vagrant/key.sec
+	gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < vagrant/key.pub
 
 .aptly:
 	aptly repo create -architectures="amd64" fakerepo01
