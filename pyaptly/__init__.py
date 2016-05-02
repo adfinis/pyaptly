@@ -5,13 +5,13 @@ import codecs
 import collections
 import datetime
 import logging
-import re
 import os
-import six
+import re
 import subprocess
 import sys
 
 import freeze
+import six
 import yaml
 
 _logging_setup = False

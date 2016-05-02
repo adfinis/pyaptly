@@ -4,13 +4,13 @@ import codecs
 import contextlib
 import os
 import shutil
-import six
 import subprocess
 import sys
 import tempfile
 
 import freezegun
 import pytest
+import six
 import yaml
 
 import pyaptly
