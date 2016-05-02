@@ -46,7 +46,7 @@ Autoamtic
 .. code:: shell
 
    git submodule update --init --recursive
-   make local-test
+   make test-local
 
 Manual. There is a safity check in tests. They won't work if you don't set
 $HOME.
