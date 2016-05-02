@@ -2,27 +2,14 @@
 
 from setuptools import setup
 from setuptools import find_packages
-from setuptools.command.install import install
-import sys
 import os
 
-version = sys.version_info[0]
-if version > 2:
-    pass
-else:
-    pass
 
 __version__  = None
 version_file = "pyaptly/version.py"
 with open(version_file) as f:
     code = compile(f.read(), version_file, 'exec')
     exec(code)
-
-
-class CustomInstallCommand(install):
-    """CustomInstallCommand"""
-    def run(self):
-        install.run(self)
 
 
 def find_data(packages, extensions):
@@ -68,9 +55,6 @@ setup(
         "freeze",
         "six"
     ],
-    cmdclass = {
-        'install': CustomInstallCommand,
-    },
     author = "Adfinis-SyGroup",
     author_email = "https://adfinis-sygroup.ch/",
     description = "Aptly mirror/snapshot managment automation.",
@@ -78,7 +62,7 @@ setup(
     keywords = "aptly mirror snapshot automation",
     url = "https://adfinis-sygroup.ch",
     classifiers = [
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
@@ -87,5 +71,8 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
     ]
 )
