@@ -133,7 +133,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     new_home = None
     try:
         old_home = os.environ['HOME'].encode("UTF-8")
-        new_home = os.path.join(old_home, ".work")
+        new_home = os.path.join(old_home, b".work")
         try:
             shutil.rmtree(new_home)
         except OSError:  # pragma: no cover
