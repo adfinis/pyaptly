@@ -2,5 +2,5 @@ mirror:
   google-chrome: 
     archive: "http://dl.google.com/linux/chrome/deb/"
     distribution: "stable"
-    gpg-keys: ["7FAC5991"]
+    gpg-keys: ["7FAC5991", "1397BC53640DB551"]
     gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
