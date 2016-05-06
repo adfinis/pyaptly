@@ -19,7 +19,7 @@ _logging_setup = False
 if six.PY2:
     environb = os.environ  # pragma: no cover
 else:
-    environb = os.environb
+    environb = os.environb  # pragma: no cover
 
 
 def init_hypothesis():
@@ -643,7 +643,7 @@ class SystemStateReader(object):
         if type_ == 'mirror':  # pragma: no cover
             return name in self.mirrors
         elif type_ == 'snapshot':
-            return name in self.snapshots
+            return name in self.snapshots  # pragma: no cover
         elif type_ == 'gpg_key':  # pragma: no cover
             return name in self.gpg_keys  # Not needed ATM
         elif type_ == 'virtual':
