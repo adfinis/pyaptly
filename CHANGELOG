@@ -1,10 +1,15 @@
 # This file is python syntax
 CHANGELOG = [
-	{
-		'version' : '0.1',
-		'date'    : "2016-05-05T13:00:00+01:00",
-		'changes' : [
-			"Initial release",
-		]
-	},
+    {
+        'version' : "1.0.0",
+        'date'    : "2016-05-06T19:40:42",
+        'author'  : "Jean-Louis Fuchs <ganwell@fangorn.ch>",
+        'changes' : [
+            "Added CHANGELOG",
+            [
+                "https://github.com/adfinis-sygroup/pyaptly/commit/9f8ea2e",
+            ],
+
+        ],
+    },
 ]

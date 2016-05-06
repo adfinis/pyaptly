@@ -1,12 +1,13 @@
 .PHONY: webserver
 PROJECT := pyaptly
-
-export HOME := $(shell pwd)
-export PATH := $(HOME)/.aptly-bin/:$(PATH)
+GIT_HUB := "https://github.com/adfinis-sygroup/pyaptly"
 
 include pyproject/Makefile
 
-test-local: webserver test
+test-local:
+	source testenv; \
+	make webserver && \
+	make test
 
 .gnupg:
 	bash -c '[[ "$$HOME" == *"pyaptly"* ]]'

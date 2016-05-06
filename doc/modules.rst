@@ -11,3 +11,4 @@ Internal API
    dateround_test
    helpers_test
    test_test
+   graph_test
