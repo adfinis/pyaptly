@@ -1,10 +1,10 @@
 mirror:
   fakerepo01: 
     archive: "http://localhost:8421/fakerepo01"
-    gpg-keys: ["437D05B5"]
+    gpg-keys: ["5ED1AC57"]
   fakerepo02:
     archive: "http://localhost:8421/fakerepo02"
-    gpg-keys: ["437D05B5"]
+    gpg-keys: ["5ED1AC57"]
   google-chrome: 
     archive: "http://dl.google.com/linux/chrome/deb/"
     distribution: "stable"
