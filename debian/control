@@ -10,13 +10,13 @@ Homepage: https://github.com/adfinis-sygroup/pyaptly
 Vcs-Git: https://github.com/adfinis-sygroup/pyaptly
 Vcs-Browser: https://github.com/adfinis-sygroup/pyaptly
 
-Package: python-finja
+Package: python-pyaptly
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}, python-pkg-resources
 Description: Automates the creation and managment of aptly mirrors and snapshots based on yml input files.
  TODO text here
 
-Package: python3-finja
+Package: python3-pyaptly
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, python3-pkg-resources
 Description: Automates the creation and managment of aptly mirrors and snapshots based on yml input files.
