@@ -5,6 +5,12 @@ CHANGELOG = [
         'date'    : "2016-05-06T19:40:42+0000",
         'author'  : "Jean-Louis Fuchs <ganwell@fangorn.ch>",
         'changes' : [
+            "Merge pull request #2 from ganwell/master",
+            [
+                "https://github.com/adfinis-sygroup/pyaptly/pull/2",
+                "Semi-Automatic Release of deb and rpm Packages",
+            ],
+
             "Added CHANGELOG",
             [
                 "https://github.com/adfinis-sygroup/pyaptly/commit/9f8ea2e",
