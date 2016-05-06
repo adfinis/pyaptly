@@ -23,7 +23,7 @@ hypothesis_min_ver = pytest.mark.skipif(
 if six.PY2:  # pragma: no cover
     environb = os.environ
 else:
-    environb = os.environb
+    environb = os.environb  # pragma: no cover
 
 
 def read_yml(file_):

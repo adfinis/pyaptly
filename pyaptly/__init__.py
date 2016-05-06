@@ -19,7 +19,7 @@ _logging_setup = False
 if six.PY2:
     environb = os.environ  # pragma: no cover
 else:
-    environb = os.environb
+    environb = os.environb  # pragma: no cover
 
 
 def init_hypothesis():
@@ -643,7 +643,7 @@ class SystemStateReader(object):
         if type_ == 'mirror':  # pragma: no cover
             return name in self.mirrors
         elif type_ == 'snapshot':
-            return name in self.snapshots
+            return name in self.snapshots  # pragma: no cover
         elif type_ == 'gpg_key':  # pragma: no cover
             return name in self.gpg_keys  # Not needed ATM
         elif type_ == 'virtual':
@@ -824,21 +824,21 @@ def round_timestamp(timestamp_config, date=None):
     ...     {'timestamp': {'time': '00:00'}},
     ...     datetime.datetime(2015,10,7, 15,30)  # A Wednesday
     ... )
-    foo-20151007T0000Z
+    'foo-20151007T0000Z'
 
     >>> expand_timestamped_name(
     ...     'foo-%T',
     ...     {'timestamp': {'time': '00:00', 'repeat-weekly': 'mon'}},
     ...     datetime.datetime(2015,10,8, 15,30)  # A Thursday
     ... )
-    foo-20151005T0000Z
+    'foo-20151005T0000Z'
 
     >>> expand_timestamped_name(
     ...     'foo',  # No %T placeholder, timestamp info is ignored
     ...     {'timestamp': {'time': '00:00', 'repeat-weekly': 'mon'}},
     ...     datetime.datetime(2015,10,8, 15,30)
     ... )
-    foo
+    'foo'
 
     :param timestamp_config: Contains the recurrence specification for the
                              timestamp.

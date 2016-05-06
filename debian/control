@@ -1,0 +1,23 @@
+Source: pyaptly
+Section: python
+Priority: optional
+Maintainer: Jean-Louis Fuchs - Adfinis-SyGroup <jean-louis.fuchs@adfinis-sygroup.ch>
+Uploaders: Jean-Louis Fuchs - Adfinis-SyGroup <jean-louis.fuchs@adfinis-sygroup.ch>
+Build-Depends: debhelper (>= 9), dh-python, python-all, python3-all,
+ python-setuptools, python3-setuptools
+Standards-Version: 3.9.4
+Homepage: https://github.com/adfinis-sygroup/pyaptly
+Vcs-Git: https://github.com/adfinis-sygroup/pyaptly
+Vcs-Browser: https://github.com/adfinis-sygroup/pyaptly
+
+Package: python-pyaptly
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, python-pkg-resources
+Description: Automates the creation and managment of aptly mirrors and snapshots based on yml input files.
+ TODO text here
+
+Package: python3-pyaptly
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-pkg-resources
+Description: Automates the creation and managment of aptly mirrors and snapshots based on yml input files.
+ TODO text here

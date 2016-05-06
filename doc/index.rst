@@ -14,7 +14,7 @@ Contents:
    README
    format
    modules
-
+   CHANGELOG
 
 
 Indices and tables
