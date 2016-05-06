@@ -4,10 +4,11 @@ GIT_HUB := "https://github.com/adfinis-sygroup/pyaptly"
 
 include pyproject/Makefile
 
-test-local:
+test-local: flake8 isort-check
+	@make test > /dev/null 2> /dev/null; true
 	source testenv; \
 	make webserver && \
-	make test
+	make pytest
 
 .gnupg:
 	bash -c '[[ "$$HOME" == *"pyaptly"* ]]'
