@@ -2,7 +2,7 @@
 CHANGELOG = [
     {
         'version' : "1.0.0",
-        'date'    : "2016-05-06T19:40:42",
+        'date'    : "2016-05-06T19:40:42+0000",
         'author'  : "Jean-Louis Fuchs <ganwell@fangorn.ch>",
         'changes' : [
             "Added CHANGELOG",

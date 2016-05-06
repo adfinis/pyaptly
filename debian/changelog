@@ -1,6 +1,6 @@
-pyaptly (1.0.0) stable; urgency=low
+pyaptly (1.0.0-1) stable; urgency=low
 
   * Added CHANGELOG
    - https://github.com/adfinis-sygroup/pyaptly/commit/9f8ea2e
 
- -- Jean-Louis Fuchs <ganwell@fangorn.ch>  Fri, 06 May 2016 19:40:42
+ -- Jean-Louis Fuchs <ganwell@fangorn.ch>  Fri, 06 May 2016 19:40:42 +0000

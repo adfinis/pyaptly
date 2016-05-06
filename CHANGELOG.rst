@@ -8,7 +8,7 @@ pyaptly
 Version 1.0.0
 ===============
 
-released 2016-05-06T19:40:42 by Jean-Louis Fuchs <ganwell@fangorn.ch>:
+released 2016-05-06T19:40:42+0000 by Jean-Louis Fuchs <ganwell@fangorn.ch>:
 
 
 * Added CHANGELOG
