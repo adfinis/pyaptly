@@ -1,0 +1,10 @@
+# This file is python syntax
+CHANGELOG = [
+	{
+		'version' : '0.1',
+		'date'    : "2016-05-05T13:00:00+01:00",
+		'changes' : [
+			"Initial release",
+		]
+	},
+]
