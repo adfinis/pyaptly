@@ -15,13 +15,6 @@ doc:
     - make doc
     - rsync -av --delete doc/_build/html/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/public/pyaptly/
 
-test26:
-  stage: test
-  script:
-    - pyenv local 2.6.9
-    - make webserver
-    - make pytest-no-cov
-
 test27:
   stage: test
   script:
