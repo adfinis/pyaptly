@@ -1,6 +1,6 @@
 before_script:
   - source /etc/profile
-  - git submodule update --init --recursive
+  - GIT_SSL_NO_VERIFY=true git submodule update --init --recursive
 
 stages:
   - doc
