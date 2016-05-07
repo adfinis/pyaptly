@@ -121,7 +121,7 @@ todo_include_todos = True
 # -- Options for HTML output ----------------------------------------------
 html_context = {
     'source_url_prefix':
-    "https://git.adfinis-sygroup.ch/roche/pyaptly.src/blob/stable/doc/",
+    "https://github.com/adfinis-sygroup/pyaptly/tree/master/doc/",
     'source_suffix': ".rst",
 }
 # The theme to use for HTML and HTML Help pages.  See the documentation for
