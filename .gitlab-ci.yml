@@ -1,6 +1,6 @@
 before_script:
   - source /etc/profile
-  - git submodule update --init --recursive
+  - GIT_SSL_NO_VERIFY=true git submodule update --init --recursive
 
 stages:
   - doc
@@ -10,25 +10,19 @@ doc:
   stage: doc
   script:
     - pyenv local 3.5.1
-    - make all-deps
+    - make install
+    - make .deps/pytest .deps/hypothesis .deps/freeze .deps/testfixtures
     - make doc
-    - rsync -av --delete doc/_build/html/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/rochediag/pyaptly/
-
-test26:
-  stage: test
-  script:
-    - pyenv local 2.6.9
-    - make webserver
-    - make pytest-no-cov
+    - rsync -av --delete doc/_build/html/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/public/pyaptly/
 
 test27:
   stage: test
   script:
     - pyenv local 2.7.11
-    - make local-test
+    - make test-local
 
 test3:
   stage: test
   script:
     - pyenv local 3.5.1
-    - make local-test
+    - make test-local
