@@ -5,9 +5,17 @@ Pyaptly
 Automates the creation and managment of aptly mirrors and snapshots based on yml
 input files.
 
-Documentation_
+|travis| |coverage| [1]_
 
-.. _Documentation: https://docs.adfinis-sygroup.ch/public/pyaptly/
+.. |travis|  image:: https://travis-ci.org/adfinis-sygroup/pyaptly.png?branch=master
+   :target: https://travis-ci.org/adfinis-sygroup/pyaptly
+.. |coverage| image:: https://img.shields.io/badge/coverage-100%25-brightgreen.svg
+
+`Read the Docs`_
+
+.. _`Read the Docs`: https://docs.adfinis-sygroup.ch/public/pyaptly/
+
+.. [1] Coverage enforced by tests (on travis)
 
 Example commands
 ----------------
