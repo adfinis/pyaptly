@@ -1,3 +1,11 @@
+pyaptly (1.0.1-1) stable; urgency=low
+
+  * Merge pull request #3 from ganwell/master
+   - https://github.com/adfinis-sygroup/pyaptly/pull/3
+   - Change to public documentation location
+
+ -- Jean-Louis Fuchs <ganwell@fangorn.ch>  Sat, 07 May 2016 14:17:42 +0000
+
 pyaptly (1.0.0-1) stable; urgency=low
 
   * Merge pull request #2 from ganwell/master
