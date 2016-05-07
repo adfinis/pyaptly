@@ -10,9 +10,9 @@ doc:
   stage: doc
   script:
     - pyenv local 3.5.1
-    - make all-deps
+    - make install
     - make doc
-    - rsync -av --delete doc/_build/html/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/rochediag/pyaptly/
+    - rsync -av --delete doc/_build/html/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/public/pyaptly/
 
 test26:
   stage: test
@@ -25,10 +25,10 @@ test27:
   stage: test
   script:
     - pyenv local 2.7.11
-    - make local-test
+    - make test-local
 
 test3:
   stage: test
   script:
     - pyenv local 3.5.1
-    - make local-test
+    - make test-local
