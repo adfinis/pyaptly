@@ -1,6 +1,19 @@
 # This file is python syntax
 CHANGELOG = [
     {
+        'version' : "1.0.1",
+        'date'    : "2016-05-07T14:17:42+0000",
+        'author'  : "Jean-Louis Fuchs <ganwell@fangorn.ch>",
+        'changes' : [
+            "Merge pull request #3 from ganwell/master",
+            [
+                "https://github.com/adfinis-sygroup/pyaptly/pull/3",
+                "Change to public documentation location",
+            ],
+
+        ],
+    },
+    {
         'version' : "1.0.0",
         'date'    : "2016-05-06T19:40:42+0000",
         'author'  : "Jean-Louis Fuchs <ganwell@fangorn.ch>",
