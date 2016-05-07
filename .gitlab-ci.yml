@@ -11,7 +11,7 @@ doc:
   script:
     - pyenv local 3.5.1
     - make install
-    - make .deps/pytest .deps/hypothesis .deps/freeze
+    - make .deps/pytest .deps/hypothesis .deps/freeze .deps/testfixtures
     - make doc
     - rsync -av --delete doc/_build/html/ doc-sync@docs.adfinis-sygroup.ch:/var/www/html/public/pyaptly/
 
