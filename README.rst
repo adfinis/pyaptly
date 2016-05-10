@@ -20,7 +20,7 @@ input files.
 Example commands
 ----------------
 
-Initialize a new Aptly server.
+Initialize a new aptly server.
 
 .. code:: shell
 
@@ -49,14 +49,14 @@ ubuntu/stable.
 Testing
 -------
 
-Autoamtic
+Automatic
 
 .. code:: shell
 
    git submodule update --init --recursive
    make test-local
 
-Manual. There is a safity check in tests. They won't work if you don't set
+Manual. There is a safety check in tests. They won't work if you don't set
 $HOME.
 
 .. code:: shell
