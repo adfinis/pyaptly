@@ -26,13 +26,14 @@ yml_st = st.recursive(
     st.floats(-1, 1) | st.booleans() |
     st.text() | st.none() | st.binary(),
     lambda children: st.lists(
-        children, average_size=5, max_size=15
+        children, average_size=5, max_size=10
     ) | st.dictionaries(
         st.text(),
         children,
         average_size=5,
-        max_size=15
-    )
+        max_size=10
+    ),
+    max_leaves=30
 )
 
 

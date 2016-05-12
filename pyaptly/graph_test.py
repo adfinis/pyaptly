@@ -15,7 +15,7 @@ if sys.version_info < (2, 7):  # pragma: no cover
     example = mock.MagicMock()  # noqa
     st = mock.MagicMock()  # noqa
 
-RES_COUNT = 35
+RES_COUNT = 20
 
 range_intagers_st = st.integers(min_value=0, max_value=RES_COUNT)
 
@@ -25,10 +25,10 @@ def provide_require_st(draw, filter_=True):
     commands = draw(range_intagers_st)
     provides = draw(
         st.lists(
-            st.lists(range_intagers_st),
+            st.lists(range_intagers_st, max_size=10),
             min_size = commands,
             max_size = commands
-        )
+        ),
     )
     is_func = draw(
         st.lists(
@@ -53,7 +53,7 @@ def provide_require_st(draw, filter_=True):
                 provides_filter = provides_set
             if provides_filter:
                 sample = st.sampled_from(provides_filter)
-                requires.append(draw(st.lists(sample)))
+                requires.append(draw(st.lists(sample, max_size=10)))
             else:
                 requires.append([])
     else:
