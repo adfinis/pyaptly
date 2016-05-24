@@ -579,17 +579,21 @@ class SystemStateReader(object):
             "aptly", "snapshot", "list"
         ])
 
-        for snapshot_outer in self.snapshots:
-            self.snapshot_map[snapshot_outer] = set()
-            re_snap = re.compile(
-                r"^\s*\*\s+\[%s\]" %
-                snapshot_outer
-            )
-            for line in data.split("\n"):
-                if re_snap.match(line):
-                    for snapshot in self.snapshots:
-                        if re.match(".*sources.*'%s'" % snapshot, line):
-                            self.snapshot_map[snapshot_outer].add(snapshot)
+        re_snap = re.compile(r"^\s*\*\s+\[([\w\d-]+)\]")
+
+        for line in data.split("\n"):
+            match = re_snap.match(line)
+            if match:
+                snapshot_outer = match.group(1)
+                if snapshot_outer not in self.snapshot_map:
+                    self.snapshot_map[snapshot_outer] = set()
+
+                sources_match = re.match(
+                    ".*Merged from sources:[\s']*(.*)'", line)
+                if sources_match:
+                    sources = re.split(r"[ ,']+", sources_match.group(1))
+                    self.snapshot_map[snapshot_outer].update(sources)
+
         lg.debug(
             'Joined snapshots with self(snapshots): %s',
             self.snapshot_map
