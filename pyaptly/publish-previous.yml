@@ -1,0 +1,8 @@
+snapshot:
+  superfake-%T:
+    timestamp: {"time": "00:00"}
+    merge:
+      - {"name": "fakerepo01-%T", "timestamp": "previous"}
+      - {"name": "fakerepo02-%T", "timestamp": 0}
+merge:
+  - "snapshot.yml"
