@@ -1359,11 +1359,14 @@ def snapshot_spec_to_name(cfg, snapshot):
         if back_ref is None:
             back_ref = int(ts)
         reference = cfg['snapshot'][name]
+
+        timestamp = datetime.datetime.now()
         for _ in range(back_ref + 1):
-            cur_timestamp = round_timestamp(reference["timestamp"])
-            cur_timestamp -= delta
-        cur_timestamp += delta
-        return name.replace('%T', format_timestamp(cur_timestamp))
+            timestamp = round_timestamp(reference["timestamp"], timestamp)
+            timestamp -= delta
+
+        timestamp += delta
+        return name.replace('%T', format_timestamp(timestamp))
     else:  # pragma: no cover
         return snapshot
 

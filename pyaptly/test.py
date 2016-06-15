@@ -155,6 +155,10 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
                 shutil.rmtree("%s/.gnupg" % new_home.decode("UTF-8"))
             except OSError:  # pragma: no cover
                 pass
+            try:
+                os.unlink('%s/.gnupg/S.gpg-agent' % old_home.decode("UTF-8"))
+            except OSError:
+                pass
             shutil.copytree(
                 "%s/.gnupg/" % old_home.decode("UTF-8"),
                 "%s/.gnupg" % new_home.decode("UTF-8")
@@ -170,7 +174,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
                     b'--delete-key',
                     b'7FAC5991',
                 ])
-            except subprocess.CalledProcessError:
+            except subprocess.CalledProcessError:  # pragma: no cover
                 pass
             yield (input_, file_)
     finally:

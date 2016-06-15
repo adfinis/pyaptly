@@ -1,10 +1,16 @@
 """Dateround tests"""
 
 import datetime
+import os.path
 import sys
 
 from . import (date_round_daily, date_round_weekly, iso_to_gregorian,  # noqa
-               test, time_delta_helper, time_remove_tz)
+               snapshot_spec_to_name, test, time_delta_helper, time_remove_tz)
+
+_test_base = os.path.dirname(
+    os.path.abspath(__file__)
+).encode("UTF-8")
+
 
 if not sys.version_info < (2, 7):
     from hypothesis import given  # noqa
@@ -186,3 +192,18 @@ def test_daily_examples():
     )
     rounded = date_round_daily(date, time)
     assert datetime.datetime(2015, 10, 1, 11, 0) == rounded
+
+
+def test_snapshot_spec_to_name():
+    with test.clean_and_config(os.path.join(
+            _test_base,
+            b"publish-previous.yml",
+    )) as (tyml, config):
+
+        snaps = tyml['snapshot']['superfake-%T']['merge']
+
+        rounded1 = snapshot_spec_to_name(tyml, snaps[0])
+        rounded2 = snapshot_spec_to_name(tyml, snaps[1])
+
+        assert rounded1 == 'fakerepo01-20121009T0000Z'
+        assert rounded2 == 'fakerepo02-20121006T0000Z'
