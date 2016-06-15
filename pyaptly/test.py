@@ -174,7 +174,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
                     b'--delete-key',
                     b'7FAC5991',
                 ])
-            except subprocess.CalledProcessError:
+            except subprocess.CalledProcessError:  # pragma: no cover
                 pass
             yield (input_, file_)
     finally:

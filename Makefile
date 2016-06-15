@@ -15,6 +15,8 @@ test-local:
 	gpg --batch --import < vagrant/key.pub
 	gpg --batch --import < vagrant/key.sec
 	gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < vagrant/key.pub
+	cat vagrant/*.key | gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import
+	gpg -k
 
 .aptly:
 	aptly repo create -architectures="amd64" fakerepo01

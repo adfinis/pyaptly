@@ -5,7 +5,7 @@ import os.path
 import sys
 
 from . import (date_round_daily, date_round_weekly, iso_to_gregorian,  # noqa
-               test, time_delta_helper, time_remove_tz, snapshot_spec_to_name)
+               snapshot_spec_to_name, test, time_delta_helper, time_remove_tz)
 
 _test_base = os.path.dirname(
     os.path.abspath(__file__)
