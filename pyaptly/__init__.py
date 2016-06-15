@@ -545,7 +545,7 @@ class SystemStateReader(object):
         lg.debug('GPG returned: %s', data)
         for line in data.split("\n"):
             field = line.split(":")
-            if field[0] == "pub":
+            if field[0] in ("pub", "sub"):
                 key = field[4]
                 key_short = key[8:]
                 self.gpg_keys.add(key)
