@@ -437,8 +437,8 @@ class Command(object):
 
 class FunctionCommand(Command):
     """Repesents a function command and is used to resolve dependencies between
-    such commands. This command executes the given function. *args and **kwargs
-    are passed through.
+    such commands. This command executes the given function. \*args and
+    \*\*kwargs are passed through.
 
     :param func: The function to execute
     :type  func: callable
