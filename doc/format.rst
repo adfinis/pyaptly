@@ -155,6 +155,7 @@ Defining a publish
          components: "main"
          repo: "icaclient"
          automatic-update: true
+         gpg-key: "7FAC5991"
 
 The name of the publish may include slashes: I.e. "ubuntu/latest".
 
@@ -210,3 +211,13 @@ Additional fields are:
       explicitly name it: "pyaptly publish update ubuntu/stable". If you just
       call "pyaptly pulish update", the will stay on the last publish point
       (snapshot).
+
+   gpg-key
+      The key must exist in the users gpg-database and if the database has a
+      password the gpg-agent must be active and the password must have been
+      entered.
+
+      See also gpg-agent.conf:
+
+      default-cache-ttl 31536000  # A Year
+      max-cache-ttl 31536000
