@@ -14,10 +14,8 @@ Package: python-pyaptly
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}, python-pkg-resources
 Description: Automates the creation and managment of aptly mirrors and snapshots based on yml input files.
- TODO text here
 
 Package: python3-pyaptly
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, python3-pkg-resources
 Description: Automates the creation and managment of aptly mirrors and snapshots based on yml input files.
- TODO text here
