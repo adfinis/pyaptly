@@ -1516,10 +1516,17 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
                 name,
                 publish['distribution']
         ) in state.publishes:
-            for snap in publish['snapshots']:
-                snap_name = snapshot_spec_to_name(cfg, snap)
-                if snap_name in affected_snapshots:
-                    return True
+            try:
+                for snap in publish['snapshots']:
+                    snap_name = snapshot_spec_to_name(cfg, snap)
+                    if snap_name in affected_snapshots:
+                        return True
+            except KeyError:  # pragma: no cover
+                lg.debug((
+                    "Publish endpoint %s is not affected because it has no "
+                    "snapshots defined"
+                ) % name)
+                return False
         return False
 
     if 'publish' in cfg:
