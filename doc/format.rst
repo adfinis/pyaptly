@@ -220,4 +220,5 @@ Additional fields are:
       See also gpg-agent.conf:
 
       default-cache-ttl 31536000  # A Year
+
       max-cache-ttl 31536000
