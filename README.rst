@@ -67,6 +67,7 @@ Install:
 
 .. code-block:: bash
 
+   wget -O - http://aptly.ad-sy.ch/aptly.asc | apt-key add -
    apt-get update
    apt-get install python-pyaptly
 
