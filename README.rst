@@ -5,8 +5,10 @@ Pyaptly
 Automates the creation and managment of aptly mirrors and snapshots based on yml
 input files.
 
-|travis| |coverage| [1]_
+|pypi| |travis| |coverage| [1]_
 
+.. |pypi| image:: https://badge.fury.io/py/Pyaptly.svg
+   :target: https://badge.fury.io/py/Pyaptly
 .. |travis|  image:: https://travis-ci.org/adfinis-sygroup/pyaptly.png?branch=master
    :target: https://travis-ci.org/adfinis-sygroup/pyaptly
 .. |coverage| image:: https://img.shields.io/badge/coverage-100%25-brightgreen.svg
