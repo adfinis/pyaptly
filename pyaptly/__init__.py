@@ -23,7 +23,7 @@ else:
 
 
 def init_hypothesis():
-    """Initialize hypotesis profile is hypothesis is available"""
+    """Initialize hypothesis profile if hypothesis is available"""
     try:  # pragma: no cover:w
         if b'HYPOTHESIS_PROFILE' in environb:
             from hypothesis import Settings
