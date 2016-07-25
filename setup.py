@@ -60,7 +60,7 @@ setup(
     description = "Aptly mirror/snapshot managment automation.",
     long_description = README_TEXT,
     keywords = "aptly mirror snapshot automation",
-    url = "https://adfinis-sygroup.ch",
+    url = "https://github.com/adfinis-sygroup/pyaptly",
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
