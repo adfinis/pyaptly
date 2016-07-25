@@ -69,7 +69,7 @@ architectures
    is another way of subdividing your repository, but should be used accordingly
    usually there is amd64 and i386.
 
-distrubtion
+distribution
    is a distribution name, e.g. squeeze, for flat repositories use ./ instead of
    distribution name
 
@@ -103,7 +103,7 @@ Defining a snapshot
          source: {"name": "google-chrome-%T", "timestamp": "current"}
          query: "google-chrome-stable"
 
-The name of a snapshot can include the %T macro, which is replace by the
+The name of a snapshot can include the `%T` macro, which is replaced by the
 calculated time of the snapshot.
 
 timestamp
@@ -196,7 +196,7 @@ architectures
    is another way of subdividing your repository, but should be used accordingly
    usually there is amd64 and i386.
 
-distrubtion
+distribution
    is a distribution name, e.g. squeeze, for flat repositories use ./ instead of
    distribution name
 
