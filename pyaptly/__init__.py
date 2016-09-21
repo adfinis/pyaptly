@@ -1354,6 +1354,9 @@ def snapshot_spec_to_name(cfg, snapshot):
     delta = datetime.timedelta(seconds=1)
     if hasattr(snapshot, 'items'):
         name      = snapshot['name']
+        if 'timestamp' not in snapshot:
+            return name
+
         ts        = snapshot['timestamp']
         back_ref  = back_reference_map.get(ts)
         if back_ref is None:
