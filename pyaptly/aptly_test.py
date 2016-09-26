@@ -6,7 +6,8 @@ import os
 import freezegun
 import testfixtures
 
-from pyaptly import Command, SystemStateReader, call_output, main
+from pyaptly import (Command, SystemStateReader, call_output, main,
+                     snapshot_spec_to_name)
 
 from . import test
 
@@ -739,12 +740,12 @@ def test_publish_updating_basic():
                 'fakerepo02-20121006T0000Z',
                 'fakerepo01-20121010T0000Z',
             ])
-            assert expect ==  state.snapshots
+            assert expect == state.snapshots
             expect = {
                 'fakerepo02 main': set(['fakerepo02-20121006T0000Z']),
                 'fakerepo01 main': set(['fakerepo01-20121011T0000Z'])
             }
-            assert expect ==  state.publish_map
+            assert expect == state.publish_map
 
 
 def do_repo_create(config):
@@ -815,3 +816,21 @@ def test_repo_create_basic():
             b"repo.yml",
     )) as (tyml, config):
         do_repo_create(config)
+
+
+def test_snapshot_spec_as_dict():
+    "Test various snapshot formats for snapshot_spec_to_name()"
+
+    snap_string = 'snapshot-foo'
+    snap_dict = {
+        'name': 'foo'
+    }
+
+    cfg = {
+        'snapshot': {
+            'foo': {},
+        }
+    }
+
+    assert snapshot_spec_to_name(cfg, snap_string) == snap_string
+    assert snapshot_spec_to_name(cfg, snap_dict) == 'foo'
