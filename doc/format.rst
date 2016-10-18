@@ -222,3 +222,6 @@ Additional fields are:
       default-cache-ttl 31536000  # A Year
 
       max-cache-ttl 31536000
+
+   skip-contents
+    If true pyaptly will tell aptly not generate contents index files
