@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "adsy-centos-6.5.box"
-  config.vm.box_url = "https://adfinis-sygroup.ch/file-exchange-public/adsy-centos-6.5.box"
+  config.vm.box_url = "https://pkg.adfinis-sygroup.ch/vagrant/adsy-centos-6.5.box"
   config.vm.box_download_checksum = "a0f2cc25560495cd927da103659a59d69b2e4f1bf032ee67f35e8ea1b1c88a80"
   config.vm.box_download_checksum_type = "sha256"
   begin
