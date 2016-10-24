@@ -12,7 +12,7 @@ _test_base = os.path.dirname(
 ).encode("UTF-8")
 
 
-if not sys.version_info < (2, 7):
+if not sys.version_info < (2, 7):  # pragma: no cover
     from hypothesis import given  # noqa
     from hypothesis.extra.datetime import datetimes, times  # noqa
     from hypothesis.strategies import integers  # noqa

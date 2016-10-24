@@ -4,7 +4,7 @@ import sys
 
 from . import Command, FunctionCommand, test
 
-if not sys.version_info < (2, 7):
+if not sys.version_info < (2, 7):  # pragma: no cover
     from hypothesis import strategies as st
     from hypothesis import given
 
@@ -21,7 +21,7 @@ range_intagers_st = st.integers(min_value=0, max_value=RES_COUNT)
 
 
 @st.composite
-def provide_require_st(draw, filter_=True):
+def provide_require_st(draw, filter_=True):  # pragma: no cover
     commands = draw(range_intagers_st)
     provides = draw(
         st.lists(
@@ -109,7 +109,7 @@ def test_graph_island(tree0, tree1, rnd):  # pragma: no cover
     run_graph(tree)
 
 
-def run_graph(tree):
+def run_graph(tree):  # pragma: no cover
     """Runs the test"""
     commands = []
     index = list(range(len(tree[0])))
