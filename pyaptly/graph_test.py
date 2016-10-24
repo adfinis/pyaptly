@@ -80,7 +80,7 @@ def print_example():  # pragma: no cover
 
 @test.hypothesis_min_ver
 @given(provide_require_st(), st.random_module())
-def test_graph_basic(tree, rnd):
+def test_graph_basic(tree, rnd):  # pragma: no cover
     """Test our test method, create a basic graph using hypthesis and run some
     basic tests against it."""
     run_graph(tree)
@@ -88,7 +88,7 @@ def test_graph_basic(tree, rnd):
 
 @test.hypothesis_min_ver
 @given(provide_require_st(False), st.random_module())
-def test_graph_cycles(tree, rnd):
+def test_graph_cycles(tree, rnd):  # pragma: no cover
     """Test reacts correctly on trees with cycles."""
     try:
         run_graph(tree)
@@ -103,7 +103,7 @@ def test_graph_cycles(tree, rnd):
     provide_require_st(),
     st.random_module()
 )
-def test_graph_island(tree0, tree1, rnd):
+def test_graph_island(tree0, tree1, rnd):  # pragma: no cover
     """Test with two independant graphs which can form a island"""
     tree = (tree0[0] + tree1[0], tree0[1] + tree1[1], tree0[2] + tree1[2])
     run_graph(tree)

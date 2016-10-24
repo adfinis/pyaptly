@@ -59,7 +59,7 @@ class TestTest(unittest.TestCase):
     @test.hypothesis_min_ver
     @given(yml_st, yml_st, st.random_module())
     @example({'1': 'Huhu'}, {'1': 'None'}, st.random_module())
-    def test_merge(self, a, b, rand):
+    def test_merge(self, a, b, rand):  # pragma: no cover
         """Test if merge has the expected result."""
         res  = test.merge(a, b)
         for _ in range(10):
