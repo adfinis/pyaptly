@@ -87,7 +87,7 @@ def time_remove_tz(time):
     )
 
 
-def time_delta_helper(time):
+def time_delta_helper(time):  # pragma: no cover
     """Convert a :py:class`datetime.time` to :py:class`datetime.datetime` to
     calculate deltas
 
@@ -418,7 +418,7 @@ class Command(object):
             if cmd not in scheduled
         ]
 
-        if len(unresolved) > 0:
+        if len(unresolved) > 0:  # pragma: no cover
             raise ValueError('Commands with unresolved deps: %s' % [
                 str(cmd) for cmd in unresolved
             ])

@@ -129,7 +129,8 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     :param     freeze: str
     :rtype:            (dict, str)
     """
-    if b"pyaptly" not in environb[b'HOME']:  # pragma: no cover
+    old_home = environb[b'HOME']
+    if b"pyaptly" not in old_home and b"vagrant" not in old_home:  # pragma: no cover  # noqa
         raise ValueError(
             "Not safe to test here. Either you haven't set HOME to the "
             "repository path %s. Or you havn't checked out the repository "
@@ -138,7 +139,6 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
     file_ = None
     new_home = None
     try:
-        old_home = environb[b'HOME']
         new_home = os.path.join(old_home, b".work")
         try:
             shutil.rmtree(new_home)

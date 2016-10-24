@@ -7,7 +7,7 @@ import unittest
 
 from . import test
 
-if not sys.version_info < (2, 7):
+if not sys.version_info < (2, 7):  # pragma: no cover
     import hypothesis.strategies as st
     from hypothesis import example, given  # noqa
 
@@ -59,7 +59,7 @@ class TestTest(unittest.TestCase):
     @test.hypothesis_min_ver
     @given(yml_st, yml_st, st.random_module())
     @example({'1': 'Huhu'}, {'1': 'None'}, st.random_module())
-    def test_merge(self, a, b, rand):
+    def test_merge(self, a, b, rand):  # pragma: no cover
         """Test if merge has the expected result."""
         res  = test.merge(a, b)
         for _ in range(10):
@@ -84,14 +84,14 @@ class TestTest(unittest.TestCase):
                 except (TypeError, KeyError):
                     pass
 
-    def get_path(self, path, data):
+    def get_path(self, path, data):  # pragma: no cover
         for i in path:
             data = data[i]
         if isinstance(data, dict):
             return None
         return data
 
-    def rand_path(self, data):
+    def rand_path(self, data):  # pragma: no cover
         path = []
         while True:
             if isinstance(data, dict):

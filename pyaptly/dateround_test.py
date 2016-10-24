@@ -12,7 +12,7 @@ _test_base = os.path.dirname(
 ).encode("UTF-8")
 
 
-if not sys.version_info < (2, 7):
+if not sys.version_info < (2, 7):  # pragma: no cover
     from hypothesis import given  # noqa
     from hypothesis.extra.datetime import datetimes, times  # noqa
     from hypothesis.strategies import integers  # noqa
@@ -28,7 +28,7 @@ if sys.version_info < (2, 7):  # pragma: no cover
 
 @test.hypothesis_min_ver
 @given(datetimes())
-def test_is_to_gregorian(date):
+def test_is_to_gregorian(date):  # pragma: no cover
     """Test if a roundtrip of isoclander() -> iso_to_gregorian() is correct"""
     iso_tuple = date.isocalendar()
     new_date  = iso_to_gregorian(*iso_tuple)
@@ -42,7 +42,7 @@ def test_is_to_gregorian(date):
     datetimes(min_year=2),
     integers(min_value=1, max_value=7),
     times())
-def test_round_weekly(date, day_of_week, time):
+def test_round_weekly(date, day_of_week, time):  # pragma: no cover
     """Test if the round function rounds the expected delta"""
     time            = time_remove_tz(time)
     round_date      = date_round_weekly(date, day_of_week, time)
@@ -117,7 +117,7 @@ def test_weekly_examples():
 
 @test.hypothesis_min_ver
 @given(datetimes(), times())
-def test_round_daily(date, time):
+def test_round_daily(date, time):  # pragma: no cover
     """Test if the round function rounds the expected delta"""
     time            = time_remove_tz(time)
     round_date      = date_round_daily(date, time)

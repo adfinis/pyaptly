@@ -4,6 +4,17 @@ GIT_HUB := "https://github.com/adfinis-sygroup/pyaptly"
 
 include pyproject/Makefile
 
+PYTHON26 := $(shell echo $(PYTHON_VERSION) | grep -Eq 2.6 && echo True 2> /dev/null)
+
+# not all comprehensions are supported in 2.6 therefore
+# need to disable linter for such
+DEVNULL := $(shell touch .deps/flake8_comprehensions)
+
+ifeq ($(PYTHON26),True)
+	# disable installation of hypothesis on python version <2.7
+	DEVNULL := $(shell touch .deps/hypothesis .deps/hypothesispytest)
+endif
+
 test-local:
 	source testenv; \
 	make webserver && \

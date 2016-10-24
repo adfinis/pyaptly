@@ -4,7 +4,7 @@ import sys
 
 from . import Command, FunctionCommand, test
 
-if not sys.version_info < (2, 7):
+if not sys.version_info < (2, 7):  # pragma: no cover
     from hypothesis import strategies as st
     from hypothesis import given
 
@@ -21,7 +21,7 @@ range_intagers_st = st.integers(min_value=0, max_value=RES_COUNT)
 
 
 @st.composite
-def provide_require_st(draw, filter_=True):
+def provide_require_st(draw, filter_=True):  # pragma: no cover
     commands = draw(range_intagers_st)
     provides = draw(
         st.lists(
@@ -80,7 +80,7 @@ def print_example():  # pragma: no cover
 
 @test.hypothesis_min_ver
 @given(provide_require_st(), st.random_module())
-def test_graph_basic(tree, rnd):
+def test_graph_basic(tree, rnd):  # pragma: no cover
     """Test our test method, create a basic graph using hypthesis and run some
     basic tests against it."""
     run_graph(tree)
@@ -88,7 +88,7 @@ def test_graph_basic(tree, rnd):
 
 @test.hypothesis_min_ver
 @given(provide_require_st(False), st.random_module())
-def test_graph_cycles(tree, rnd):
+def test_graph_cycles(tree, rnd):  # pragma: no cover
     """Test reacts correctly on trees with cycles."""
     try:
         run_graph(tree)
@@ -103,13 +103,13 @@ def test_graph_cycles(tree, rnd):
     provide_require_st(),
     st.random_module()
 )
-def test_graph_island(tree0, tree1, rnd):
+def test_graph_island(tree0, tree1, rnd):  # pragma: no cover
     """Test with two independant graphs which can form a island"""
     tree = (tree0[0] + tree1[0], tree0[1] + tree1[1], tree0[2] + tree1[2])
     run_graph(tree)
 
 
-def run_graph(tree):
+def run_graph(tree):  # pragma: no cover
     """Runs the test"""
     commands = []
     index = list(range(len(tree[0])))
