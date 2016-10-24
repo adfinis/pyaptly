@@ -7,6 +7,7 @@ publish:
           timestamp: "current"
           archive-on-update: "archived-fakerepo01-%T"
       gpg-key: "650FE755"
+      skip-contents: true
       automatic-update: true
   fakerepo02:
     -

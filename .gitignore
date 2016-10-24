@@ -1,6 +1,7 @@
 /pyaptly.egg-info
 *.swp
 *.pyc
+.python-version
 __pycache__
 /.cache
 /.hypothesis

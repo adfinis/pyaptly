@@ -923,7 +923,10 @@ def publish_cmd_create(cfg,
 
     for conf, conf_value in publish_config.items():
 
-        if conf == 'architectures':  # pragma: no cover
+        if conf == 'skip-contents':
+            if conf_value:
+                options.append('-skip-contents=true')
+        elif conf == 'architectures':  # pragma: no cover
             options.append(
                 '-architectures=%s' %
                 ','.join(unit_or_list_to_list(conf_value))
@@ -1048,14 +1051,18 @@ def publish_cmd_update(cfg,
     :type    publish_name: str
     :param publish_config: Configuration of the publish from the yml file.
     :type  publish_config: dict"""
+
+    publish_cmd = ['aptly', 'publish']
+    options     = []
+    args        = [publish_config['distribution'], publish_name]
+
+    if 'skip-contents' in publish_config and publish_config['skip-contents']:
+        options.append('-skip-contents=true')
+
     if 'repo' in publish_config:
-        return Command([
-            'aptly',
-            'publish',
-            'update',
-            publish_config['distribution'],
-            publish_name,
-        ])
+        publish_cmd.append('update')
+        return Command(publish_cmd + options + args)
+
     publish_fullname = '%s %s' % (publish_name, publish_config['distribution'])
     current_snapshots = state.publish_map[publish_fullname]
     if 'snapshots' in publish_config:
@@ -1111,14 +1118,13 @@ def publish_cmd_update(cfg,
 
                 clone_snapshot(current_snapshot, archive).execute()
 
-    return Command([
-        'aptly',
-        'publish',
-        'switch',
-        '-component=%s' % ','.join(components),
-        publish_config['distribution'],
-        publish_name,
-    ] + new_snapshots)
+    publish_cmd.append('switch')
+    options.append('-component=%s' % ','.join(components))
+
+    if 'skip-contents' in publish_config and publish_config['skip-contents']:
+        options.append('-skip-contents=true')
+
+    return Command(publish_cmd + options + args + new_snapshots)
 
 
 def repo_cmd_create(cfg, repo_name, repo_config):
