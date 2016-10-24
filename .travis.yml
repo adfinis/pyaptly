@@ -2,6 +2,7 @@ language: python
 env:
   - HYPOTHESIS_PROFILE=ci
 python:
+  - "2.6"
   - "2.7"
   - "3.4"
   - "3.5"
