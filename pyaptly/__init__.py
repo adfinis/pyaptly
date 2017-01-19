@@ -522,6 +522,31 @@ class SystemStateReader(object):
         self.publishes    = set()
         self.publish_map  = {}
 
+    def _extract_sources(self, data):
+        """
+        Extract sources from data.
+
+        Data needs to be in following format:
+        Name: test-snap
+        Description: some description
+        Sources:
+          test-snap-base [snapshot]
+        """
+        entered_sources = False
+        sources = []
+        for line in data.split("\n"):
+            # source line need to start with two spaces
+            if entered_sources and line[0:2] != '  ':
+                break
+
+            if entered_sources:
+                sources.append(line)
+
+            if line == "Sources:":
+                entered_sources = True
+
+        return sources
+
     def read(self):
         """Reads all available system states."""
         self.read_gpg()
@@ -554,45 +579,36 @@ class SystemStateReader(object):
     def read_publish_map(self):
         """Create a publish map. publish -> snapshots"""
         self.publish_map = {}
-        data, _ = call_output([
-            "aptly", "publish", "list"
-        ])
-
+        # match example:  main: test-snapshot [snapshot]
+        re_snap = re.compile(r"\s+[\w\d-]+\:\s([\w\d-]+)\s\[snapshot\]")
         for publish in self.publishes:
-            self.publish_map[publish] = set()
-            re_snap = re.compile(
-                r"^\s*\*\s+%s/%s " %
-                tuple(publish.split(" "))
-            )
-            for line in data.split("\n"):
-                if re_snap.match(line):
-                    for snapshot in self.snapshots:
-                        if re.match(".*\[%s\]" % snapshot, line):
-                            self.publish_map[publish].add(snapshot)
+
+            prefix, dist = publish.split(' ')
+            data, _ = call_output([
+                "aptly", "publish", "show", dist, prefix
+            ])
+
+            sources = self._extract_sources(data)
+            matches = [re_snap.match(source) for source in sources]
+            snapshots = [match.group(1) for match in matches if match]
+            self.publish_map[publish] = set(snapshots)
+
         lg.debug('Joined snapshots and publishes: %s', self.publish_map)
 
     def read_snapshot_map(self):
         """Create a snapshot map. snapshot -> snapshots. This is also called
         merge-tree."""
         self.snapshot_map = {}
-        data, _ = call_output([
-            "aptly", "snapshot", "list"
-        ])
-
-        re_snap = re.compile(r"^\s*\*\s+\[([\w\d-]+)\]")
-
-        for line in data.split("\n"):
-            match = re_snap.match(line)
-            if match:
-                snapshot_outer = match.group(1)
-                if snapshot_outer not in self.snapshot_map:
-                    self.snapshot_map[snapshot_outer] = set()
-
-                sources_match = re.match(
-                    ".*Merged from sources:[\s']*(.*)'", line)
-                if sources_match:
-                    sources = re.split(r"[ ,']+", sources_match.group(1))
-                    self.snapshot_map[snapshot_outer].update(sources)
+        # match example:  test-snapshot [snapshot]
+        re_snap = re.compile(r"\s+([\w\d-]+)\s\[snapshot\]")
+        for snapshot_outer in self.snapshots:
+            data, _ = call_output([
+                "aptly", "snapshot", "show", snapshot_outer
+            ])
+            sources = self._extract_sources(data)
+            matches = [re_snap.match(source) for source in sources]
+            snapshots = [match.group(1) for match in matches if match]
+            self.snapshot_map[snapshot_outer] = set(snapshots)
 
         lg.debug(
             'Joined snapshots with self(snapshots): %s',
@@ -1480,7 +1496,7 @@ def cmd_snapshot_update(cfg, snapshot_name, snapshot_config):
     intermediate2.provide('virtual', 'all-snapshots-rebuilt')
 
     create_cmds = []
-    for snap in affected_snapshots:
+    for _ in affected_snapshots:
 
         # Well.. there's normally just one, but since we need interface
         # consistency, cmd_snapshot_create() returns a list. And since it

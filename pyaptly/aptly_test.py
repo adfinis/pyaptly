@@ -272,14 +272,14 @@ def test_snapshot_update_rotating():
         do_snapshot_update_rotating(config)
 
 
-def test_snapshot_update_twice_rotating():
+def test_snapshot_update_threetimes_rotating():
     """Test if rotating snapshot update works."""
     with test.clean_and_config(os.path.join(
             _test_base,
             b"snapshot-current.yml",
     )) as (tyml, config):
         do_snapshot_update_rotating(config)
-        with freezegun.freeze_time("2012-11-10 10:10:10"):
+        with freezegun.freeze_time("2012-10-11 10:10:10"):
             args = [
                 '-c',
                 config,
@@ -294,8 +294,8 @@ def test_snapshot_update_twice_rotating():
                     'fake-current',
                     'fakerepo01-current-rotated-20121010T1010Z',
                     'fakerepo02-current-rotated-20121010T1010Z',
-                    'fakerepo01-current-rotated-20121110T1010Z',
-                    'fakerepo02-current-rotated-20121110T1010Z',
+                    'fakerepo01-current-rotated-20121011T1010Z',
+                    'fakerepo02-current-rotated-20121011T1010Z',
                 ]
             ).issubset(state.snapshots)
             expected = {
@@ -303,19 +303,65 @@ def test_snapshot_update_twice_rotating():
                     u'fakerepo01-current', u'fakerepo02-current'
                 ]),
                 u'fake-current-rotated-20121010T1010Z': set([
-                    u'fakerepo01-current',
-                    u'fakerepo02-current'
+                    u'fakerepo01-current-rotated-20121010T1010Z',
+                    u'fakerepo02-current-rotated-20121010T1010Z'
                 ]),
-                u'fake-current-rotated-20121110T1010Z': set([
-                    u'fakerepo01-current',
-                    u'fakerepo02-current'
+                u'fake-current-rotated-20121011T1010Z': set([
+                    u'fakerepo01-current-rotated-20121011T1010Z',
+                    u'fakerepo02-current-rotated-20121011T1010Z',
                 ]),
                 u'fakerepo01-current': set([]),
                 u'fakerepo01-current-rotated-20121010T1010Z': set([]),
-                u'fakerepo01-current-rotated-20121110T1010Z': set([]),
+                u'fakerepo01-current-rotated-20121011T1010Z': set([]),
                 u'fakerepo02-current': set([]),
                 u'fakerepo02-current-rotated-20121010T1010Z': set([]),
-                u'fakerepo02-current-rotated-20121110T1010Z': set([])
+                u'fakerepo02-current-rotated-20121011T1010Z': set([])
+            }
+            assert state.snapshot_map == expected
+
+        with freezegun.freeze_time("2012-10-12 10:10:10"):
+            args = [
+                '-c',
+                config,
+                'snapshot',
+                'update',
+            ]
+            main(args)
+            state = SystemStateReader()
+            state.read()
+            assert set(
+                [
+                    'fake-current',
+                    'fakerepo01-current-rotated-20121011T1010Z',
+                    'fakerepo02-current-rotated-20121011T1010Z',
+                    'fakerepo01-current-rotated-20121012T1010Z',
+                    'fakerepo02-current-rotated-20121012T1010Z',
+                ]
+            ).issubset(state.snapshots)
+            expected = {
+                u'fake-current': set([
+                    u'fakerepo01-current', u'fakerepo02-current'
+                ]),
+                u'fake-current-rotated-20121010T1010Z': set([
+                    u'fakerepo01-current-rotated-20121010T1010Z',
+                    u'fakerepo02-current-rotated-20121010T1010Z'
+                ]),
+                u'fake-current-rotated-20121011T1010Z': set([
+                    u'fakerepo01-current-rotated-20121011T1010Z',
+                    u'fakerepo02-current-rotated-20121011T1010Z',
+                ]),
+                u'fake-current-rotated-20121012T1010Z': set([
+                    u'fakerepo01-current-rotated-20121012T1010Z',
+                    u'fakerepo02-current-rotated-20121012T1010Z',
+                ]),
+                u'fakerepo01-current': set([]),
+                u'fakerepo01-current-rotated-20121010T1010Z': set([]),
+                u'fakerepo01-current-rotated-20121011T1010Z': set([]),
+                u'fakerepo01-current-rotated-20121012T1010Z': set([]),
+                u'fakerepo02-current': set([]),
+                u'fakerepo02-current-rotated-20121010T1010Z': set([]),
+                u'fakerepo02-current-rotated-20121011T1010Z': set([]),
+                u'fakerepo02-current-rotated-20121012T1010Z': set([]),
             }
             assert state.snapshot_map == expected
 
@@ -359,8 +405,8 @@ def do_snapshot_update_rotating(config):
             u'fakerepo01-current', u'fakerepo02-current'
         ]),
         u'fake-current-rotated-20121010T1010Z': set([
-            u'fakerepo01-current',
-            u'fakerepo02-current'
+            u'fakerepo01-current-rotated-20121010T1010Z',
+            u'fakerepo02-current-rotated-20121010T1010Z'
         ]),
         u'fakerepo01-current': set([]),
         u'fakerepo01-current-rotated-20121010T1010Z': set([]),
