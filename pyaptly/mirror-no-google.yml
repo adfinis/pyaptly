@@ -1,5 +1,6 @@
 mirror:
-  fakerepo01: 
+  fakerepo01:
+    max-tries: 2
     archive: "http://localhost:8421/fakerepo01"
     gpg-keys: ["5ED1AC57"]
   fakerepo02:

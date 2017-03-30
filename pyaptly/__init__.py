@@ -1818,6 +1818,9 @@ def cmd_mirror_update(cfg, mirror_name, mirror_config):
         raise Exception("Mirror not created yet")
     add_gpg_keys(mirror_config)
     aptly_cmd = ['aptly', 'mirror', 'update']
+    if 'max-tries' in mirror_config:
+        aptly_cmd.append('-max-tries=%d' % mirror_config['max-tries'])
+
     aptly_cmd.append(mirror_name)
     lg.debug('Running command: %s', ' '.join(aptly_cmd))
     subprocess.check_call(aptly_cmd)
