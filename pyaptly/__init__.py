@@ -13,8 +13,10 @@ import sys
 import freeze
 import six
 import yaml
+from distutils.version import LooseVersion
 
 _logging_setup = False
+_gpg_bin = '/usr/bin/gpg'
 
 if six.PY2:
     environb = os.environ  # pragma: no cover
@@ -561,7 +563,7 @@ class SystemStateReader(object):
         """Read all trusted keys in gpg."""
         self.gpg_keys = set()
         data, _ = call_output([
-            "gpg",
+            _gpg_bin,
             "--no-default-keyring",
             "--keyring", "trustedkeys.gpg",
             "--list-keys",
@@ -679,6 +681,15 @@ class SystemStateReader(object):
 
 state = SystemStateReader()
 
+def check_gpg_version():
+    """Check if system gpg point to version 2.x"""
+    global _gpg_bin
+    gpg_version_output, _ = call_output(['gpg', '--version'])
+    gpg_version = gpg_version_output.splitlines()[0].split(" ")[2]
+    if LooseVersion(gpg_version) < LooseVersion("2"):
+        _gpg_bin = '/usr/bin/gpg'
+    else:
+        _gpg_bin = '/usr/bin/gpg1'
 
 def main(argv=None):
     """Called by command-line, defines parsers and executes commands.
@@ -686,6 +697,7 @@ def main(argv=None):
     :param argv: Arguments usually taken from sys.argv
     :type  argv: list"""
     global _logging_setup
+    check_gpg_version()
     if not argv:  # pragma: no cover
         argv = sys.argv[1:]
     parser = argparse.ArgumentParser(description='Manage aptly')
@@ -1742,7 +1754,7 @@ def add_gpg_keys(mirror_config):
             continue
         try:
             key_command = [
-                "gpg",
+                _gpg_bin,
                 "--no-default-keyring",
                 "--keyring",
                 "trustedkeys.gpg",
@@ -1758,9 +1770,9 @@ def add_gpg_keys(mirror_config):
             if url:
                 key_command = (
                     "wget -q -O - %s | "
-                    "gpg --no-default-keyring "
+                    "%s --no-default-keyring "
                     "--keyring trustedkeys.gpg --import"
-                ) % url
+                ) % (url, _gpg_bin)
                 subprocess.check_call(['bash', '-c', key_command])
             else:
                 raise
