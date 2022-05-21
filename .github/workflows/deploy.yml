@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Initialize git submodules
+        run: git submodule update --init --recursive
+
+      - name: Install dependencies and sources
+        run: make install
+
+      - name: Prepare additional dependencies
+        run: make .deps/pytest .deps/hypothesis .deps/freeze .deps/testfixtures
+
+      - name: Generate docs
+        run: make doc
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: doc/_build/html
