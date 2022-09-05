@@ -784,7 +784,7 @@ def main(argv=None):
     lg.debug("Args: %s", vars(args))
 
     with codecs.open(args.config, 'r', encoding="UTF-8") as cfgfile:
-        cfg = yaml.load(cfgfile)
+        cfg = yaml.load(cfgfile, Loader=yaml.FullLoader)
     state.read()
 
     # run function for selected subparser
