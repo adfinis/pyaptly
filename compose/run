@@ -1,0 +1,25 @@
+#!/bin/sh
+
+TAG=3a9c40c25b2f
+
+cleanup() {
+  pkill -f http-$TAG
+  pkill -f hagrid-$TAG
+}
+
+(
+cd /setup/aptly/public
+exec -a http-$TAG python3 -m http.server 3123
+) &
+
+(
+cd /setup/hagrid
+exec -a hagrid-$TAG /root/.cargo/bin/hagrid
+) &
+
+trap cleanup SIGTERM SIGINT
+
+wait-for-it -t 0 127.0.0.1:8080
+cat /setup/test01.pub | curl -T - http://127.0.0.1:8080
+
+wait

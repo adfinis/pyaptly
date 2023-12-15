@@ -1,0 +1,15 @@
+# See compose/config.toml
+services:
+  testing:
+    image: ghcr.io/adfinis/pyaptly/cache:latest
+    build:
+      cache_from:
+        - ghcr.io/adfinis/pyaptly/cache:latest
+      context: compose
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+        DOCKER_IMAGE: debian:bookworm-slim
+    working_dir: /source
+    command: ["bash", "/setup/run"]
+    volumes:
+      - ./:/source

@@ -8,9 +8,15 @@ if not sys.version_info < (2, 7):  # pragma: no cover
     from hypothesis import strategies as st
     from hypothesis import given
 
+from hypothesis import settings
+
+# Disable the deadline globally for all tests
+settings.register_profile("my_profile", deadline=None)
+settings.load_profile("my_profile")
 
 if sys.version_info < (2, 7):  # pragma: no cover
     import mock
+
     given = mock.MagicMock()  # noqa
     example = mock.MagicMock()  # noqa
     st = mock.MagicMock()  # noqa
@@ -26,17 +32,11 @@ def provide_require_st(draw, filter_=True):  # pragma: no cover
     provides = draw(
         st.lists(
             st.lists(range_intagers_st, max_size=10),
-            min_size = commands,
-            max_size = commands
+            min_size=commands,
+            max_size=commands,
         ),
     )
-    is_func = draw(
-        st.lists(
-            st.booleans(),
-            min_size = commands,
-            max_size = commands
-        )
-    )
+    is_func = draw(st.lists(st.booleans(), min_size=commands, max_size=commands))
     provides_set = set()
     for command in provides:
         provides_set.update(command)
@@ -52,7 +52,7 @@ def provide_require_st(draw, filter_=True):  # pragma: no cover
             else:
                 provides_filter = provides_set
             if provides_filter:
-                sample = st.sampled_from(provides_filter)
+                sample = st.sampled_from(list(provides_filter))
                 requires.append(draw(st.lists(sample, max_size=10)))
             else:
                 requires.append([])
@@ -63,11 +63,13 @@ def provide_require_st(draw, filter_=True):  # pragma: no cover
 
 def print_example():  # pragma: no cover
     example = provide_require_st().example()
-    print("""
+    print(
+        """
     digraph g {
          label="Command graph";
          graph [splines=line];
-    """)
+    """
+    )
     for i in range(len(example[0])):
         print("    c%03d [shape=triangle];" % i)
         for provides in example[0][i]:
@@ -98,11 +100,7 @@ def test_graph_cycles(tree, rnd):  # pragma: no cover
 
 
 @test.hypothesis_min_ver
-@given(
-    provide_require_st(),
-    provide_require_st(),
-    st.random_module()
-)
+@given(provide_require_st(), provide_require_st(), st.random_module())
 def test_graph_island(tree0, tree1, rnd):  # pragma: no cover
     """Test with two independant graphs which can form a island"""
     tree = (tree0[0] + tree1[0], tree0[1] + tree1[1], tree0[2] + tree1[2])
@@ -115,6 +113,7 @@ def run_graph(tree):  # pragma: no cover
     index = list(range(len(tree[0])))
     random.shuffle(index)
     for i in index:
+
         def dummy():  # pragma: no cover
             return i
 

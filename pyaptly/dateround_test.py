@@ -14,7 +14,7 @@ _test_base = os.path.dirname(
 
 if not sys.version_info < (2, 7):  # pragma: no cover
     from hypothesis import given  # noqa
-    from hypothesis.extra.datetime import datetimes, times  # noqa
+    from hypothesis.strategies import datetimes, times  # noqa
     from hypothesis.strategies import integers  # noqa
 
 
@@ -39,7 +39,7 @@ def test_is_to_gregorian(date):  # pragma: no cover
 
 @test.hypothesis_min_ver
 @given(
-    datetimes(min_year=2),
+    datetimes(min_value=datetime.datetime(year=2, month=1, day=1)),
     integers(min_value=1, max_value=7),
     times())
 def test_round_weekly(date, day_of_week, time):  # pragma: no cover

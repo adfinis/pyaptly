@@ -1,0 +1,11 @@
+APT::Install-Recommends "0";
+APT::Install-Suggests "0";
+Dpkg::Options {
+    "--exclude=/usr/share/doc";
+    "--exclude=/usr/share/man";
+    "--exclude=/usr/share/groff";
+    "--exclude=/usr/share/info";
+    "--exclude=/usr/share/lintian";
+    "--exclude=/usr/share/linda";
+    "--exclude=/var/cache/man";
+};

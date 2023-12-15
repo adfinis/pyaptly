@@ -1,51 +1,45 @@
-.PHONY: webserver
-PROJECT := pyaptly
-GIT_HUB := "https://github.com/adfinis-sygroup/pyaptly"
+.DEFAULT_GOAL := help
 
-include pyproject/Makefile
+# Help target extracts the double-hash comments from the targets and shows them
+# in a convenient way. This allows us to easily document the user-facing Make
+# targets
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort -k 1,1 | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-PYTHON26 := $(shell echo $(PYTHON_VERSION) | grep -Eq 2.6 && echo True 2> /dev/null)
+.PHONY: up
+up: ## start and build container if needed
+	#@docker pull ghcr.io/adfinis/pyaptly/cache:latest
+	@DOCKER_BUILDKIT=1 docker compose up -d --build
 
-# not all comprehensions are supported in 2.6 therefore
-# need to disable linter for such
-DEVNULL := $(shell touch .deps/flake8_comprehensions)
+.PHONY: push
+push: ## push docker build cache to registry
+	@docker push ghcr.io/adfinis/pyaptly/cache:latest
 
-ifeq ($(PYTHON26),True)
-	# disable installation of hypothesis on python version <2.7
-	DEVNULL := $(shell touch .deps/hypothesis .deps/hypothesispytest)
-endif
+.PHONY: down
+down: ## stop and remove container 
+	@docker compose down -v
 
-test-local:
-	source testenv; \
-	make webserver && \
-	make test
+.PHONY: recreate
+recreate: down up ## recreate container
 
-.gnupg:
-	bash -c '[[ "$$HOME" == *"pyaptly"* ]]'
-	gpg -k
-	gpg --batch --import < vagrant/key.pub
-	gpg --batch --import < vagrant/key.sec
-	gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import < vagrant/key.pub
-	cat vagrant/*.key | gpg --batch --no-default-keyring --keyring trustedkeys.gpg --import
-	gpg -k
+.PHONY: wait-for-ready
+wait-for-ready: up ## wait for web-server to be ready for testing
+	@docker compose exec testing wait-for-it -t 0 127.0.0.1:3123
+	@docker compose exec testing wait-for-it -t 0 127.0.0.1:8080
 
-.aptly:
-	aptly repo create -architectures="amd64" fakerepo01
-	aptly repo create -architectures="amd64" fakerepo02
-	aptly repo add fakerepo01 vagrant/*.deb
-	aptly repo add fakerepo02 vagrant/*.deb
+.PHONY: poetry-install
+poetry-install: wait-for-ready ## install dev environment
+	@docker compose exec testing poetry install
 
-.aptly/public: .aptly .gnupg
-	aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo01 fakerepo01; true
-	aptly publish repo -gpg-key="650FE755" -distribution="main" fakerepo02 fakerepo02; true
-	touch .aptly/public
+.PHONY: test
+test: poetry-install ## run pytest
+	@docker compose exec testing poetry run pytest
 
-webserver: .aptly/public
-	pkill -f -x "python -m SimpleHTTPServer 8421"; true
-	pkill -f -x "python -m http.server 8421"; true
-	cd .aptly/public && python -m SimpleHTTPServer 8421 > /dev/null 2> /dev/null &
-	cd .aptly/public && python -m http.server 8421 > /dev/null 2> /dev/null &
+.PHONY: shell
+shell: poetry-install ## run shell
+	@docker compose exec testing bash -c "SHELL=bash poetry shell"
 
-remote-test:
-	vagrant up
-	vagrant ssh -c "cd /vagrant && make test"
+.PHONY: entr
+entr: poetry-install ## run entr
+	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'pytest -x --lf'"
