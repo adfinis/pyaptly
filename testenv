@@ -1,2 +1,0 @@
-export HOME="$(pwd)"
-export PATH="$HOME/.aptly-bin/:$PATH"

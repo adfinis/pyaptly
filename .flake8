@@ -1,3 +1,0 @@
-[flake8]
-ignore = E203,E221,E222,E241,E251,E272
-jobs=auto

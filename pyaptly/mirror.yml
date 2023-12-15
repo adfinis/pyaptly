@@ -5,8 +5,3 @@ mirror:
   fakerepo02:
     archive: "http://localhost:8421/fakerepo02"
     gpg-keys: ["5ED1AC57"]
-  google-chrome: 
-    archive: "http://dl.google.com/linux/chrome/deb/"
-    distribution: "stable"
-    gpg-keys: ["7FAC5991"]
-    gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]

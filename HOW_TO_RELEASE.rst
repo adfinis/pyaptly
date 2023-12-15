@@ -1,1 +1,0 @@
-pyproject/HOW_TO_RELEASE.rst
