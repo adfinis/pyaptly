@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+import hashlib
+import os
+import shutil
+import sys
+from glob import glob
+from pathlib import Path
+from subprocess import run
+
+import requests
+import toml
+
+base = Path("/setup")
+_nocheck = False
+_blocksize = 1024 * 16
+
+
+def get(url, path):
+    print(f"Download {url}")
+    hash = hashlib.sha256()
+    with requests.get(url, stream=True) as response:
+        if response.status_code == 200:
+            with path.open("wb") as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        sys.stdout.write(".")
+                        sys.stdout.flush()
+                        file.write(chunk)
+                        hash.update(chunk)
+    print("done")
+    hexdigest = hash.hexdigest()
+    print(f"sha256sum: {hexdigest}")
+    return hexdigest
+
+
+def main():
+    global _nocheck
+    _nocheck = "nocheck" in sys.argv
+    config = toml.load(base / "config.toml")
+    aptly = config["aptly"]
+    url = aptly["url"]
+    aptly["filename"] = Path(url).name
+    setup_gnupg(config["gnupg"])
+    install_aptly(aptly)
+    setup_static_aptly(config)
+    publish_key("01")
+    publish_key("02")
+    build_hagrid(config["hagrid"])
+
+
+def drun(cmd, *args, **kwargs):
+    """run for debugbing."""
+    print(" ".join(cmd))
+    run(cmd, *args, **kwargs)
+
+
+def create_repo(config, name, key):
+    cmd = config["base"]
+    run(cmd + ["repo", "create", '-architectures="amd64"', name], check=True)
+    run(cmd + ["repo", "add", name] + glob("/setup/*.deb"), check=True)
+    run(
+        cmd
+        + [
+            "publish",
+            "repo",
+            "-keyring=trustedkeys.gpg",
+            f"-gpg-key={key}",
+            "-distribution=main",
+            name,
+            name,
+        ],
+        check=True,
+    )
+
+
+def setup_static_aptly(config):
+    aptly = config["aptly"]
+    gnupg = config["gnupg"]
+    create_repo(aptly, "fakerepo01", gnupg["test01"])
+    create_repo(aptly, "fakerepo02", gnupg["test01"])
+    create_repo(aptly, "fakerepo03", gnupg["test02"])
+
+
+def setup_key(gpg, number):
+    run(gpg + ["--import", base / f"test{number}.key"], check=True)
+    run(gpg + ["--import", base / f"test{number}.pub"], check=True)
+
+
+def setup_gnupg(config):
+    gpg = config["base"]
+    setup_key(gpg, "01")
+    setup_key(gpg, "02")
+
+
+def install_aptly(config):
+    url = config["url"]
+    filename = config["filename"]
+    target = Path(config["target"])
+    bin = target / "bin"
+    aptly_path = base / filename
+    print(aptly_path)
+    if not aptly_path.exists():
+        hexdigest = get(url, aptly_path)
+        if not _nocheck:
+            assert hexdigest == config["hash"]
+    run(["dpkg", "-i", aptly_path], check=True)
+    run(["aptly", "version"], check=True)
+
+
+def publish_key(number):
+    aptly = base / "aptly"
+    public = aptly / "public"
+    keydir = public / "keys"
+    keydir.mkdir(parents=True, exist_ok=True)
+    key = f"test{number}.key"
+    (keydir / key).hardlink_to(base / key)
+
+
+def digestdir(hash, dir: Path):
+    for item in sorted(dir.iterdir(), key=lambda x: x.name):
+        if item.is_file():
+            with item.open("rb") as f:
+                while block := f.read(_blocksize):
+                    hash.update(block)
+        elif item.is_dir():
+            digestdir(hash, item)
+
+
+def build_hagrid(config):
+    os.chdir(base)
+    hagrid = base / "hagrid.src"
+    hagrid_dst = base / "hagrid"
+    hagrid_dst.mkdir()
+    run(["git", "clone", config["repo"], hagrid])
+    os.chdir(hagrid)
+    run(["git", "checkout", config["revision"]])
+    run(["cargo", "install", "--locked", "--path", "."])
+    rocket_dist = hagrid / "dist"
+    rocket_dist.rename(hagrid_dst)
+    config_src = hagrid / "Rocket.toml.dist"
+    config_dst = hagrid_dst / "Rocket.toml"
+    config_src.rename(config_dst)
+    os.chdir(base)
+    shutil.rmtree(hagrid)
+    shutil.rmtree("/root/.cargo/git")
+    shutil.rmtree("/root/.cargo/registry")
+
+
+if __name__ == "__main__":
+    main()

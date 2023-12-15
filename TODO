@@ -1,6 +1,9 @@
-TODO
-====
+# Update old files
 
-* Cleanup of rotated snapshots after snapshot-update
-* rotated snapshots should be identified by configuration option, not just by
-  "not being timestamped
+The following files have just been copied without checking if their content is ok:
+
+- CHANELOG
+- CHANELOG.rst
+- README.rst
+
+The reason for this is to ensure the continuity of the git history.

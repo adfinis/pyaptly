@@ -1,0 +1,22 @@
+# Run compose/setup/setup with nocheck to update hashes
+
+[aptly]
+url="https://github.com/aptly-dev/aptly/releases/download/v1.5.0/aptly_1.5.0_amd64.deb"
+hash="c606c06ef2ddc6f0b225d6cbecaccd4b17f537ddc8a3fc72a12be94f864674cb"
+target="/usr/local"
+base=["aptly", "-config=/setup/aptly.conf"]
+
+[gnupg]
+base=[
+    "gpg",
+    "--no-default-keyring",
+    "--keyring",
+    "trustedkeys.gpg"
+]
+test01="2841988729C7F3FF"
+test02="EC54D33E5B5EBE98"
+
+[hagrid]
+repo="https://gitlab.com/keys.openpgp.org/hagrid.git"
+# Upstream project does not tag, this is version 1.2.1
+revision="5e08a7086eccf03bfe6d3bb06e197c33735c96f4"
