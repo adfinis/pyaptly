@@ -118,76 +118,37 @@ def create_config(test_input):
 
 
 @contextlib.contextmanager
-def clean_and_config(test_input, freeze="2012-10-10 10:10:10"):
+def clean_and_config(test_input, freeze="2012-10-10 10:10:10", sign=False):
     """Remove aptly file and create a input config file to run pyaptly with.
 
     Test input should be minimal and extended/tranformed in create_config.
-
-    :param test_input: Path to test data input file
-    :type  test_input: str
-    :param     freeze: ISO8601 date string used to set the date/time for the
-                       test
-    :param     freeze: str
-    :rtype:            (dict, str)
     """
-    if (
-        b"pyaptly" not in old_home and b"vagrant" not in old_home
-    ):  # pragma: no cover # noqa
-        raise ValueError(
-            "Not safe to test here. Either you haven't set HOME to the "
-            "repository path %s. Or you havn't checked out the repository "
-            "as pyaptly." % os.path.abspath(".")
-        )
-    file_ = None
-    new_home = None
+    tempdir_obj = tempfile.TemporaryDirectory()
+    tempdir = Path(tempdir_obj.name).absolute()
+
+    aptly = tempdir / "aptly"
+    aptly.mkdir(parents=True)
+    config = {"rootDir": str(aptly)}
+    if aptly_conf.exists():
+        aptly_conf.unlink()
+    with aptly_conf.open("w") as f:
+        json.dump(config, f)
+
+    gnupg = tempdir / "gnugp"
+    gnupg.mkdir(parents=True)
+    os.chown(gnupg, 0, 0)
+    gnupg.chmod(0o700)
+    environb[b"GNUPGHOME"] = str(gnupg).encode("UTF-8")
+
+    if sign:
+        setup = Path("/setup")
+        subprocess.run(["gpg", "--import", setup / "test03.pub"], check=True)
+        subprocess.run(["gpg", "--import", setup / "test03.key"], check=True)
+
+    input_, file_ = create_config(test_input)
     try:
-        new_home = os.path.join(old_home, b".work")
-        try:
-            shutil.rmtree(new_home)
-        except OSError:  # pragma: no cover
-            pass
-        os.mkdir(new_home)
-        shutil.copytree(
-            f"{old_home.decode('UTF-8')}/.gnupg", f"{new_home.decode('UTF-8')}/.gnupg"
-        )
-        environb[b"HOME"] = new_home
         with freezegun.freeze_time(freeze):
-            try:
-                aptly_dir = Path("%s/.aptly" % new_home.decode("UTF-8"))
-                shutil.rmtree(aptly_dir)
-            except OSError:  # pragma: no cover
-                pass
-            try:
-                shutil.rmtree("%s/.gnupg" % new_home.decode("UTF-8"))
-            except OSError:  # pragma: no cover
-                pass
-            try:
-                os.unlink("%s/.gnupg/S.gpg-agent" % old_home.decode("UTF-8"))
-            except OSError:
-                pass
-            shutil.copytree(
-                "%s/.gnupg/" % old_home.decode("UTF-8"),
-                "%s/.gnupg" % new_home.decode("UTF-8"),
-            )
-            input_, file_ = create_config(test_input)
-            try:
-                subprocess.check_call(
-                    [
-                        b"gpg",
-                        b"--keyring",
-                        b"trustedkeys.gpg",
-                        b"--batch",
-                        b"--yes",
-                        b"--delete-key",
-                        b"7FAC5991",
-                    ]
-                )
-            except subprocess.CalledProcessError:  # pragma: no cover
-                pass
             yield (input_, file_)
     finally:
-        environb[b"HOME"] = old_home
-        if file_:
-            os.unlink(file_)
-        if new_home:
-            shutil.rmtree(new_home)
+        tempdir_obj.cleanup()
+        aptly_conf.unlink()

@@ -6,7 +6,8 @@ import os
 import freezegun
 import testfixtures
 
-from pyaptly import Command, SystemStateReader, call_output, main, snapshot_spec_to_name
+from pyaptly import (Command, SystemStateReader, call_output, main,
+                     snapshot_spec_to_name)
 
 from . import test
 
@@ -532,7 +533,8 @@ def test_publish_create_single():
         os.path.join(
             _test_base,
             b"publish.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_snapshot_create(config)
         args = [
@@ -580,7 +582,8 @@ def test_publish_create_repo():
         os.path.join(
             _test_base,
             b"publish_repo.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_repo_create(config)
         args = [
@@ -609,7 +612,8 @@ def test_publish_create_basic():
         os.path.join(
             _test_base,
             b"publish.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_publish_create(config)
 
@@ -620,7 +624,8 @@ def test_publish_update_rotating():
         os.path.join(
             _test_base,
             b"publish-current.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_publish_create_rotating(config)
         with freezegun.freeze_time("2012-10-11 10:10:10"):
@@ -647,7 +652,8 @@ def test_publish_snapshot_update_rotating():
         os.path.join(
             _test_base,
             b"publish-current.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_publish_create_rotating(config)
         with freezegun.freeze_time("2012-10-11 10:10:10"):
@@ -674,7 +680,8 @@ def test_publish_create_rotating():
         os.path.join(
             _test_base,
             b"publish-current.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_publish_create_rotating(config)
 
@@ -707,7 +714,8 @@ def test_publish_create_republish():
         os.path.join(
             _test_base,
             b"publish_publish.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_publish_create_republish(config)
 
@@ -718,7 +726,8 @@ def test_publish_update_republish():
         os.path.join(
             _test_base,
             b"publish_publish.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_publish_create_republish(config)
         with freezegun.freeze_time("2012-10-11 10:10:10"):
@@ -759,7 +768,8 @@ def test_publish_updating_basic():
         os.path.join(
             _test_base,
             b"publish.yml",
-        )
+        ),
+        sign=True,
     ) as (tyml, config):
         do_publish_create(config)
         with freezegun.freeze_time("2012-10-11 10:10:10"):
@@ -791,7 +801,15 @@ def do_repo_create(config):
     main(args)
     state = SystemStateReader()
     state.read()
-    call_output(["aptly", "repo", "add", "centrify", "vagrant/hellome_0.1-1_amd64.deb"])
+    call_output(
+        [
+            "aptly",
+            "repo",
+            "add",
+            "centrify",
+            "/source/compose/setup/hellome_0.1-1_amd64.deb",
+        ]
+    )
     assert set(["centrify"]) == state.repos
 
 

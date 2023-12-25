@@ -21,7 +21,7 @@ up: ## start the container (cached)
 	@docker compose up -d
 
 .PHONY: push
-push: ## push docker build cache to registry
+push: ## push docker image cache to the registry
 	@docker push $(CACHE_IMG)
 
 .PHONY: down

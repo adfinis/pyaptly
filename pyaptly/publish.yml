@@ -6,7 +6,7 @@ publish:
           name: "fakerepo01-%T"
           timestamp: "current"
           archive-on-update: "archived-fakerepo01-%T"
-      gpg-key: "650FE755"
+      gpg-key: "6D79A810B9B7ABAE"
       skip-contents: true
       automatic-update: true
   fakerepo02:
@@ -16,7 +16,7 @@ publish:
           name: "fakerepo02-%T"
           timestamp: "current"
           archive-on-update: "archived-fakerepo02-%T"
-      gpg-key: "650FE755"
+      gpg-key: "6D79A810B9B7ABAE"
       automatic-update: true
 merge:
   - "snapshot.yml"

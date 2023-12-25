@@ -1,6 +1,5 @@
 mirror:
-  google-chrome: 
-    archive: "http://dl.google.com/linux/chrome/deb/"
-    distribution: "stable"
-    gpg-keys: ["7FAC5991", "EB4C1BFD4F042F6DDDCCEC917721F63BD38B4796"]
-    gpg-urls: ["https://dl.google.com/linux/linux_signing_key.pub"]
+  fakerepo03:
+    archive: "http://localhost:3123/fakerepo03"
+    gpg-keys: ["EC54D33E5B5EBE98"]
+    gpg-urls: ["http://localhost:3123/keys/test02.key"]

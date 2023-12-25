@@ -105,6 +105,7 @@ def install_aptly(config):
             assert hexdigest == config["hash"]
     run(["dpkg", "-i", aptly_path], check=True)
     run(["aptly", "version"], check=True)
+    aptly_path.unlink()
 
 
 def publish_key(number):
