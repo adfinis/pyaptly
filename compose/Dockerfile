@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ADD setup /setup
 RUN /setup/setup
 ADD run /setup/run
+ADD pdbrc.py /root/.pdbrc.py
 WORKDIR /source
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["bash", "/setup/run"]

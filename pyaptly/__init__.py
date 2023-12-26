@@ -1585,7 +1585,7 @@ def add_gpg_keys(mirror_config):
                 "--keyring",
                 "trustedkeys.gpg",
                 "--keyserver",
-                "keys.openpgp.org",
+                "hkp://127.0.0.1:8080",
                 "--recv-keys",
                 key,
             ]
@@ -1595,7 +1595,7 @@ def add_gpg_keys(mirror_config):
             url = keys_urls[key]
             if url:
                 key_command = (
-                    "wget -q -O - %s | "
+                    "curl %s | "
                     "gpg --no-default-keyring --keyring trustedkeys.gpg "
                     "--import"
                 ) % url
