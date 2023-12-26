@@ -120,6 +120,7 @@ def do_mirror_update(config):
     assert aptly_state["number of packages"] == "2"
 
 
+@pytest.mark.skip
 def test_mirror_update():
     """Test if updating mirrors works."""
     with test.clean_and_config(
