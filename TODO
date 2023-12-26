@@ -7,3 +7,8 @@ The following files have just been copied without checking if their content is o
 - README.rst
 
 The reason for this is to ensure the continuity of the git history.
+
+# Tool to convert yaml config to toml
+
+- This is probably just a sub-command of pyaptly
+- We probably still want to switch to a modern yaml parser
