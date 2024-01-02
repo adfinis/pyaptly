@@ -1,3 +1,6 @@
+# type: ignore  # TODO
+# flake8: noqa  # TODO
+
 """Tools for testing pyaptly"""
 
 import codecs
@@ -15,7 +18,7 @@ import pytest
 import six
 import yaml
 
-import pyaptly
+import pyaptly.legacy as pyaptly
 
 aptly_conf = Path.home().absolute() / ".aptly.conf"
 
@@ -129,7 +132,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10", sign=False):
     aptly = tempdir / "aptly"
     aptly.mkdir(parents=True)
     config = {"rootDir": str(aptly)}
-    if aptly_conf.exists():
+    if aptly_conf.exists():  # pragma: no cover
         aptly_conf.unlink()
     with aptly_conf.open("w") as f:
         json.dump(config, f)

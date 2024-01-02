@@ -1,3 +1,4 @@
+"""python-click based command line interface for pyaptly."""
 from pathlib import Path
 
 import click
@@ -14,7 +15,8 @@ import click
     default=False,
     help="Add default values to fields if missing",
 )
-def cli(debug):
+def cli(debug: bool):
+    """Show basic command group."""
     from pyaptly import util
 
     util._DEBUG = debug
@@ -22,7 +24,8 @@ def cli(debug):
 
 @cli.command(help="run legacy command parser")
 def legacy():
-    from pyaptly import main
+    """Run legacy pyaptly cli."""
+    from pyaptly import main  # type: ignore  # TODO
 
     main()
 
@@ -43,7 +46,7 @@ def legacy():
     type=click.Path(
         file_okay=True,
         dir_okay=False,
-        exists=None,
+        exists=False,
         writable=True,
         path_type=Path,
     ),
@@ -55,7 +58,8 @@ def legacy():
     default=False,
     help="Add default values to fields if missing",
 )
-def yaml_to_toml(yaml_path, toml_path, add_defaults):
+def yaml_to_toml(yaml_path: Path, toml_path: Path, add_defaults: bool):
+    """Convert pyaptly config files from yaml to toml."""
     from pyaptly import config_file
 
     config_file.yaml_to_toml(

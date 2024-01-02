@@ -1,3 +1,6 @@
+# type: ignore  # TODO
+# flake8: noqa  # TODO
+
 """Testing pyaptly"""
 import contextlib
 import logging
@@ -7,8 +10,13 @@ import freezegun
 import pytest
 import testfixtures
 
-from pyaptly import (Command, SystemStateReader, call_output, main,
-                     snapshot_spec_to_name)
+from pyaptly.legacy import (
+    Command,
+    SystemStateReader,
+    call_output,
+    main,
+    snapshot_spec_to_name,
+)
 
 from . import test
 
@@ -25,7 +33,7 @@ _test_base = os.path.dirname(os.path.abspath(__file__)).encode("UTF-8")
 def mock_subprocess():
     """Mock subprocess that no commands are executed"""
     call = mock.patch("subprocess.check_call")
-    output = mock.patch("pyaptly.call_output")
+    output = mock.patch("pyaptly.legacy.call_output")
     yield (call.start(), output.start())
     call.stop()
     output.stop()

@@ -1,15 +1,18 @@
+# type: ignore  # TODO
+# flake8: noqa  # TODO
+
 """Testing testing helper functions"""
 import subprocess
 
-from pyaptly import Command, SystemStateReader, call_output
+from pyaptly.legacy import Command, SystemStateReader, call_output
 
 
 def test_call_output_error():
     """Test if call_output raises errors correctly"""
     args = [
-        'bash',
-        '-c',
-        'exit 42',
+        "bash",
+        "-c",
+        "exit 42",
     ]
     error = False
     try:
@@ -22,7 +25,7 @@ def test_call_output_error():
 
 def test_command_dependency_fail():
     """Test if bad dependencies fail correctly."""
-    a = Command(['ls'])
+    a = Command(["ls"])
     error = False
     try:
         a.require("turbo", "banana")
@@ -35,7 +38,7 @@ def test_dependency_callback_file():
     """Test if bad dependencies fail correctly."""
     state = SystemStateReader()
     try:
-        state.has_dependency(['turbo', 'banana'])
+        state.has_dependency(["turbo", "banana"])
     except ValueError as e:
         assert "Unknown dependency" in e.args[0]
         error = True

@@ -1,5 +1,11 @@
 # NEXT: Add coverage and mypy
 
+# Call code moves somewhere else
+
+- Tests to the tests/ directory
+- Everything else away from legacy.py
+- Remove version.py completely
+
 # Update old files
 
 The following files have just been copied without checking if their content is ok:
@@ -20,3 +26,8 @@ The reason for this is to ensure the continuity of the git history.
 # Replace all subprocess commands with a modern one (usually run())
 
 # All logging should be done via logging (no stdout/stderr)
+
+# Remove all top-level `# type: ignore` and all `# type: ignore  # TODO`
+
+# Add good documentation to every function and module, but plan to review all of
+  it once everything is in place

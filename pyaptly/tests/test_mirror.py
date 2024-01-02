@@ -1,3 +1,4 @@
+"""Test mirror functionality."""
 import logging
 
 import pytest
@@ -13,7 +14,6 @@ def test_mirror_create(environment, config, caplog):
 
     caplog.set_level(logging.DEBUG)
     pyaptly.main(["-c", config_file, "mirror", "create"])
-
     keys_added = []
     for rec in caplog.records:
         for arg in rec.args:
@@ -31,6 +31,7 @@ def test_mirror_create(environment, config, caplog):
 
 @pytest.mark.parametrize("config", ["mirror-basic.toml"], indirect=True)
 def test_mirror_update(environment, config):
+    """Test if updating mirrors works."""
     config_file, config_dict = config
     do_mirror_update(config_file)
 
