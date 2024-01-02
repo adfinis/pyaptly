@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import tempfile
 from pathlib import Path
@@ -12,7 +13,23 @@ test_base = Path(__file__).absolute().parent / "tests"
 
 
 @pytest.fixture()
-def environment():
+def debug_mode():
+    from pyaptly import util
+
+    level = logging.root.getEffectiveLevel()
+
+    try:
+        util._PYTEST_DEBUG = True
+        logging.root.setLevel(logging.DEBUG)
+
+        yield
+    finally:
+        util._PYTEST_DEBUG = False
+        logging.root.setLevel(level)
+
+
+@pytest.fixture()
+def environment(debug_mode):
     tempdir_obj = tempfile.TemporaryDirectory()
     tempdir = Path(tempdir_obj.name).absolute()
 

@@ -6,12 +6,16 @@ authors = ["Jean-Louis Fuchs <jean-louis.fuchs@adfinis.com>"]
 license = "AGPL-3.0-or-later"
 readme = "README.md"
 
+[tool.poetry.scripts]
+pyaptly = 'pyaptly.cli:cli'
+
 [tool.poetry.dependencies]
 python = "^3.11"
 pretty-dump = {git = "https://github.com/adfinis/freeze"}
 pytz = "^2023.3.post1"
 pyyaml = "^6.0.1"
 toml = "^0.10.2"
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.2.2"

@@ -1,3 +1,5 @@
+# NEXT: Add coverage and mypy
+
 # Update old files
 
 The following files have just been copied without checking if their content is ok:
@@ -12,3 +14,9 @@ The reason for this is to ensure the continuity of the git history.
 
 - This is probably just a sub-command of pyaptly
 - We probably still want to switch to a modern yaml parser
+
+# Rename testsets mentioning google
+
+# Replace all subprocess commands with a modern one (usually run())
+
+# All logging should be done via logging (no stdout/stderr)

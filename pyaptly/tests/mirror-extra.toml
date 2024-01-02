@@ -1,0 +1,6 @@
+[mirror.fakerepo03]
+archive = "http://localhost:3123/fakerepo03"
+gpg-keys = [ "EC54D33E5B5EBE98",]
+gpg-urls = [ "http://localhost:3123/keys/test02.key",]
+components = "main"
+distribution = "main"
