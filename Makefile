@@ -40,14 +40,52 @@ wait-for-ready: up ## wait for web-server to be ready for testing
 poetry-install: wait-for-ready ## install dev environment
 	@docker compose exec testing poetry install
 
+.PHONY: mypy
+mypy: poetry-install
+	@docker compose exec testing poetry run dmypy run -- pyaptly
+
+.PHONY: pytest
+pytest: poetry-install ## run pytest
+	@docker compose exec testing poetry run pytest -vv --cov
+
+.PHONY: check-isort
+check-isort: poetry-install ## check isort
+	@docker compose exec testing poetry run isort --check pyaptly
+
+.PHONY: check-black
+check-black: poetry-install ## check black
+	@docker compose exec testing poetry run black --check pyaptly
+
+.PHONY: check-black
+format-black: poetry-install ## format code with black
+	@docker compose exec testing poetry run black pyaptly
+
+.PHONY: flake8
+flake8: poetry-install ## run flake8
+	@docker compose exec testing poetry run flake8 pyaptly
+
+.PHONY: lint-code
+lint-code: check-isort check-black flake8 ## check all linters
+
 .PHONY: test
-test: poetry-install ## run pytest
-	@docker compose exec testing poetry run pytest
+test: pytest mypy lint-code ## run all testing
 
 .PHONY: shell
 shell: poetry-install ## run shell
 	@docker compose exec testing bash -c "SHELL=bash poetry shell"
 
-.PHONY: entr
-entr: poetry-install ## run entr
-	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'pytest -x --lf'"
+.PHONY: entr-pytest
+entr-pytest: poetry-install ## run pytest with entr
+	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'pytest -x --lf; echo ---'"
+
+.PHONY: entr-mypy
+entr-mypy: poetry-install ## run pytest with entr
+	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'make local-mypy; echo ---'"
+
+.PHONY: entr-flake8
+entr-flake8: poetry-install ## run flake8 with entr
+	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'flake8 pyaptly; echo ---'"
+
+.PHONY: local-mypy
+local-mypy: ## Run mypy as daemon locally (requires local-dev)
+	@poetry run dmypy run -- pyaptly

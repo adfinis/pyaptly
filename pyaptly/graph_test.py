@@ -1,8 +1,13 @@
+# type: ignore  # TODO
+# flake8: noqa  # TODO
+
 """Testing dependency graphs"""
 import random
 import sys
 
-from . import Command, FunctionCommand, test
+from pyaptly.legacy import Command, FunctionCommand
+
+from . import test
 
 if not sys.version_info < (2, 7):  # pragma: no cover
     from hypothesis import strategies as st

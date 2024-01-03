@@ -1,6 +1,9 @@
+"""Basic function like running processes and logging."""
+
 import logging
 import subprocess
-from subprocess import DEVNULL, PIPE
+from subprocess import DEVNULL, PIPE  # noqa: F401
+from typing import Union
 
 _DEBUG = False
 _PYTEST_DEBUG = False
@@ -22,8 +25,8 @@ def is_debug_mode():
     return _DEBUG or _PYTEST_DEBUG
 
 
-def run(cmd_args, *, decode=True, **kwargs):
-    """Instrumented subprocess.run() for easier debugging.
+def run(cmd_args: list[str], *, decode: bool = True, **kwargs):
+    """Instrumented subprocess.run for easier debugging.
 
     By default this run command will add `encoding="UTF-8"` to kwargs. Disable
     with `decode=False`.
@@ -39,7 +42,7 @@ def run(cmd_args, *, decode=True, **kwargs):
             kwargs["stderr"] = PIPE
             added_stderr = True
     result = None
-    if decode:
+    if decode and "encoding" not in kwargs:
         kwargs["encoding"] = "UTF-8"
     try:
         result = subprocess.run(cmd_args, **kwargs)
@@ -54,7 +57,12 @@ def run(cmd_args, *, decode=True, **kwargs):
     return result
 
 
-def indent_out(output):
+def indent_out(output: Union[bytes, str]) -> str:
+    """Indent command output for nicer logging-messages.
+
+    It will convert bytes to strings if need or display the result as bytes if
+    decoding fails.
+    """
     output = output.strip()
     if not output:
         return ""
@@ -78,7 +86,8 @@ def indent_out(output):
     return "\n".join(result)
 
 
-def log_run_result(result):
+def log_run_result(result: subprocess.CompletedProcess):
+    """Log a CompletedProcess result log debug."""
     msg = RESULT_LOG.format(
         args=result.args,
         returncode=result.returncode,
@@ -88,7 +97,7 @@ def log_run_result(result):
     logger.debug(msg)
 
 
-def parse_aptly_show_command(show):
+def parse_aptly_show_command(show: str) -> dict[str, str]:
     """Parse an aptly show command."""
     result = {}
     for line in show.split("\n"):
