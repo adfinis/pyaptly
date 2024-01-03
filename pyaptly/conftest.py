@@ -6,9 +6,13 @@ import os
 import tempfile
 from pathlib import Path
 
+import freezegun
 import pytest
 import toml
 import yaml
+
+import pyaptly
+from pyaptly import util
 
 aptly_conf = Path.home().absolute() / ".aptly.conf"
 test_base = Path(__file__).absolute().parent / "tests"
@@ -70,6 +74,26 @@ def environment(debug_mode):
 
 
 @pytest.fixture()
+def freeze(request):
+    """Freeze to datetime.
+
+    Can be configured with:
+
+    ```python
+    @pytest.mark.parametrize("freeze", ["2012-10-10 10:10:10"], indirect=True)
+    def test_snapshot_create_basic(environment, config, freeze):
+    ...
+    ```
+    """
+    if hasattr(request, "param"):
+        freeze = request.param
+    else:
+        freeze = "2012-10-10 10:10:10"
+    with freezegun.freeze_time(freeze) as ft:
+        yield ft
+
+
+@pytest.fixture()
 def config(request):
     """Get a config.
 
@@ -88,6 +112,111 @@ def config(request):
     try:
         with tempfile.NamedTemporaryFile(mode="w", encoding="UTF-8", delete=False) as f:
             yaml.dump(config, f)
-        yield f.name, config
+        yield f.name
     finally:
         Path(f.name).unlink()
+
+
+@pytest.fixture()
+def mirror_update(environment, config):
+    """Test if updating mirrors works."""
+    args = ["-c", config, "mirror", "create"]
+    state = pyaptly.SystemStateReader()
+    state.read()
+    assert "fakerepo01" not in state.mirrors
+    pyaptly.main(args)
+    state.read()
+    assert "fakerepo01" in state.mirrors
+    args[3] = "update"
+    pyaptly.main(args)
+    args = [
+        "aptly",
+        "mirror",
+        "show",
+        "fakerepo01",
+    ]
+    result = util.run_command(args, stdout=util.PIPE, check=True)
+    aptly_state = util.parse_aptly_show_command(result.stdout)
+    assert aptly_state["number of packages"] == "2"
+
+
+@pytest.fixture()
+def snapshot_create(config, mirror_update, freeze):
+    """Test if createing snapshots works."""
+    args = ["-c", config, "snapshot", "create"]
+    pyaptly.main(args)
+    state = pyaptly.SystemStateReader()
+    state.read()
+    assert set(["fakerepo01-20121010T0000Z", "fakerepo02-20121006T0000Z"]).issubset(
+        state.snapshots
+    )
+    yield state
+
+
+@pytest.fixture()
+def snapshot_update_rotating(config, mirror_update, freeze):
+    """Rotate snapshots."""
+    args = [
+        "-c",
+        config,
+        "snapshot",
+        "create",
+    ]
+    pyaptly.main(args)
+    state = pyaptly.SystemStateReader()
+    state.read()
+    assert set(
+        [
+            "fake-current",
+            "fakerepo01-current",
+            "fakerepo02-current",
+        ]
+    ).issubset(state.snapshots)
+    args = [
+        "-c",
+        config,
+        "snapshot",
+        "update",
+    ]
+    pyaptly.main(args)
+    state.read()
+    assert set(
+        [
+            "fake-current",
+            "fakerepo01-current-rotated-20121010T1010Z",
+            "fakerepo02-current-rotated-20121010T1010Z",
+        ]
+    ).issubset(state.snapshots)
+    expected = {
+        "fake-current": set(["fakerepo01-current", "fakerepo02-current"]),
+        "fake-current-rotated-20121010T1010Z": set(
+            [
+                "fakerepo01-current-rotated-20121010T1010Z",
+                "fakerepo02-current-rotated-20121010T1010Z",
+            ]
+        ),
+        "fakerepo01-current": set([]),
+        "fakerepo01-current-rotated-20121010T1010Z": set([]),
+        "fakerepo02-current": set([]),
+        "fakerepo02-current-rotated-20121010T1010Z": set([]),
+    }
+    assert state.snapshot_map == expected
+
+
+@pytest.fixture()
+def repo_create(environment, config):
+    """Test if creating repositories works."""
+    args = ["-c", config, "repo", "create"]
+    pyaptly.main(args)
+    state = pyaptly.SystemStateReader()
+    state.read()
+    util.run_command(
+        [
+            "aptly",
+            "repo",
+            "add",
+            "centrify",
+            "/source/compose/setup/hellome_0.1-1_amd64.deb",
+        ]
+    )
+    assert set(["centrify"]) == state.repos

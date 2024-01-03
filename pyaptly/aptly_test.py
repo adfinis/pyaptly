@@ -140,6 +140,7 @@ def test_mirror_update():
         do_mirror_update(config)
 
 
+@pytest.mark.skip
 def test_mirror_update_inexistent():
     """Test if updating an inexistent mirror causes an error."""
     with test.clean_and_config(
@@ -158,6 +159,7 @@ def test_mirror_update_inexistent():
         assert error
 
 
+@pytest.mark.skip
 def test_mirror_update_single():
     """Test if updating a single mirror works."""
     with test.clean_and_config(
@@ -184,6 +186,7 @@ def do_snapshot_create(config):
     return state
 
 
+@pytest.mark.skip
 def test_snapshot_create_inexistent():
     """Test if creating an inexistent snapshot raises an error."""
     with test.clean_and_config(
@@ -208,6 +211,7 @@ def test_snapshot_create_inexistent():
         assert error
 
 
+@pytest.mark.skip
 def test_snapshot_create_single():
     """Test if single snapshot create works."""
     with test.clean_and_config(
@@ -230,6 +234,7 @@ def test_snapshot_create_single():
         assert set(["fakerepo01-20121010T0000Z"]).issubset(state.snapshots)
 
 
+@pytest.mark.skip
 def test_snapshot_create_rotating():
     """Test if rotating snapshot create works."""
     with test.clean_and_config(
@@ -257,6 +262,7 @@ def test_snapshot_create_rotating():
         ).issubset(state.snapshots)
 
 
+@pytest.mark.skip
 def test_snapshot_update_rotating():
     """Test if rotating snapshot update works."""
     with test.clean_and_config(
@@ -268,6 +274,7 @@ def test_snapshot_update_rotating():
         do_snapshot_update_rotating(config)
 
 
+@pytest.mark.skip
 def test_snapshot_update_threetimes_rotating():
     """Test if rotating snapshot update works."""
     with test.clean_and_config(
@@ -420,6 +427,7 @@ def do_snapshot_update_rotating(config):
     assert state.snapshot_map == expected
 
 
+@pytest.mark.skip
 def test_snapshot_create_basic():
     """Test if snapshot create works."""
     with test.clean_and_config(
@@ -435,6 +443,7 @@ def test_snapshot_create_basic():
         )
 
 
+@pytest.mark.skip
 def test_snapshot_create_repo():
     """Test if repo snapshot create works."""
     with test.clean_and_config(

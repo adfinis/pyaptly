@@ -1,0 +1,37 @@
+[mirror.fakerepo01]
+max-tries = 2
+archive = "http://localhost:3123/fakerepo01"
+gpg-keys = [ "2841988729C7F3FF",]
+components = "main"
+distribution = "main"
+
+[mirror.fakerepo02]
+archive = "http://localhost:3123/fakerepo02"
+gpg-keys = [ "2841988729C7F3FF",]
+components = "main"
+distribution = "main"
+
+[snapshot."fakerepo01-%T"]
+mirror = "fakerepo01"
+
+[snapshot."fakerepo02-%T"]
+mirror = "fakerepo02"
+
+[snapshot."fakerepo01-%T".timestamp]
+time = "00:00"
+
+[snapshot."fakerepo02-%T".timestamp]
+time = "00:00"
+repeat-weekly = "sat"
+
+[snapshot."superfake-%T"]
+[[snapshot."superfake-%T".merge]]
+name = "fakerepo01-%T"
+timestamp = "current"
+
+[[snapshot."superfake-%T".merge]]
+name = "fakerepo02-%T"
+timestamp = 0
+
+[snapshot."superfake-%T".timestamp]
+time = "00:00"

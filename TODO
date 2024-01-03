@@ -1,6 +1,4 @@
-# NEXT: Add coverage and mypy
-
-# Call code moves somewhere else
+# All code moves somewhere else
 
 - Tests to the tests/ directory
 - Everything else away from legacy.py
@@ -21,9 +19,7 @@ The reason for this is to ensure the continuity of the git history.
 - This is probably just a sub-command of pyaptly
 - We probably still want to switch to a modern yaml parser
 
-# Rename testsets mentioning google
-
-# Replace all subprocess commands with a modern one (usually run())
+# Replace all subprocess commands with a modern one (run_command())
 
 # All logging should be done via logging (no stdout/stderr)
 
