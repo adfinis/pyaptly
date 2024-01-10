@@ -25,7 +25,7 @@ def is_debug_mode():
     return _DEBUG or _PYTEST_DEBUG
 
 
-def run(cmd_args: list[str], *, decode: bool = True, **kwargs):
+def run_command(cmd_args: list[str], *, decode: bool = True, **kwargs):
     """Instrumented subprocess.run for easier debugging.
 
     By default this run command will add `encoding="UTF-8"` to kwargs. Disable
