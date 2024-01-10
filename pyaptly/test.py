@@ -143,7 +143,7 @@ def clean_and_config(test_input, freeze="2012-10-10 10:10:10", sign=False):
     gnupg.chmod(0o700)
     environb[b"GNUPGHOME"] = str(gnupg).encode("UTF-8")
 
-    if sign:
+    if sign:  # pragma: no cover
         setup = Path("/setup")
         subprocess.run(["gpg", "--import", setup / "test03.pub"], check=True)
         subprocess.run(["gpg", "--import", setup / "test03.key"], check=True)

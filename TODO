@@ -27,3 +27,7 @@ The reason for this is to ensure the continuity of the git history.
 
 # Add good documentation to every function and module, but plan to review all of
   it once everything is in place
+
+# Do all output via logging module
+
+- Idea show INFO and above, but display info without timestamp etc.

@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from .. import util
+from .. import legacy, util
 
 EXPECT = """
 stdout:     'first
@@ -39,3 +39,19 @@ def test_run(test_path, debug_mode, caplog, decode, unicode_error):
 def test_freeze(freeze):
     """Test if setting freeze params works."""
     assert str(datetime.now()) == "2014-10-10 10:10:10"
+
+
+def test_snapshot_spec_as_dict():
+    """Test various snapshot formats for snapshot_spec_to_name()."""
+    snap_string = "snapshot-foo"
+    snap_dict = {"name": "foo"}
+
+    # TODO We cannot typecheck this as long as we do not typecheck legacy.py
+    cfg = {
+        "snapshot": {
+            "foo": {},
+        }
+    }  # type: ignore
+
+    assert legacy.snapshot_spec_to_name(cfg, snap_string) == snap_string  # type: ignore
+    assert legacy.snapshot_spec_to_name(cfg, snap_dict) == "foo"  # type: ignore
