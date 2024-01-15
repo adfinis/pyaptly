@@ -106,7 +106,7 @@ def test_mirror_create():
         assert state.mirrors == expect
 
 
-def do_mirror_update(config):
+def do_mirror_update(config):  # pragma: no cover
     """Test if updating mirrors works."""
     args = ["-c", config, "mirror", "create"]
     state = SystemStateReader()
@@ -173,7 +173,7 @@ def test_mirror_update_single():
         main(args)
 
 
-def do_snapshot_create(config):
+def do_snapshot_create(config):  # pragma: no cover
     """Test if createing snapshots works"""
     do_mirror_update(config)
     args = ["-c", config, "snapshot", "create"]
@@ -377,7 +377,7 @@ def test_snapshot_update_threetimes_rotating():
             assert state.snapshot_map == expected
 
 
-def do_snapshot_update_rotating(config):
+def do_snapshot_update_rotating(config):  # pragma: no cover
     """Helper for rotating snapshot tests"""
     do_mirror_update(config)
     args = [
@@ -461,6 +461,7 @@ def test_snapshot_create_repo():
         return state
 
 
+@pytest.mark.skip
 def test_snapshot_create_merge():
     """Test if snapshot merge create works."""
     with test.clean_and_config(
@@ -490,6 +491,7 @@ def test_snapshot_create_merge():
         assert expect == state.snapshot_map
 
 
+@pytest.mark.skip
 def test_snapshot_create_filter():
     """Test if snapshot filter create works."""
     with test.clean_and_config(
@@ -507,7 +509,7 @@ def test_snapshot_create_filter():
         assert state == expect
 
 
-def do_publish_create(config):
+def do_publish_create(config):  # pragma: no cover
     """Test if creating publishes works."""
     do_snapshot_create(config)
     args = ["-c", config, "publish", "create"]
@@ -522,7 +524,7 @@ def do_publish_create(config):
     assert expect == state.publish_map
 
 
-def do_publish_create_rotating(config):
+def do_publish_create_rotating(config):  # pragma: no cover
     """Test if creating publishes works."""
     do_snapshot_update_rotating(config)
     args = ["-c", config, "publish", "create"]
@@ -547,6 +549,7 @@ def do_publish_create_rotating(config):
     assert expect == state.publish_map
 
 
+@pytest.mark.skip
 def test_publish_create_single():
     """Test if creating a single publish works."""
     with test.clean_and_config(
@@ -572,6 +575,7 @@ def test_publish_create_single():
         assert expect == state.publish_map
 
 
+@pytest.mark.skip
 def test_publish_create_inexistent():
     """Test if creating inexistent publish raises an error."""
     with test.clean_and_config(
@@ -596,6 +600,7 @@ def test_publish_create_inexistent():
         assert error
 
 
+@pytest.mark.skip
 def test_publish_create_repo():
     """Test if creating repo publishes works."""
     with test.clean_and_config(
@@ -626,6 +631,7 @@ def test_publish_create_repo():
         assert {"centrify latest": set([])} == state.publish_map
 
 
+@pytest.mark.skip
 def test_publish_create_basic():
     """Test if creating publishes works."""
     with test.clean_and_config(
@@ -638,6 +644,7 @@ def test_publish_create_basic():
         do_publish_create(config)
 
 
+@pytest.mark.skip
 def test_publish_update_rotating():
     """Test if update rotating publishes works."""
     with test.clean_and_config(
@@ -666,6 +673,7 @@ def test_publish_update_rotating():
             assert expect == state.publish_map
 
 
+@pytest.mark.skip
 def test_publish_snapshot_update_rotating():
     """Test if update rotating publishes via snapshot works."""
     with test.clean_and_config(
@@ -694,6 +702,7 @@ def test_publish_snapshot_update_rotating():
             assert expect == state.publish_map
 
 
+@pytest.mark.skip
 def test_publish_create_rotating():
     """Test if creating rotating publishes works."""
     with test.clean_and_config(
@@ -706,7 +715,7 @@ def test_publish_create_rotating():
         do_publish_create_rotating(config)
 
 
-def do_publish_create_republish(config):
+def do_publish_create_republish(config):  # pragma: no cover
     """Test if creating republishes works."""
     with testfixtures.LogCapture() as l:
         do_publish_create(config)
@@ -728,6 +737,7 @@ def do_publish_create_republish(config):
     assert "fakerepo01-stable main" in state.publishes
 
 
+@pytest.mark.skip
 def test_publish_create_republish():
     """Test if creating republishes works."""
     with test.clean_and_config(
@@ -740,6 +750,7 @@ def test_publish_create_republish():
         do_publish_create_republish(config)
 
 
+@pytest.mark.skip
 def test_publish_update_republish():
     """Test if update republishes works."""
     with test.clean_and_config(
@@ -782,6 +793,7 @@ def test_publish_update_republish():
         assert expect == state.publish_map
 
 
+@pytest.mark.skip
 def test_publish_updating_basic():
     """Test if updating publishes works."""
     with test.clean_and_config(
@@ -815,7 +827,7 @@ def test_publish_updating_basic():
             assert expect == state.publish_map
 
 
-def do_repo_create(config):
+def do_repo_create(config):  # pragma: no cover
     """Test if creating repositories works."""
     args = ["-c", config, "repo", "create"]
     main(args)
@@ -833,6 +845,7 @@ def do_repo_create(config):
     assert set(["centrify"]) == state.repos
 
 
+@pytest.mark.skip
 def test_repo_create_single():
     """Test if creating a single repo works."""
     with test.clean_and_config(
@@ -854,6 +867,7 @@ def test_repo_create_single():
         assert set(["centrify"]) == state.repos
 
 
+@pytest.mark.skip
 def test_repo_create_inexistent():
     """Test if creating an inexistent repo causes an error."""
     with test.clean_and_config(
@@ -877,6 +891,7 @@ def test_repo_create_inexistent():
         assert error
 
 
+@pytest.mark.skip
 def test_repo_create_basic():
     """Test if creating repositories works."""
     with test.clean_and_config(
@@ -888,6 +903,7 @@ def test_repo_create_basic():
         do_repo_create(config)
 
 
+@pytest.mark.skip
 def test_snapshot_spec_as_dict():
     "Test various snapshot formats for snapshot_spec_to_name()"
 

@@ -16,6 +16,7 @@ from pyaptly import util
 
 aptly_conf = Path.home().absolute() / ".aptly.conf"
 test_base = Path(__file__).absolute().parent / "tests"
+setup_base = Path("/setup")
 
 
 @pytest.fixture()
@@ -71,6 +72,13 @@ def environment(debug_mode):
     finally:
         tempdir_obj.cleanup()
         aptly_conf.unlink()
+
+
+@pytest.fixture()
+def test_key_03(environment):
+    """Get test gpg-key number 3."""
+    util.run_command(["gpg", "--import", setup_base / "test03.key"], check=True)
+    util.run_command(["gpg", "--import", setup_base / "test03.pub"], check=True)
 
 
 @pytest.fixture()
@@ -204,7 +212,7 @@ def snapshot_update_rotating(config, mirror_update, freeze):
 
 
 @pytest.fixture()
-def repo_create(environment, config):
+def repo_create(environment, config, test_key_03):
     """Test if creating repositories works."""
     args = ["-c", config, "repo", "create"]
     pyaptly.main(args)
@@ -220,3 +228,64 @@ def repo_create(environment, config):
         ]
     )
     assert set(["centrify"]) == state.repos
+
+
+@pytest.fixture()
+def publish_create(config, snapshot_create, test_key_03):
+    """Test if creating publishes works."""
+    args = ["-c", config, "publish", "create"]
+    pyaptly.main(args)
+    state = pyaptly.SystemStateReader()
+    state.read()
+    assert set(["fakerepo02 main", "fakerepo01 main"]) == state.publishes
+    expect = {
+        "fakerepo02 main": set(["fakerepo02-20121006T0000Z"]),
+        "fakerepo01 main": set(["fakerepo01-20121010T0000Z"]),
+    }
+    assert expect == state.publish_map
+
+
+@pytest.fixture()
+def publish_create_rotating(config, snapshot_update_rotating, test_key_03):
+    """Test if creating publishes works."""
+    args = ["-c", config, "publish", "create"]
+    pyaptly.main(args)
+    state = pyaptly.SystemStateReader()
+    state.read()
+    assert (
+        set(
+            [
+                "fakerepo01/current stable",
+                "fake/current stable",
+                "fakerepo02/current stable",
+            ]
+        )
+        == state.publishes
+    )
+    expect = {
+        "fake/current stable": set(["fake-current"]),
+        "fakerepo01/current stable": set(["fakerepo01-current"]),
+        "fakerepo02/current stable": set(["fakerepo02-current"]),
+    }
+    assert expect == state.publish_map
+
+
+@pytest.fixture()
+def publish_create_republish(config, publish_create, caplog):
+    """Test if creating republishes works."""
+    found = False
+    for rec in caplog.records:
+        if rec.levelname == "CRITICAL":
+            if "has been deferred" in rec.msg:
+                found = True
+    assert found
+    args = [
+        "-c",
+        config,
+        "publish",
+        "create",
+    ]
+    pyaptly.main(args)
+    state = pyaptly.SystemStateReader()
+    state.read()
+    assert "fakerepo01-stable main" in state.publishes
