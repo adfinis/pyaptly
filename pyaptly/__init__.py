@@ -3,4 +3,8 @@
 Configuration is based on toml input files.
 """
 
-from pyaptly.legacy import SystemStateReader, main  # type: ignore  # TODO  # noqa: F401
+from pyaptly.legacy import (  # type: ignore  # TODO  # noqa: F401
+    Command,
+    SystemStateReader,
+    main,
+)

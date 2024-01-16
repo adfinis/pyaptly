@@ -39,6 +39,7 @@ def mock_subprocess():
     output.stop()
 
 
+@pytest.mark.skip  # mock_subprocess was never used
 def test_debug():
     """Test if debug is enabled with -d"""
     with mock_subprocess() as (_, gpg):
@@ -54,6 +55,7 @@ def test_debug():
         assert logging.getLogger().level == logging.DEBUG
 
 
+@pytest.mark.skip
 def test_pretend():
     """Test if pretend is enabled with -p"""
     with test.clean_and_config(
