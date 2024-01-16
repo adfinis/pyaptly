@@ -73,7 +73,7 @@ def merge(a, b):
     return b
 
 
-def execute_and_parse_show_cmd(args):
+def execute_and_parse_show_cmd(args):  # pragma: no cover
     """Executes and parses a aptly show command.
 
     :param args: Command to execute
@@ -105,7 +105,7 @@ def create_config(test_input):
                 mirror["components"] = "main"
             if "distribution" not in mirror:
                 mirror["distribution"] = "main"
-    if "publish" in input_:
+    if "publish" in input_:  # pragma: no cover
         for publish in input_["publish"].values():
             for item in publish:
                 if "components" not in item:

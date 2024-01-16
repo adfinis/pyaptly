@@ -1,7 +1,23 @@
 """Test mirror functionality."""
+import logging
+
 import pytest
 
 import pyaptly
+
+
+@pytest.mark.parametrize("config", ["debug.toml"], indirect=True)
+def test_debug(environment, config):
+    """Test if debug is enabled with -d."""
+    args = [
+        "-d",
+        "-c",
+        config,
+        "mirror",
+        "create",
+    ]
+    pyaptly.main(args)
+    assert logging.getLogger().level == logging.DEBUG
 
 
 @pytest.mark.parametrize("config", ["mirror-extra.toml"], indirect=True)

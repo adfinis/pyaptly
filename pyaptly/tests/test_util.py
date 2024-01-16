@@ -55,3 +55,8 @@ def test_snapshot_spec_as_dict():
 
     assert legacy.snapshot_spec_to_name(cfg, snap_string) == snap_string  # type: ignore
     assert legacy.snapshot_spec_to_name(cfg, snap_dict) == "foo"  # type: ignore
+
+
+def test_get_default_keyserver():
+    """Test getting default keyserver."""
+    assert util.get_default_keyserver() == util._DEFAULT_KEYSERVER

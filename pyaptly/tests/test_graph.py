@@ -1,30 +1,15 @@
-# type: ignore  # TODO
-# flake8: noqa  # TODO
-
-"""Testing dependency graphs"""
+"""Testing dependency graphs."""
 import random
-import sys
+from functools import partial
 
-from pyaptly.legacy import Command, FunctionCommand
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
-from . import test
-
-if not sys.version_info < (2, 7):  # pragma: no cover
-    from hypothesis import strategies as st
-    from hypothesis import given
-
-from hypothesis import settings
+from pyaptly.legacy import Command, FunctionCommand  # type: ignore
 
 # Disable the deadline globally for all tests
 settings.register_profile("my_profile", deadline=None)
 settings.load_profile("my_profile")
-
-if sys.version_info < (2, 7):  # pragma: no cover
-    import mock
-
-    given = mock.MagicMock()  # noqa
-    example = mock.MagicMock()  # noqa
-    st = mock.MagicMock()  # noqa
 
 RES_COUNT = 20
 
@@ -32,7 +17,8 @@ range_intagers_st = st.integers(min_value=0, max_value=RES_COUNT)
 
 
 @st.composite
-def provide_require_st(draw, filter_=True):  # pragma: no cover
+def provide_require_st(draw, filter_=True):
+    """Build a random command tree, to test."""
     commands = draw(range_intagers_st)
     provides = draw(
         st.lists(
@@ -53,7 +39,7 @@ def provide_require_st(draw, filter_=True):  # pragma: no cover
             else:
                 max_prov = 0
             if filter_:
-                provides_filter = [x for x in provides_set if x > max_prov]
+                provides_filter = set([x for x in provides_set if x > max_prov])
             else:
                 provides_filter = provides_set
             if provides_filter:
@@ -67,6 +53,7 @@ def provide_require_st(draw, filter_=True):  # pragma: no cover
 
 
 def print_example():  # pragma: no cover
+    """Print an example for debugging."""
     example = provide_require_st().example()
     print(
         """
@@ -85,17 +72,17 @@ def print_example():  # pragma: no cover
     print("}")
 
 
-@test.hypothesis_min_ver
 @given(provide_require_st(), st.random_module())
-def test_graph_basic(tree, rnd):  # pragma: no cover
-    """Test our test method, create a basic graph using hypthesis and run some
-    basic tests against it."""
+def test_graph_basic(tree, rnd):
+    """Test our test method, create a basic graph using hypthesis.
+
+    And run some basic tests against it.
+    """
     run_graph(tree)
 
 
-@test.hypothesis_min_ver
 @given(provide_require_st(False), st.random_module())
-def test_graph_cycles(tree, rnd):  # pragma: no cover
+def test_graph_cycles(tree, rnd):
     """Test reacts correctly on trees with cycles."""
     try:
         run_graph(tree)
@@ -104,26 +91,27 @@ def test_graph_cycles(tree, rnd):  # pragma: no cover
             raise e
 
 
-@test.hypothesis_min_ver
 @given(provide_require_st(), provide_require_st(), st.random_module())
 def test_graph_island(tree0, tree1, rnd):  # pragma: no cover
-    """Test with two independant graphs which can form a island"""
+    """Test with two independant graphs which can form a island."""
     tree = (tree0[0] + tree1[0], tree0[1] + tree1[1], tree0[2] + tree1[2])
     run_graph(tree)
 
 
-def run_graph(tree):  # pragma: no cover
-    """Runs the test"""
+def run_graph(tree):
+    """Run the test."""
     commands = []
     index = list(range(len(tree[0])))
     random.shuffle(index)
     for i in index:
 
-        def dummy():  # pragma: no cover
+        def dummy(i):  # pragma: no cover
             return i
 
         if tree[2][i]:
-            cmd = FunctionCommand(dummy)
+            func = partial(dummy, i)
+            func.__name__ = dummy.__name__  # type: ignore
+            cmd = FunctionCommand(func)
         else:
             cmd = Command(i)
         for provides in tree[0][i]:
@@ -133,7 +121,7 @@ def run_graph(tree):  # pragma: no cover
         commands.append(cmd)
     ordered = Command.order_commands(commands)
     assert len(commands) == len(ordered)
-    provided = set()
+    provided: set[tuple[str, str]] = set()
     for command in ordered:
         assert command._requires.issubset(provided)
         provided.update(command._provides)
