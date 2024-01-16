@@ -66,10 +66,12 @@ def environment(debug_mode):
     os.chown(gnupg, 0, 0)
     gnupg.chmod(0o700)
     os.environ["GNUPGHOME"] = str(gnupg)
+    util._PYTEST_KEYSERVER = "hkp://127.0.0.1:8080"
 
     try:
         yield
     finally:
+        util._PYTEST_KEYSERVER = None
         tempdir_obj.cleanup()
         aptly_conf.unlink()
 

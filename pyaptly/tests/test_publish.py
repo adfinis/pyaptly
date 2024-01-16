@@ -39,6 +39,25 @@ def test_repo_crate_basic(config, repo_create):
     pass
 
 
+@pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
+def test_pretend(config, snapshot_create, test_key_03):
+    """Test if pretend is enabled with -p."""
+    args = [
+        "-p",
+        "-c",
+        config,
+        "publish",
+        "create",
+        "fakerepo01",
+    ]
+    pyaptly.main(args)
+    state = pyaptly.SystemStateReader()
+    state.read()
+    assert set() == state.publishes
+    assert {} == state.publish_map
+    assert pyaptly.Command.pretend_mode
+
+
 @pytest.mark.parametrize("config", ["publish-repo.toml"], indirect=True)
 def test_publish_create_repo(config, repo_create):
     """Test if creating repo publishes works."""

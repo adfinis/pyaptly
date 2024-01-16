@@ -4,7 +4,10 @@ import logging
 import subprocess
 from pathlib import Path
 from subprocess import DEVNULL, PIPE  # noqa: F401
-from typing import Union
+from typing import Optional, Union
+
+_DEFAULT_KEYSERVER: str = "hkps://keys.openpgp.org"
+_PYTEST_KEYSERVER: Optional[str] = None
 
 _DEBUG = False
 _PYTEST_DEBUG = False
@@ -19,6 +22,14 @@ stderr:     '{stderr}'
 _indent = " " * 13
 
 logger = logging.getLogger(__name__)
+
+
+def get_default_keyserver():
+    """Get default keyseerver."""
+    if _PYTEST_KEYSERVER:
+        return _PYTEST_KEYSERVER
+    else:
+        return _DEFAULT_KEYSERVER
 
 
 def is_debug_mode():

@@ -17,6 +17,8 @@ import freeze
 import six
 import yaml
 
+from .util import get_default_keyserver
+
 _logging_setup = False
 
 if six.PY2:
@@ -1562,6 +1564,9 @@ def add_gpg_keys(mirror_config):
     :param  mirror_config: The configuration yml as dict
     :type   mirror_config: dict
     """
+    keyserver = mirror_config.get("keyserver")
+    if not keyserver:
+        keyserver = get_default_keyserver()
     keys_urls = {}
     if "gpg-keys" in mirror_config:
         keys = unit_or_list_to_list(mirror_config["gpg-keys"])
@@ -1588,7 +1593,7 @@ def add_gpg_keys(mirror_config):
                 "--keyring",
                 "trustedkeys.gpg",
                 "--keyserver",
-                "hkp://127.0.0.1:8080",
+                keyserver,
                 "--recv-keys",
                 key,
             ]
