@@ -13,7 +13,7 @@ help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort -k 1,1 | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: build
-build: build ## Build the container in case you made changes
+build: ## Build the container in case you made changes
 	@docker compose build
 
 .PHONY: up
