@@ -8,7 +8,7 @@ from pathlib import Path
 
 import freezegun
 import pytest
-import toml
+import tomli
 import yaml
 
 import pyaptly
@@ -116,8 +116,8 @@ def config(request):
     ```
     """
     config_file = test_base / request.param
-    with config_file.open("r", encoding="UTF-8") as f:
-        config = toml.load(f)
+    with config_file.open("rb") as f:
+        config = tomli.load(f)
     # TODO: remove yaml conversion
     try:
         with tempfile.NamedTemporaryFile(mode="w", encoding="UTF-8", delete=False) as f:

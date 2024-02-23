@@ -1,7 +1,7 @@
 """Handling pyaptly config-files."""
 from pathlib import Path
 
-import toml
+import tomli_w
 import yaml
 
 
@@ -11,11 +11,11 @@ def yaml_to_toml(yaml_path: Path, toml_path: Path, *, add_defaults: bool = False
     Setting `add_defaults=True` will set common default during conversion.
     """
     with yaml_path.open("r", encoding="UTF-8") as yf:
-        with toml_path.open("w", encoding="UTF-8") as tf:
+        with toml_path.open("wb") as tf:
             config = yaml.safe_load(yf)
             if add_defaults:
                 add_default_to_config(config)
-            toml.dump(config, tf)
+            tomli_w.dump(config, tf)
 
 
 def add_default_to_config(config):

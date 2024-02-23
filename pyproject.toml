@@ -47,8 +47,9 @@ python = "^3.11"
 pretty-dump = {git = "https://github.com/adfinis/freeze"}
 pytz = "^2023.3.post1"
 pyyaml = "^6.0.1"
-toml = "^0.10.2"
 click = "^8.1.7"
+tomli = "^2.0.1"
+tomli-w = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.2.2"
