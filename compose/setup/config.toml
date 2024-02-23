@@ -5,6 +5,8 @@ url="https://github.com/aptly-dev/aptly/releases/download/v1.5.0/aptly_1.5.0_amd
 hash="c606c06ef2ddc6f0b225d6cbecaccd4b17f537ddc8a3fc72a12be94f864674cb"
 target="/usr/local"
 base=["aptly", "-config=/setup/aptly.conf"]
+git="https://github.com/aptly-dev/aptly.git"
+tag="v1.5.0"
 
 [gnupg]
 base=[

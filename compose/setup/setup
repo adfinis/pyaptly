@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import hashlib
 import os
+import platform
 import shutil
 import sys
+from contextlib import contextmanager
 from glob import glob
 from pathlib import Path
 from subprocess import run
@@ -13,6 +15,16 @@ import toml
 base = Path("/setup")
 _nocheck = False
 _blocksize = 1024 * 16
+
+
+@contextmanager
+def change_dir(destination):
+    try:
+        prev_dir = os.getcwd()
+        os.chdir(destination)
+        yield
+    finally:
+        os.chdir(prev_dir)
 
 
 def get(url, path):
@@ -41,7 +53,10 @@ def main():
     url = aptly["url"]
     aptly["filename"] = Path(url).name
     setup_gnupg(config["gnupg"])
-    install_aptly(aptly)
+    if platform.machine() == "x86_64":
+        install_aptly(aptly)
+    else:
+        build_aptly(aptly)
     setup_static_aptly(config)
     publish_key("01")
     publish_key("02")
@@ -92,6 +107,16 @@ def setup_gnupg(config):
     setup_key(gpg, "02")
 
 
+def build_aptly(config):
+    git = config["git"]
+    tag = config["tag"]
+    aptly_path = base / "aptly.git"
+    run(["git", "clone", git, aptly_path], check=True)
+    with change_dir(aptly_path):
+        run(["git", "checkout", tag, "-b", "tag"], check=True)
+        run(["make", "modules", "install"], check=True)
+
+
 def install_aptly(config):
     url = config["url"]
     filename = config["filename"]
@@ -132,10 +157,10 @@ def build_hagrid(config):
     hagrid = base / "hagrid.src"
     hagrid_dst = base / "hagrid"
     hagrid_dst.mkdir()
-    run(["git", "clone", config["repo"], hagrid])
+    run(["git", "clone", config["repo"], hagrid], check=True)
     os.chdir(hagrid)
-    run(["git", "checkout", config["revision"]])
-    run(["cargo", "install", "--locked", "--path", "."])
+    run(["git", "checkout", config["revision"]], check=True)
+    run(["cargo", "install", "--locked", "--path", "."], check=True)
     rocket_dist = hagrid / "dist"
     rocket_dist.rename(hagrid_dst)
     config_src = hagrid / "Rocket.toml.dist"
