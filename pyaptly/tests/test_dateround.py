@@ -1,61 +1,37 @@
-# type: ignore  # TODO
-# flake8: noqa  # TODO
-
-"""Dateround tests"""
+"""Dateround tests."""
 
 import datetime
 import os.path
-import sys
 
-from . import test
-from .legacy import (
-    date_round_daily,
-    date_round_weekly,
-    iso_to_gregorian,
-    snapshot_spec_to_name,
-    time_delta_helper,
-    time_remove_tz,
-)
+import pytest
+import yaml
+from hypothesis import given
+from hypothesis.strategies import datetimes, integers, times
+
+from .. import date_tools, snapshot
 
 _test_base = os.path.dirname(os.path.abspath(__file__)).encode("UTF-8")
 
 
-if not sys.version_info < (2, 7):  # pragma: no cover
-    from hypothesis import given  # noqa
-    from hypothesis.strategies import integers  # noqa
-    from hypothesis.strategies import datetimes, times  # noqa
-
-
-if sys.version_info < (2, 7):  # pragma: no cover
-    import mock
-
-    given = mock.MagicMock()  # noqa
-    datetimes = mock.MagicMock()  # noqa
-    times = mock.MagicMock()  # noqa
-    integers = mock.MagicMock()  # noqa
-
-
-@test.hypothesis_min_ver
 @given(datetimes())
 def test_is_to_gregorian(date):  # pragma: no cover
-    """Test if a roundtrip of isoclander() -> iso_to_gregorian() is correct"""
+    """Test if a roundtrip of isoclander() -> iso_to_gregorian() is correct."""
     iso_tuple = date.isocalendar()
-    new_date = iso_to_gregorian(*iso_tuple)
+    new_date = date_tools.iso_to_gregorian(*iso_tuple)
     assert date.year == new_date.year
     assert date.month == new_date.month
     assert date.day == new_date.day
 
 
-@test.hypothesis_min_ver
 @given(
     datetimes(min_value=datetime.datetime(year=2, month=1, day=1)),
     integers(min_value=1, max_value=7),
     times(),
 )
-def test_round_weekly(date, day_of_week, time):  # pragma: no cover
-    """Test if the round function rounds the expected delta"""
-    time = time_remove_tz(time)
-    round_date = date_round_weekly(date, day_of_week, time)
+def test_round_weekly(date, day_of_week, time):
+    """Test if the round function rounds the expected delta."""
+    time = date_tools.time_remove_tz(time)
+    round_date = date_tools.date_round_weekly(date, day_of_week, time)
     date_time = datetime.time(
         hour=date.hour,
         minute=date.minute,
@@ -63,7 +39,7 @@ def test_round_weekly(date, day_of_week, time):  # pragma: no cover
         microsecond=date.microsecond,
     )
     # double round
-    assert round_date == date_round_weekly(round_date, day_of_week, time)
+    assert round_date == date_tools.date_round_weekly(round_date, day_of_week, time)
     if round_date == date:  # pragma: no cover
         # Find tz problems
         assert date_time == time
@@ -81,10 +57,10 @@ def test_round_weekly(date, day_of_week, time):  # pragma: no cover
         assert round_date.isoweekday() == day_of_week
         # Expected delta
         date_delta = date - round_date
-        date_day_time_delta = time_delta_helper(date_time) + datetime.timedelta(
-            days=date.weekday()
-        )
-        given_day_time_delta = time_delta_helper(time) + datetime.timedelta(
+        date_day_time_delta = date_tools.time_delta_helper(
+            date_time
+        ) + datetime.timedelta(days=date.weekday())
+        given_day_time_delta = date_tools.time_delta_helper(time) + datetime.timedelta(
             days=day_of_week - 1
         )
         delta = date_day_time_delta - given_day_time_delta
@@ -97,7 +73,7 @@ def test_round_weekly(date, day_of_week, time):  # pragma: no cover
 
 
 def test_weekly_examples():
-    """Test if the round function rounds at the given day and time"""
+    """Test if the round function rounds at the given day and time."""
     date = datetime.datetime(
         year=2015,
         month=11,
@@ -107,7 +83,7 @@ def test_weekly_examples():
     )
     time = datetime.time(hour=23, minute=0)
     day_of_week = 2
-    rounded = date_round_weekly(date, day_of_week, time)
+    rounded = date_tools.date_round_weekly(date, day_of_week, time)
     assert datetime.datetime(2015, 10, 27, 23, 0) == rounded
     date = datetime.datetime(
         year=2015,
@@ -116,16 +92,15 @@ def test_weekly_examples():
         hour=23,
         minute=1,
     )
-    rounded = date_round_weekly(date, day_of_week, time)
+    rounded = date_tools.date_round_weekly(date, day_of_week, time)
     assert datetime.datetime(2015, 11, 3, 23, 0) == rounded
 
 
-@test.hypothesis_min_ver
 @given(datetimes(), times())
 def test_round_daily(date, time):  # pragma: no cover
-    """Test if the round function rounds the expected delta"""
-    time = time_remove_tz(time)
-    round_date = date_round_daily(date, time)
+    """Test if the round function rounds the expected delta."""
+    time = date_tools.time_remove_tz(time)
+    round_date = date_tools.date_round_daily(date, time)
     date_time = datetime.time(
         hour=date.hour,
         minute=date.minute,
@@ -133,7 +108,7 @@ def test_round_daily(date, time):  # pragma: no cover
         microsecond=date.microsecond,
     )
     # double round
-    assert round_date == date_round_daily(round_date, time)
+    assert round_date == date_tools.date_round_daily(round_date, time)
     if round_date == date:  # pragma: no cover
         # Find tz problems
         assert date_time == time
@@ -149,7 +124,9 @@ def test_round_daily(date, time):  # pragma: no cover
         assert round_date.microsecond == time.microsecond
         # Expected delta
         date_delta = date - round_date
-        time_delta = time_delta_helper(date_time) - time_delta_helper(time)
+        time_delta = date_tools.time_delta_helper(
+            date_time
+        ) - date_tools.time_delta_helper(time)
         if date_time > time:
             assert date_delta == time_delta
         else:
@@ -159,7 +136,7 @@ def test_round_daily(date, time):  # pragma: no cover
 
 
 def test_daily_examples():
-    """Test if the round function rounds at the given time"""
+    """Test if the round function rounds at the given time."""
     date = datetime.datetime(
         year=2015,
         month=10,
@@ -168,10 +145,10 @@ def test_daily_examples():
         minute=34,
     )
     time = datetime.time(hour=23, minute=00)
-    rounded = date_round_daily(date, time)
+    rounded = date_tools.date_round_daily(date, time)
     assert datetime.datetime(2015, 9, 30, 23, 0) == rounded
     time = datetime.time(hour=11, minute=00)
-    rounded = date_round_daily(date, time)
+    rounded = date_tools.date_round_daily(date, time)
     assert datetime.datetime(2015, 10, 1, 11, 0) == rounded
     date = datetime.datetime(
         year=2015,
@@ -180,7 +157,7 @@ def test_daily_examples():
         hour=10,
         minute=59,
     )
-    rounded = date_round_daily(date, time)
+    rounded = date_tools.date_round_daily(date, time)
     assert datetime.datetime(2015, 9, 30, 11, 0) == rounded
     date = datetime.datetime(
         year=2015,
@@ -189,21 +166,19 @@ def test_daily_examples():
         hour=11,
         minute=1,
     )
-    rounded = date_round_daily(date, time)
+    rounded = date_tools.date_round_daily(date, time)
     assert datetime.datetime(2015, 10, 1, 11, 0) == rounded
 
 
-def test_snapshot_spec_to_name():
-    with test.clean_and_config(
-        os.path.join(
-            _test_base,
-            b"publish-previous.yml",
-        )
-    ) as (tyml, config):
-        snaps = tyml["snapshot"]["superfake-%T"]["merge"]
+@pytest.mark.parametrize("config", ["publish-previous.toml"], indirect=True)
+def test_snapshot_spec_to_name(config, test_path, freeze):
+    """Test the complete functionality (snapshot_spec_to_name)."""
+    with (test_path / config).open("r") as f:
+        tyml = yaml.load(f, Loader=yaml.FullLoader)
+    snaps = tyml["snapshot"]["superfake-%T"]["merge"]
 
-        rounded1 = snapshot_spec_to_name(tyml, snaps[0])
-        rounded2 = snapshot_spec_to_name(tyml, snaps[1])
+    rounded1 = snapshot.snapshot_spec_to_name(tyml, snaps[0])
+    rounded2 = snapshot.snapshot_spec_to_name(tyml, snaps[1])
 
-        assert rounded1 == "fakerepo01-20121009T0000Z"
-        assert rounded2 == "fakerepo02-20121006T0000Z"
+    assert rounded1 == "fakerepo01-20121009T0000Z"
+    assert rounded2 == "fakerepo02-20121006T0000Z"

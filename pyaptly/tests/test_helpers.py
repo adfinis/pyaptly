@@ -1,14 +1,12 @@
-# type: ignore  # TODO
-# flake8: noqa  # TODO
-
-"""Testing testing helper functions"""
+"""Testing testing helper functions."""
 import subprocess
 
-from pyaptly.legacy import Command, SystemStateReader, call_output
+from .. import command, main, state_reader
 
 
 def test_call_output_error():
-    """Test if call_output raises errors correctly"""
+    """Test if call_output raises errors correctly."""
+    # TDOD remove
     args = [
         "bash",
         "-c",
@@ -16,7 +14,7 @@ def test_call_output_error():
     ]
     error = False
     try:
-        call_output(args)
+        main.call_output(args)
     except subprocess.CalledProcessError as e:
         assert e.returncode == 42
         error = True
@@ -25,7 +23,7 @@ def test_call_output_error():
 
 def test_command_dependency_fail():
     """Test if bad dependencies fail correctly."""
-    a = Command(["ls"])
+    a = command.Command(["ls"])
     error = False
     try:
         a.require("turbo", "banana")
@@ -36,7 +34,7 @@ def test_command_dependency_fail():
 
 def test_dependency_callback_file():
     """Test if bad dependencies fail correctly."""
-    state = SystemStateReader()
+    state = state_reader.SystemStateReader()
     try:
         state.has_dependency(["turbo", "banana"])
     except ValueError as e:

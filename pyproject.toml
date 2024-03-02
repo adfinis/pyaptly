@@ -28,6 +28,8 @@ ignore = [
     "E501",
     # Line break occurred before a binary operator (this is not PEP8 compatible)
     "W503",
+    # We do not document __init__
+    "D107",
 ]
 
 max-line-length = 88
@@ -44,12 +46,11 @@ show_missing = true
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pretty-dump = {git = "https://github.com/adfinis/freeze"}
-pytz = "^2023.3.post1"
 pyyaml = "^6.0.1"
 click = "^8.1.7"
 tomli = "^2.0.1"
 tomli-w = "^1.0.0"
+frozendict = "^2.4.0"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.2.2"

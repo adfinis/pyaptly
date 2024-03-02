@@ -3,8 +3,19 @@
 Configuration is based on toml input files.
 """
 
-from pyaptly.legacy import (  # type: ignore  # TODO  # noqa: F401
-    Command,
-    SystemStateReader,
-    main,
-)
+import os
+
+
+def init_hypothesis():
+    """Initialize hypothesis profile if hypothesis is available."""
+    try:  # pragma: no cover
+        if "HYPOTHESIS_PROFILE" in os.environ:
+            from hypothesis import settings
+
+            settings.register_profile("ci", settings(max_examples=10000))
+            settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
+    except (ImportError, AttributeError):  # pragma: no cover
+        pass
+
+
+init_hypothesis()
