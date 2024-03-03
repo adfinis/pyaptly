@@ -11,8 +11,7 @@ import pytest
 import tomli
 import yaml
 
-import pyaptly
-from pyaptly import util
+from pyaptly import main, state_reader, util
 
 aptly_conf = Path.home().absolute() / ".aptly.conf"
 test_base = Path(__file__).absolute().parent / "tests"
@@ -131,14 +130,14 @@ def config(request):
 def mirror_update(environment, config):
     """Test if updating mirrors works."""
     args = ["-c", config, "mirror", "create"]
-    state = pyaptly.SystemStateReader()
+    state = state_reader.SystemStateReader()
     state.read()
     assert "fakerepo01" not in state.mirrors
-    pyaptly.main(args)
+    main.main(args)
     state.read()
     assert "fakerepo01" in state.mirrors
     args[3] = "update"
-    pyaptly.main(args)
+    main.main(args)
     args = [
         "aptly",
         "mirror",
@@ -154,8 +153,8 @@ def mirror_update(environment, config):
 def snapshot_create(config, mirror_update, freeze):
     """Test if createing snapshots works."""
     args = ["-c", config, "snapshot", "create"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(["fakerepo01-20121010T0000Z", "fakerepo02-20121006T0000Z"]).issubset(
         state.snapshots
@@ -172,8 +171,8 @@ def snapshot_update_rotating(config, mirror_update, freeze):
         "snapshot",
         "create",
     ]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(
         [
@@ -188,7 +187,7 @@ def snapshot_update_rotating(config, mirror_update, freeze):
         "snapshot",
         "update",
     ]
-    pyaptly.main(args)
+    main.main(args)
     state.read()
     assert set(
         [
@@ -217,8 +216,8 @@ def snapshot_update_rotating(config, mirror_update, freeze):
 def repo_create(environment, config, test_key_03):
     """Test if creating repositories works."""
     args = ["-c", config, "repo", "create"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     util.run_command(
         [
@@ -236,8 +235,8 @@ def repo_create(environment, config, test_key_03):
 def publish_create(config, snapshot_create, test_key_03):
     """Test if creating publishes works."""
     args = ["-c", config, "publish", "create"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(["fakerepo02 main", "fakerepo01 main"]) == state.publishes
     expect = {
@@ -251,8 +250,8 @@ def publish_create(config, snapshot_create, test_key_03):
 def publish_create_rotating(config, snapshot_update_rotating, test_key_03):
     """Test if creating publishes works."""
     args = ["-c", config, "publish", "create"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert (
         set(
@@ -287,7 +286,7 @@ def publish_create_republish(config, publish_create, caplog):
         "publish",
         "create",
     ]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert "fakerepo01-stable main" in state.publishes

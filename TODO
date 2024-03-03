@@ -31,3 +31,14 @@ The reason for this is to ensure the continuity of the git history.
 # Do all output via logging module
 
 - Idea show INFO and above, but display info without timestamp etc.
+
+# latest, maybe repeat:
+
+- replace all prints with logging
+- correctly do getLogger
+- is this unit_or_list... thing still needed
+- remove codecs.open
+- use pathlib.Path
+- replace state_reader.state with function
+- remove six
+- remote test.py completely

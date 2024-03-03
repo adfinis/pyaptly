@@ -25,9 +25,9 @@ def cli(debug: bool):
 @cli.command(help="run legacy command parser")
 def legacy():
     """Run legacy pyaptly cli."""
-    from pyaptly import main  # type: ignore  # TODO
+    from . import main
 
-    main()
+    main.main()
 
 
 @cli.command(help="convert yaml- to toml-comfig")
@@ -60,7 +60,7 @@ def legacy():
 )
 def yaml_to_toml(yaml_path: Path, toml_path: Path, add_defaults: bool):
     """Convert pyaptly config files from yaml to toml."""
-    from pyaptly import config_file
+    from . import config_file
 
     config_file.yaml_to_toml(
         yaml_path,

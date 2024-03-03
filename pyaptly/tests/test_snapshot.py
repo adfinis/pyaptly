@@ -1,8 +1,7 @@
 """Test snapshot functionality."""
 import pytest
 
-import pyaptly
-from pyaptly import util
+from .. import main, state_reader, util
 
 
 @pytest.mark.parametrize("config", ["snapshot.toml"], indirect=True)
@@ -24,7 +23,7 @@ def test_snapshot_create(mirror_update, config, exists):
     args = ["-c", config, "snapshot", "create", mirror]
     error = False
     try:
-        pyaptly.main(args)
+        main.main(args)
     except ValueError:
         error = True
     assert error != exists
@@ -34,8 +33,8 @@ def test_snapshot_create(mirror_update, config, exists):
 def test_snapshot_create_rotating(mirror_update, config):
     """Test if rotating snapshot create works."""
     args = ["-c", config, "snapshot", "create"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(
         [
@@ -62,8 +61,8 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
         "snapshot",
         "update",
     ]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(
         [
@@ -104,8 +103,8 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
         "snapshot",
         "update",
     ]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(
         [
@@ -152,8 +151,8 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
 def test_snapshot_create_repo(config, repo_create):
     """Test if repo snapshot create works."""
     args = ["-c", config, "snapshot", "create"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(["centrify-latest"]).issubset(state.snapshots)
     return state

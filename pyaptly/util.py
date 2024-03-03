@@ -24,6 +24,20 @@ _indent = " " * 13
 logger = logging.getLogger(__name__)
 
 
+def unit_or_list_to_list(thingy):
+    """Ensure that a yml entry is always a list.
+
+    Used to allow lists and single units in the yml file.
+
+    :param thingy: The data to ensure it is a list
+    :type  thingy: list, tuple or other
+    """
+    if isinstance(thingy, list) or isinstance(thingy, tuple):
+        return list(thingy)
+    else:
+        return [thingy]
+
+
 def get_default_keyserver():
     """Get default keyseerver."""
     if _PYTEST_KEYSERVER:

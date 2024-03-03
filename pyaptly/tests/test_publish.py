@@ -1,7 +1,7 @@
 """Test publish functionality."""
 import pytest
 
-import pyaptly
+from .. import command, main, state_reader
 
 
 @pytest.mark.parametrize("repo", ["fakerepo01", "asdfasdf"])
@@ -11,10 +11,10 @@ def test_publish_create_single(config, snapshot_create, test_key_03, repo):
     args = ["-c", config, "publish", "create", repo]
     if repo == "asdfasdf":
         with pytest.raises(ValueError):
-            pyaptly.main(args)
+            main.main(args)
         return
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(["fakerepo01 main"]) == state.publishes
     expect = {"fakerepo01 main": set(["fakerepo01-20121010T0000Z"])}
@@ -27,7 +27,7 @@ def test_publish_create_inexistent(config, snapshot_create, test_key_03):
     args = ["-c", config, "publish", "create", "asdfasdf"]
     error = False
     try:
-        pyaptly.main(args)
+        main.main(args)
     except ValueError:
         error = True
     assert error
@@ -50,12 +50,12 @@ def test_pretend(config, snapshot_create, test_key_03):
         "create",
         "fakerepo01",
     ]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set() == state.publishes
     assert {} == state.publish_map
-    assert pyaptly.Command.pretend_mode
+    assert command.Command.pretend_mode
 
 
 @pytest.mark.parametrize("config", ["publish-repo.toml"], indirect=True)
@@ -67,15 +67,15 @@ def test_publish_create_repo(config, repo_create):
         "publish",
         "create",
     ]
-    pyaptly.main(args)
+    main.main(args)
     args = [
         "-c",
         config,
         "publish",
         "update",
     ]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(["centrify latest"]) == state.publishes
     assert {"centrify latest": set([])} == state.publish_map
@@ -93,8 +93,8 @@ def test_publish_update_rotating(config, freeze, publish_create_rotating, via):
     """Test if update rotating publishes works."""
     freeze.move_to("2012-10-11 10:10:10")
     args = ["-c", config, via, "update"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     expect = {
         "fake/current stable": set(["fake-current"]),
@@ -134,10 +134,10 @@ def test_publish_update_republish(config, publish_create_republish, freeze):
     """Test if update republishes works."""
     freeze.move_to("2012-10-11 10:10:10")
     args = ["-c", config, "snapshot", "create"]
-    pyaptly.main(args)
+    main.main(args)
     args = ["-c", config, "publish", "update"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert "fakerepo01-stable main" in state.publishes
     # As you see fakerepo01-stable main points to the old snapshot
@@ -159,10 +159,10 @@ def test_publish_updating_basic(config, publish_create, freeze):
     """Test if updating publishes works."""
     freeze.move_to("2012-10-11 10:10:10")
     args = ["-c", config, "snapshot", "create"]
-    pyaptly.main(args)
+    main.main(args)
     args = ["-c", config, "publish", "update"]
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     expect = set(
         [
@@ -187,9 +187,9 @@ def test_repo_create_single(config, repo, test_key_03):
     args = ["-c", config, "repo", "create", repo]
     if repo == "asdfasdf":
         with pytest.raises(ValueError):
-            pyaptly.main(args)
+            main.main(args)
         return
-    pyaptly.main(args)
-    state = pyaptly.SystemStateReader()
+    main.main(args)
+    state = state_reader.SystemStateReader()
     state.read()
     assert set(["centrify"]) == state.repos

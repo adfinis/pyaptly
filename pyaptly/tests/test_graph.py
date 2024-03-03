@@ -1,11 +1,12 @@
 """Testing dependency graphs."""
 import random
 from functools import partial
+from typing import Union
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from pyaptly.legacy import Command, FunctionCommand  # type: ignore
+from .. import command
 
 # Disable the deadline globally for all tests
 settings.register_profile("my_profile", deadline=None)
@@ -29,13 +30,13 @@ def provide_require_st(draw, filter_=True):
     )
     is_func = draw(st.lists(st.booleans(), min_size=commands, max_size=commands))
     provides_set = set()
-    for command in provides:
-        provides_set.update(command)
+    for cmd in provides:
+        provides_set.update(cmd)
     requires = []
     if provides_set:
-        for command in provides:
-            if command:
-                max_prov = max(command)
+        for cmd in provides:
+            if cmd:
+                max_prov = max(cmd)
             else:
                 max_prov = 0
             if filter_:
@@ -103,6 +104,7 @@ def run_graph(tree):
     commands = []
     index = list(range(len(tree[0])))
     random.shuffle(index)
+    cmd: Union[command.Command, command.FunctionCommand]
     for i in index:
 
         def dummy(i):  # pragma: no cover
@@ -111,17 +113,17 @@ def run_graph(tree):
         if tree[2][i]:
             func = partial(dummy, i)
             func.__name__ = dummy.__name__  # type: ignore
-            cmd = FunctionCommand(func)
+            cmd = command.FunctionCommand(func)
         else:
-            cmd = Command(i)
+            cmd = command.Command([str(i)])
         for provides in tree[0][i]:
             cmd.provide("virtual", provides)
         for requires in tree[1][i]:
             cmd.require("virtual", requires)
         commands.append(cmd)
-    ordered = Command.order_commands(commands)
+    ordered = command.Command.order_commands(commands)
     assert len(commands) == len(ordered)
     provided: set[tuple[str, str]] = set()
-    for command in ordered:
-        assert command._requires.issubset(provided)
-        provided.update(command._provides)
+    for cmd in ordered:
+        assert cmd._requires.issubset(provided)
+        provided.update(cmd._provides)
