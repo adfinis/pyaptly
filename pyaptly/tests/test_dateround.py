@@ -4,7 +4,7 @@ import datetime
 import os.path
 
 import pytest
-import yaml
+import tomli
 from hypothesis import given
 from hypothesis.strategies import datetimes, integers, times
 
@@ -173,8 +173,8 @@ def test_daily_examples():
 @pytest.mark.parametrize("config", ["publish-previous.toml"], indirect=True)
 def test_snapshot_spec_to_name(config, test_path, freeze):
     """Test the complete functionality (snapshot_spec_to_name)."""
-    with (test_path / config).open("r") as f:
-        tyml = yaml.load(f, Loader=yaml.FullLoader)
+    with open(config, "rb") as f:
+        tyml = tomli.load(f)
     snaps = tyml["snapshot"]["superfake-%T"]["merge"]
 
     rounded1 = snapshot.snapshot_spec_to_name(tyml, snaps[0])
