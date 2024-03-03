@@ -3,7 +3,7 @@
 import logging
 import subprocess
 from pathlib import Path
-from subprocess import DEVNULL, PIPE  # noqa: F401
+from subprocess import DEVNULL, PIPE, CalledProcessError  # noqa: F401
 from typing import Optional, Union
 
 _DEFAULT_KEYSERVER: str = "hkps://keys.openpgp.org"
