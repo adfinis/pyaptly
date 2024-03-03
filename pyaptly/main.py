@@ -1,10 +1,9 @@
 """Aptly mirror/snapshot managment automation."""
 import argparse
-import codecs
 import logging
 import sys
 
-import yaml
+import tomli
 
 from . import command, mirror, publish, repo, snapshot, state_reader
 
@@ -84,8 +83,8 @@ def main(argv=None):
         _logging_setup = True  # noqa
     lg.debug("Args: %s", vars(args))
 
-    with codecs.open(args.config, "r", encoding="UTF-8") as cfgfile:
-        cfg = yaml.load(cfgfile, Loader=yaml.FullLoader)
+    with open(args.config, "rb") as f:
+        cfg = tomli.load(f)
     state_reader.state.read()
 
     # run function for selected subparser
