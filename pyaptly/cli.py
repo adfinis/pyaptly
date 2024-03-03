@@ -23,11 +23,12 @@ def cli(debug: bool):
 
 
 @cli.command(help="run legacy command parser")
-def legacy():
+@click.argument("passthrough", nargs=-1)
+def legacy(passthrough):
     """Run legacy pyaptly cli."""
     from . import main
 
-    main.main()
+    main.main(argv=passthrough)
 
 
 @cli.command(help="convert yaml- to toml-comfig")
