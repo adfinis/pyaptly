@@ -1,5 +1,4 @@
 """Create and update snapshots in aptly."""
-import codecs
 import datetime
 import logging
 from typing import Optional
@@ -37,7 +36,7 @@ def snapshot(cfg, args):
 
         if args.debug:  # pragma: no cover
             dot_file = "/tmp/commands.dot"
-            with codecs.open(dot_file, "w", "UTF-8") as fh_dot:
+            with open(dot_file, "w", encoding="UTF-8") as fh_dot:
                 fh_dot.write(command.Command.command_list_to_digraph(commands))
             lg.info("Wrote command dependency tree graph to %s", dot_file)
 
