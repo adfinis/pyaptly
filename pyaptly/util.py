@@ -3,8 +3,8 @@
 import logging
 import subprocess
 from pathlib import Path
-from subprocess import DEVNULL, PIPE  # noqa: F401
-from typing import Optional, Union
+from subprocess import DEVNULL, PIPE, CalledProcessError  # noqa: F401
+from typing import Optional, Sequence
 
 _DEFAULT_KEYSERVER: str = "hkps://keys.openpgp.org"
 _PYTEST_KEYSERVER: Optional[str] = None
@@ -51,7 +51,7 @@ def is_debug_mode():
     return _DEBUG or _PYTEST_DEBUG
 
 
-def run_command(cmd_args: list[Union[str, Path]], *, decode: bool = True, **kwargs):
+def run_command(cmd_args: Sequence[str | Path], *, decode: bool = True, **kwargs):
     """Instrumented subprocess.run for easier debugging.
 
     By default this run command will add `encoding="UTF-8"` to kwargs. Disable
@@ -83,7 +83,7 @@ def run_command(cmd_args: list[Union[str, Path]], *, decode: bool = True, **kwar
     return result
 
 
-def indent_out(output: Union[bytes, str]) -> str:
+def indent_out(output: bytes | str) -> str:
     """Indent command output for nicer logging-messages.
 
     It will convert bytes to strings if need or display the result as bytes if
