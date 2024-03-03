@@ -1,24 +1,5 @@
 """Testing testing helper functions."""
-import subprocess
-
-from .. import command, main, state_reader
-
-
-def test_call_output_error():
-    """Test if call_output raises errors correctly."""
-    # TDOD remove
-    args = [
-        "bash",
-        "-c",
-        "exit 42",
-    ]
-    error = False
-    try:
-        main.call_output(args)
-    except subprocess.CalledProcessError as e:
-        assert e.returncode == 42
-        error = True
-    assert error
+from .. import command, state_reader
 
 
 def test_command_dependency_fail():

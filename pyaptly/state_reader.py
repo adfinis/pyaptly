@@ -2,7 +2,7 @@
 import logging
 import re
 
-from . import main
+from . import util
 
 lg = logging.getLogger(__name__)
 
@@ -70,9 +70,8 @@ class SystemStateReader(object):
             "--list-keys",
             "--with-colons",
         ]
-        data, _ = main.call_output(cmd)
-        lg.debug("GPG returned: %s", data)
-        for line in data.split("\n"):
+        result = util.run_command(cmd, stdout=util.PIPE, check=True)
+        for line in result.stdout.split("\n"):
             field = line.split(":")
             if field[0] in ("pub", "sub"):
                 key = field[4]
@@ -87,9 +86,9 @@ class SystemStateReader(object):
         re_snap = re.compile(r"\s+[\w\d-]+\:\s([\w\d-]+)\s\[snapshot\]")
         for publish in self.publishes:
             prefix, dist = publish.split(" ")
-            data, _ = main.call_output(["aptly", "publish", "show", dist, prefix])
-
-            sources = self._extract_sources(data)
+            cmd = ["aptly", "publish", "show", dist, prefix]
+            result = util.run_command(cmd, stdout=util.PIPE, check=True)
+            sources = self._extract_sources(result.stdout)
             matches = [re_snap.match(source) for source in sources]
             snapshots = [match.group(1) for match in matches if match]
             self.publish_map[publish] = set(snapshots)
@@ -105,8 +104,10 @@ class SystemStateReader(object):
         # match example:  test-snapshot [snapshot]
         re_snap = re.compile(r"\s+([\w\d-]+)\s\[snapshot\]")
         for snapshot_outer in self.snapshots:
-            data, _ = main.call_output(["aptly", "snapshot", "show", snapshot_outer])
-            sources = self._extract_sources(data)
+            cmd = ["aptly", "snapshot", "show", snapshot_outer]
+
+            result = util.run_command(cmd, stdout=util.PIPE, check=True)
+            sources = self._extract_sources(result.stdout)
             matches = [re_snap.match(source) for source in sources]
             snapshots = [match.group(1) for match in matches if match]
             self.snapshot_map[snapshot_outer] = set(snapshots)
@@ -141,9 +142,9 @@ class SystemStateReader(object):
         :param list_: Read into this list
         :param list_: list
         """
-        data, _ = main.call_output(["aptly", type_, "list", "-raw"])
-        lg.debug("Aptly returned %s: %s", type_, data)
-        for line in data.split("\n"):
+        cmd = ["aptly", type_, "list", "-raw"]
+        result = util.run_command(cmd, stdout=util.PIPE, check=True)
+        for line in result.stdout.split("\n"):
             clean_line = line.strip()
             if clean_line:
                 list_.add(clean_line)

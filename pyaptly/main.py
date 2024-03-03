@@ -2,7 +2,6 @@
 import argparse
 import codecs
 import logging
-import subprocess
 import sys
 
 import yaml
@@ -13,29 +12,6 @@ _logging_setup = False
 
 
 lg = logging.getLogger(__name__)
-
-
-# TODO remove
-def call_output(args, input_=None):
-    """Call command and return output.
-
-    :param   args: Command to execute
-    :type    args: list
-    :param input_: Input to command
-    :type  input_: bytes
-    """
-    p = subprocess.Popen(
-        args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    output, err = p.communicate(input_)
-    if p.returncode != 0:
-        raise subprocess.CalledProcessError(
-            p.returncode,
-            args,
-            output,
-            err,
-        )
-    return (output.decode("UTF-8"), err.decode("UTF-8"))
 
 
 def main(argv=None):
