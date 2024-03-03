@@ -1,6 +1,5 @@
 """Create and update mirrors in aptly."""
 import logging
-import subprocess
 
 from . import state_reader, util
 
@@ -47,8 +46,8 @@ def add_gpg_keys(mirror_config):
                 key,
             ]
             lg.debug("Adding gpg key with call: %s", key_command)
-            subprocess.check_call(key_command)
-        except subprocess.CalledProcessError:  # pragma: no cover
+            util.run_command(key_command, check=True)
+        except util.CalledProcessError:  # pragma: no cover
             url = keys_urls[key]
             if url:
                 key_shell = (
@@ -56,7 +55,7 @@ def add_gpg_keys(mirror_config):
                     "gpg --no-default-keyring --keyring trustedkeys.gpg "
                     "--import"
                 ) % url
-                subprocess.check_call(["bash", "-c", key_shell])
+                util.run_command(["bash", "-c", key_shell], check=True)
             else:
                 raise
     state_reader.state.read_gpg()
@@ -129,7 +128,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     aptly_cmd.extend(util.unit_or_list_to_list(mirror_config["components"]))
 
     lg.debug("Running command: %s", " ".join(aptly_cmd))
-    subprocess.check_call(aptly_cmd)
+    util.run_command(aptly_cmd, check=True)
 
 
 def cmd_mirror_update(cfg, mirror_name, mirror_config):
@@ -151,4 +150,4 @@ def cmd_mirror_update(cfg, mirror_name, mirror_config):
 
     aptly_cmd.append(mirror_name)
     lg.debug("Running command: %s", " ".join(aptly_cmd))
-    subprocess.check_call(aptly_cmd)
+    util.run_command(aptly_cmd, check=True)
