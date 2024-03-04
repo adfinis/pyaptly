@@ -2,6 +2,7 @@
 
 import os
 import shutil
+from datetime import datetime
 from pathlib import Path
 from subprocess import PIPE, run
 from tempfile import NamedTemporaryFile
@@ -14,23 +15,40 @@ base = Path(__file__).resolve().absolute().parent.parent
 version_tag = "%global pypi_version "
 source_tag = "Source0:        "
 autosetup_tag = "%autosetup -n "
+check_tag = "%check"
+egg_tag = "%{python3_sitelib}/%{pypi_name}-"
+
+change_log = """
+%changelog
+* {date} Package Robot <package@robot.nowhere> - 2.0.0^alpha
+- Automatic build of revision {revision}
+"""
 
 
-def fix_spec(spec, version, package):
+def fix_spec(spec, version, package, revision):
     version_rpm = version.replace("+", "^")
     with spec.open("r", encoding="UTF-8") as f:
         data = f.read()
     with spec.open("w", encoding="UTF-8") as f:
+        ignore = False
         for line in data.splitlines():
             if line.startswith("%changelog"):
+                date = datetime.now().strftime("%a %b %d %Y")
+                f.write(change_log.format(date=date, revision=revision))
                 break
+            if not line.strip():
+                ignore = False
             if line.startswith(version_tag):
                 f.write(f"{version_tag}{version_rpm}\n")
             elif line.startswith(source_tag):
                 f.write(f"{source_tag}{package}\n")
             elif line.startswith(autosetup_tag):
                 f.write(f"{autosetup_tag}pyaptly-{version}")
-            else:
+            elif line.startswith(egg_tag):
+                f.write(f"{egg_tag}{version}-py%{{python3_version}}.egg-info")
+            elif line.startswith(check_tag):
+                ignore = True
+            elif not ignore:
                 f.write(f"{line}\n")
 
 
@@ -77,7 +95,7 @@ def main():
     sources = target / "SOURCES"
     sources.mkdir()
     shutil.copy2(package, sources)
-    fix_spec(spec, version, package.name)
+    fix_spec(spec, version, package.name, build_id)
     run(["rpmbuild", "-bs", spec], check=True)
     srpms = target / "SRPMS"
     rpm = str(list(srpms.glob("python-pyaptly-*.src.rpm"))[0])
