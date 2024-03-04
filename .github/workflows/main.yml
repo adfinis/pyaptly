@@ -87,6 +87,7 @@ jobs:
     - name: Run tests
       run: |
         make build-packages
+        make rebuild-packages
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
