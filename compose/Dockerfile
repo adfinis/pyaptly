@@ -32,6 +32,7 @@ ADD setup /setup
 RUN /setup/setup
 ADD run /setup/run
 ADD pdbrc.py /root/.pdbrc.py
+RUN git config --global --add safe.directory /source
 WORKDIR /source
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["bash", "/setup/run"]

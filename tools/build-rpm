@@ -13,9 +13,11 @@ base = Path(__file__).resolve().absolute().parent.parent
 
 version_tag = "%global pypi_version "
 source_tag = "Source0:        "
+autosetup_tag = "%autosetup -n "
 
 
 def fix_spec(spec, version, package):
+    version_rpm = version.replace("+", "^")
     with spec.open("r", encoding="UTF-8") as f:
         data = f.read()
     with spec.open("w", encoding="UTF-8") as f:
@@ -23,9 +25,11 @@ def fix_spec(spec, version, package):
             if line.startswith("%changelog"):
                 break
             if line.startswith(version_tag):
-                f.write(f"{version_tag}{version}\n")
+                f.write(f"{version_tag}{version_rpm}\n")
             elif line.startswith(source_tag):
                 f.write(f"{source_tag}{package}\n")
+            elif line.startswith(autosetup_tag):
+                f.write(f"{autosetup_tag}pyaptly-{version}")
             else:
                 f.write(f"{line}\n")
 
@@ -73,7 +77,7 @@ def main():
     sources = target / "SOURCES"
     sources.mkdir()
     shutil.copy2(package, sources)
-    fix_spec(spec, version.replace("+", "^"), package.name)
+    fix_spec(spec, version, package.name)
     run(["rpmbuild", "-bs", spec], check=True)
     srpms = target / "SRPMS"
     rpm = str(list(srpms.glob("python-pyaptly-*.src.rpm"))[0])

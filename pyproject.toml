@@ -47,10 +47,10 @@ show_missing = true
 [tool.poetry.dependencies]
 python = "^3.11"
 pyyaml = "^6.0.1"
-click = "^8.1.7"
+click = "^8.0.0"
 tomli = "^2.0.1"
 tomli-w = "^1.0.0"
-frozendict = "^2.4.0"
+frozendict = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.2.2"
