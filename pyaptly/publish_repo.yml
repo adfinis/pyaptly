@@ -4,7 +4,7 @@ publish:
     -
       distribution: "latest"
       repo: "centrify"
-      gpg-key: "650FE755"
+      gpg-key: "6D79A810B9B7ABAE"
       automatic-update: true
 merge:
   - "repo.yml"

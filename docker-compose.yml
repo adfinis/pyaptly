@@ -1,0 +1,8 @@
+# See compose/config.toml
+services:
+  testing:
+    image: ghcr.io/adfinis/pyaptly/cache:latest
+    build:
+      context: compose
+    volumes:
+      - ./:/source

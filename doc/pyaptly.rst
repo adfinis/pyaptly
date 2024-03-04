@@ -1,6 +1,0 @@
-=======
-pyaptly
-=======
-
-.. automodule:: pyaptly
-   :members:

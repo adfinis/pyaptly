@@ -1,6 +1,44 @@
-TODO
-====
+# All code moves somewhere else
 
-* Cleanup of rotated snapshots after snapshot-update
-* rotated snapshots should be identified by configuration option, not just by
-  "not being timestamped
+- Tests to the tests/ directory
+- Everything else away from legacy.py
+- Remove version.py completely
+
+# Update old files
+
+The following files have just been copied without checking if their content is ok:
+
+- CHANELOG
+- CHANELOG.rst
+- README.rst
+
+The reason for this is to ensure the continuity of the git history.
+
+# Tool to convert yaml config to toml
+
+- This is probably just a sub-command of pyaptly
+- We probably still want to switch to a modern yaml parser
+
+# Replace all subprocess commands with a modern one (run_command())
+
+# All logging should be done via logging (no stdout/stderr)
+
+# Remove all top-level `# type: ignore` and all `# type: ignore  # TODO`
+
+# Add good documentation to every function and module, but plan to review all of
+  it once everything is in place
+
+# Do all output via logging module
+
+- Idea show INFO and above, but display info without timestamp etc.
+
+# latest, maybe repeat:
+
+- replace all prints with logging
+- correctly do getLogger
+- is this unit_or_list... thing still needed
+- remove codecs.open
+- use pathlib.Path
+- replace state_reader.state with function
+- remove six
+- remote test.py completely

@@ -2,7 +2,7 @@ publish:
   fakerepo01-stable:
     -
       publish: "fakerepo01 main"
-      gpg-key: "650FE755"
+      gpg-key: "6D79A810B9B7ABAE"
       automatic-update: true
 merge:
   - "publish.yml"

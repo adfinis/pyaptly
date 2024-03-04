@@ -1,0 +1,38 @@
+[mirror.trusty]
+components = [ "main", "multiverse", "restricted", "universe",]
+architectures = [ "amd64", "i386",]
+distribution = "trusty"
+sources = true
+udeb = true
+archive = "http://ch.archive.ubuntu.com/ubuntu/"
+gpg-keys = [ "40976EAF437D05B5", "3B4FE6ACC0B21F32" ]
+keyserver = "keyserver.ubuntu.com"
+
+[mirror.trusty-updates]
+components = [ "main", "multiverse", "restricted", "universe",]
+architectures = [ "amd64", "i386",]
+distribution = "trusty-updates"
+sources = true
+udeb = true
+archive = "http://ch.archive.ubuntu.com/ubuntu/"
+gpg-keys = [ "40976EAF437D05B5", "3B4FE6ACC0B21F32" ]
+keyserver = "keyserver.ubuntu.com"
+
+[mirror.trusty-backports]
+components = [ "main", "multiverse", "restricted", "universe",]
+architectures = [ "amd64", "i386",]
+distribution = "trusty-backports"
+sources = true
+udeb = true
+archive = "http://ch.archive.ubuntu.com/ubuntu/"
+gpg-keys = [ "40976EAF437D05B5", "3B4FE6ACC0B21F32" ]
+keyserver = "keyserver.ubuntu.com"
+
+[snapshot.trusty-latest]
+mirror = "trusty-updates"
+
+[snapshot.trusty-backports-latest]
+mirror = "trusty-backports"
+
+[snapshot.my-repo-latest]
+repo = "my-repo"
