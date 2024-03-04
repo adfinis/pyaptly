@@ -89,3 +89,8 @@ entr-flake8: poetry-install ## run flake8 with entr
 .PHONY: local-mypy
 local-mypy: ## Run mypy as daemon locally (requires local-dev)
 	@poetry run dmypy run -- pyaptly
+
+.PHONY: build-packages
+build-packages: poetry-install ## build-rpm
+	@docker compose exec testing bash -c "poetry run ./tools/build-rpm"
+

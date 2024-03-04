@@ -25,6 +25,7 @@ RUN install_packages \
     cargo \
     git \
     make \
+    rpm \
     golang
 ENV PATH="${PATH}:/root/go/bin"
 ADD setup /setup
