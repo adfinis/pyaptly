@@ -91,6 +91,11 @@ local-mypy: ## Run mypy as daemon locally (requires local-dev)
 	@poetry run dmypy run -- pyaptly
 
 .PHONY: build-packages
-build-packages: poetry-install ## build-rpm
+build-packages: poetry-install ## build source package, wheel and srpm
 	@docker compose exec testing bash -c "poetry run ./tools/build-rpm"
 
+.PHONY: rebuild-packages
+rebuild-packages: ## build binary rpms
+	@docker run -v ./:/source fedora:39 /source/tools/rebuild-rpm
+	@docker run -v ./:/source fedora:40 /source/tools/rebuild-rpm
+	#@docker run -v ./:/source rockylinux:9 /source/tools/rebuild-rpm

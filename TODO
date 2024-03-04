@@ -42,3 +42,8 @@ The reason for this is to ensure the continuity of the git history.
 - replace state_reader.state with function
 - remove six
 - remote test.py completely
+
+- Build package
+
+  sudo dnf install python3-click python3-frozendict python3-pyyaml python3-tomli python3-tomli-w python3-devel python3-setuptools
+
