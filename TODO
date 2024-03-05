@@ -55,4 +55,4 @@ The reason for this is to ensure the continuity of the git history.
 
 - This is string is wrong in several places:
 
-  Automates the creation and managment of aptly mirrors and snapshots based on yml input files
+  Automates the creation and managment of aptly mirrors and snapshots based on toml input files

@@ -2,7 +2,7 @@
 Pyaptly
 =======
 
-Automates the creation and managment of aptly mirrors and snapshots based on yml
+Automates the creation and managment of aptly mirrors and snapshots based on toml
 input files.
 
 |pypi| |travis| |coverage| [1]_
