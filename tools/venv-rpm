@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+import os
+import shutil
+from datetime import datetime
+from pathlib import Path
+from subprocess import PIPE, run
+
+SPEC = """
+Name:           python3-pyaptly
+Version:        2.0.0^{revision}
+Release:        1%{{?dist}}
+Summary:        Automates the creation and managment of aptly mirrors and snapshots based on yml input files
+License:        AGPL-3.0-or-later
+BuildArch:      noarch
+Requires:       python3.11
+
+%description
+Automates the creation and managment of aptly mirrors and snapshots based on yml input files
+
+
+%install
+rm -rf /opt/pyaptly
+python3.11 -m venv /opt/pyaptly
+(source /opt/pyaptly/bin/activate
+pip install -r /root/requirements.txt)
+mkdir -p ${{RPM_BUILD_ROOT}}/opt
+cp -r --preserve=links /opt/pyaptly/ ${{RPM_BUILD_ROOT}}/opt/pyaptly/
+mkdir -p ${{RPM_BUILD_ROOT}}/usr/bin
+ln -s /opt/pyaptly/bin/pyaptly ${{RPM_BUILD_ROOT}}/usr/bin/pyaptly
+rm -rf /opt/pyaptly
+
+%files
+/usr/bin/pyaptly
+/opt/pyaptly
+
+%changelog
+* {date} Package Robot <package@robot.nowhere> - 2.0.0^alpha
+- Automatic build of revision {revision}
+"""
+
+
+def main():
+    os.chdir("/source")
+    macros = Path("/root/.rpmmacros")
+    with macros.open("w", encoding="UTF-8") as f:
+        f.write("%_binaries_in_noarch_packages_terminate_build   0")
+        f.write("\n")
+    run(["dnf", "install", "-y", "rpm-build", "python3.11", "git"], check=True)
+    date = datetime.now().strftime("%a %b %d %Y")
+    build_id = run(
+        ["git", "rev-parse", "--short", "HEAD"],
+        stdout=PIPE,
+        check=True,
+        encoding="UTF-8",
+    ).stdout.strip()
+    dist = Path("/source/dist")
+    package = str(list(dist.glob("pyaptly-*-py3-none-any.whl"))[0])
+    req = Path("/root/requirements.txt")
+    with req.open("w", encoding="UTF-8") as f:
+        f.write(package)
+        f.write("\n")
+    spec = Path("/root/venv.spec")
+    with spec.open("w", encoding="UTF-8") as f:
+        f.write(SPEC.format(revision=build_id, date=date))
+    shutil.rmtree("/root/rpmbuild", ignore_errors=True)
+    run(["rpmbuild", "--bb", spec], check=True)
+    rpms = Path("/root/rpmbuild/RPMS/noarch")
+    file = Path(list(rpms.glob("python3-pyaptly-*.noarch.rpm"))[0])
+    shutil.copy2(file, dist)
+
+
+if __name__ == "__main__":
+    main()
