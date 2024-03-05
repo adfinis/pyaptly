@@ -8,8 +8,6 @@ from pathlib import Path
 
 import freezegun
 import pytest
-import tomli
-import yaml
 
 from pyaptly import main, state_reader, util
 
@@ -114,16 +112,7 @@ def config(request):
     ...
     ```
     """
-    config_file = test_base / request.param
-    with config_file.open("rb") as f:
-        config = tomli.load(f)
-    # TODO: remove yaml conversion
-    try:
-        with tempfile.NamedTemporaryFile(mode="w", encoding="UTF-8", delete=False) as f:
-            yaml.dump(config, f)
-        yield f.name
-    finally:
-        Path(f.name).unlink()
+    yield str(test_base / request.param)
 
 
 @pytest.fixture()
