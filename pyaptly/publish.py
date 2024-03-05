@@ -11,7 +11,7 @@ lg = logging.getLogger(__name__)
 def publish(cfg, args):
     """Create publish commands, orders and executes them.
 
-    :param  cfg: The configuration yml as dict
+    :param  cfg: The configuration toml as dict
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace
@@ -67,7 +67,7 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
     :type             cfg: dict
     :param   publish_name: Name of the publish to update
     :type    publish_name: str
-    :param publish_config: Configuration of the publish from the yml file.
+    :param publish_config: Configuration of the publish from the toml file.
     :type  publish_config: dict
     """
     publish_cmd = ["aptly", "publish"]
@@ -150,7 +150,7 @@ def publish_cmd_create(cfg, publish_name, publish_config, ignore_existing=False)
     :type             cfg: dict
     :param   publish_name: Name of the publish to create
     :type    publish_name: str
-    :param publish_config: Configuration of the publish from the yml file.
+    :param publish_config: Configuration of the publish from the toml file.
     :type  publish_config: dict
     """
     publish_fullname = "%s %s" % (publish_name, publish_config["distribution"])

@@ -11,7 +11,7 @@ class SystemStateReader(object):
     """Reads the state from aptly and gpg.
 
     To find out what operations have to be performed to reach the state defined
-    in the yml config-file.
+    in the toml config-file.
     """
 
     known_dependency_types = ("repo", "snapshot", "mirror", "gpg_key")

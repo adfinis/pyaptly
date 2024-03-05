@@ -9,13 +9,13 @@ SPEC = """
 Name:           python3-pyaptly
 Version:        2.0.0^{revision}
 Release:        1%{{?dist}}
-Summary:        Automates the creation and managment of aptly mirrors and snapshots based on yml input files
+Summary:        Automates the creation and managment of aptly mirrors and snapshots based on toml input files
 License:        AGPL-3.0-or-later
 BuildArch:      noarch
 Requires:       python3.11
 
 %description
-Automates the creation and managment of aptly mirrors and snapshots based on yml input files
+Automates the creation and managment of aptly mirrors and snapshots based on toml input files
 
 
 %install

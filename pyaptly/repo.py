@@ -9,7 +9,7 @@ lg = logging.getLogger(__name__)
 def repo(cfg, args):
     """Create repository commands, orders and executes them.
 
-    :param  cfg: The configuration yml as dict
+    :param  cfg: The configuration toml as dict
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace
@@ -53,7 +53,7 @@ def repo_cmd_create(cfg, repo_name, repo_config):
     :type          cfg: dict
     :param   repo_name: Name of the repo to create
     :type    repo_name: str
-    :param repo_config: Configuration of the repo from the yml file.
+    :param repo_config: Configuration of the repo from the toml file.
     :type  repo_config: dict
     """
     if repo_name in state_reader.state.repos:  # pragma: no cover

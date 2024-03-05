@@ -9,7 +9,7 @@ lg = logging.getLogger(__name__)
 def add_gpg_keys(mirror_config):
     """Use the gpg to download and add gpg keys needed to create mirrors.
 
-    :param  mirror_config: The configuration yml as dict
+    :param  mirror_config: The configuration toml as dict
     :type   mirror_config: dict
     """
     keyserver = mirror_config.get("keyserver")
@@ -64,7 +64,7 @@ def add_gpg_keys(mirror_config):
 def mirror(cfg, args):
     """Create mirror commands, orders and executes them.
 
-    :param  cfg: The configuration yml as dict
+    :param  cfg: The configuration toml as dict
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace
@@ -94,11 +94,11 @@ def mirror(cfg, args):
 def cmd_mirror_create(cfg, mirror_name, mirror_config):
     """Create a mirror create command to be ordered and executed later.
 
-    :param           cfg: The configuration yml as dict
+    :param           cfg: The configuration toml as dict
     :type            cfg: dict
     :param   mirror_name: Name of the mirror to create
     :type    mirror_name: str
-    :param mirror_config: Configuration of the snapshot from the yml file.
+    :param mirror_config: Configuration of the snapshot from the toml file.
     :type  mirror_config: dict
     """
     if mirror_name in state_reader.state.mirrors:  # pragma: no cover
@@ -138,7 +138,7 @@ def cmd_mirror_update(cfg, mirror_name, mirror_config):
     :type            cfg: dict
     :param   mirror_name: Name of the mirror to create
     :type    mirror_name: str
-    :param mirror_config: Configuration of the snapshot from the yml file.
+    :param mirror_config: Configuration of the snapshot from the toml file.
     :type  mirror_config: dict
     """
     if mirror_name not in state_reader.state.mirrors:  # pragma: no cover

@@ -16,7 +16,7 @@ back_reference_map = {
 def snapshot(cfg, args):
     """Create snapshot commands, orders and executes them.
 
-    :param  cfg: The configuration yml as dict
+    :param  cfg: The configuration toml as dict
     :type   cfg: dict
     :param args: The command-line arguments read with :py:mod:`argparse`
     :type  args: namespace
@@ -160,7 +160,7 @@ def cmd_snapshot_update(
     :type              cfg: dict
     :param   snapshot_name: Name of the snapshot to update/rotate
     :type    snapshot_name: str
-    :param snapshot_config: Configuration of the snapshot from the yml file.
+    :param snapshot_config: Configuration of the snapshot from the toml file.
     :type  snapshot_config: dict
     """
     # To update a snapshot, we need to do roughly the following steps:
@@ -301,7 +301,7 @@ def cmd_snapshot_create(
     :type              cfg: dict
     :param   snapshot_name: Name of the snapshot to create
     :type    snapshot_name: str
-    :param snapshot_config: Configuration of the snapshot from the yml file.
+    :param snapshot_config: Configuration of the snapshot from the toml file.
     :type  snapshot_config: dict
     :param ignore_existing: Optional, defaults to False. If set to True, still
                             return a command object even if the requested
