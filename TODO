@@ -52,3 +52,7 @@ The reason for this is to ensure the continuity of the git history.
 - venv-rpm hardcodes version 2.0.0 in some places
 
 - review rpm build and improve it later
+
+- This is string is wrong in several places:
+
+  Automates the creation and managment of aptly mirrors and snapshots based on yml input files
