@@ -1,11 +1,10 @@
 """Commands with dependencies."""
 import collections
 import logging
-import subprocess
 
 from frozendict import frozendict
 
-from . import state_reader
+from . import state_reader, util
 
 lg = logging.getLogger(__name__)
 
@@ -94,9 +93,18 @@ class Command(object):
 
         if not Command.pretend_mode:
             lg.debug("Running command: %s", " ".join(self.cmd))
-            self._finished = bool(subprocess.check_call(self.cmd))
+            # It seems the intention of the original code is to a redo a command if it
+            # scheduled multiple times and fails the first time. But there is also:
+
+            # `commands = set([c for c in commands if c is not None])`
+
+            # which prevents that. I guess the feature is currently not needed.
+            # So I decided to change that. For now we fail hard if a `Command` fails.
+            # I guess we will see in production what happens.
+            util.run_command(self.cmd, check=True)
         else:
             lg.info("Pretending to run command: %s", " ".join(self.cmd))
+        self._finished = True
 
         return self._finished
 

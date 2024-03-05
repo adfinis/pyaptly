@@ -1,11 +1,9 @@
 """Aptly mirror/snapshot managment automation."""
 import argparse
-import codecs
 import logging
-import subprocess
 import sys
 
-import yaml
+import tomli
 
 from . import command, mirror, publish, repo, snapshot, state_reader
 
@@ -13,29 +11,6 @@ _logging_setup = False
 
 
 lg = logging.getLogger(__name__)
-
-
-# TODO remove
-def call_output(args, input_=None):
-    """Call command and return output.
-
-    :param   args: Command to execute
-    :type    args: list
-    :param input_: Input to command
-    :type  input_: bytes
-    """
-    p = subprocess.Popen(
-        args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    output, err = p.communicate(input_)
-    if p.returncode != 0:
-        raise subprocess.CalledProcessError(
-            p.returncode,
-            args,
-            output,
-            err,
-        )
-    return (output.decode("UTF-8"), err.decode("UTF-8"))
 
 
 def main(argv=None):
@@ -108,8 +83,8 @@ def main(argv=None):
         _logging_setup = True  # noqa
     lg.debug("Args: %s", vars(args))
 
-    with codecs.open(args.config, "r", encoding="UTF-8") as cfgfile:
-        cfg = yaml.load(cfgfile, Loader=yaml.FullLoader)
+    with open(args.config, "rb") as f:
+        cfg = tomli.load(f)
     state_reader.state.read()
 
     # run function for selected subparser
