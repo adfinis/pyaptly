@@ -5,7 +5,7 @@ from typing import Optional
 
 from . import command, date_tools, publish, state_reader, types
 
-lg = logging.getLogger(__name__)
+lg = logging.getLogger(__name__)  # cleanup2
 
 back_reference_map = {
     "current": 0,
