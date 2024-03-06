@@ -13,7 +13,7 @@ check_untyped_defs = true
 profile = "black"
 
 [tool.poetry.scripts]
-pyaptly = 'pyaptly.cli:cli'
+pyaptly = 'pyaptly.cli:entry_point'
 
 [tool.flake8]
 ignore = [

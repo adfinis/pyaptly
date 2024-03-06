@@ -1,10 +1,23 @@
 """python-click based command line interface for pyaptly."""
+import sys
 from pathlib import Path
 
 import click
 
 # I decided it is a good pattern to do lazy imports in the cli module. I had to
 # do this in a few other CLIs for startup performance.
+
+
+# TODO this makes the legacy command more usable. remove and set the entry point
+# back to `pyaptly = 'pyaptly.cli:cli'
+def entry_point():
+    """Fix args then call click."""
+    argv = list(sys.argv)
+    len_argv = len(argv)
+    if len_argv > 0 and argv[0].endswith("pyaptly"):
+        if len_argv > 2 and argv[1] == "legacy" and argv[2] != "--":
+            argv = argv[:2] + ["--"] + argv[2:]
+    cli.main(argv[1:])
 
 
 @click.group()
@@ -22,6 +35,8 @@ def cli(debug: bool):
     util._DEBUG = debug
 
 
+# TODO legacy is here to be able to do early alpha and get feedback from users.
+# remove when there is full replacement.
 @cli.command(help="run legacy command parser")
 @click.argument("passthrough", nargs=-1)
 def legacy(passthrough):
