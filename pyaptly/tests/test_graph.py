@@ -1,4 +1,5 @@
 """Testing dependency graphs."""
+
 import random
 from functools import partial
 from typing import Union

@@ -1,4 +1,5 @@
 """Test snapshot functionality."""
+
 import pytest
 
 from .. import main, state_reader, util

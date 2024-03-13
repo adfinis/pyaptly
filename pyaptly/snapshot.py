@@ -1,4 +1,5 @@
 """Create and update snapshots in aptly."""
+
 import datetime
 import logging
 from typing import Optional

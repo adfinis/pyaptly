@@ -1,4 +1,5 @@
 """Test mirror functionality."""
+
 import logging
 
 import pytest
@@ -7,17 +8,25 @@ from .. import main, state_reader
 
 
 @pytest.mark.parametrize("config", ["debug.toml"], indirect=True)
-def test_debug(environment, config):
+@pytest.mark.parametrize("kind", ["debug", "info"])
+def test_debug(environment, config, kind):
     """Test if debug is enabled with -d."""
+    if kind == "debug":
+        arg = "-d"
+        expect = logging.DEBUG
+    else:
+        arg = "-i"
+        expect = logging.INFO
+    main._logging_setup = False  # revert logging setup by environment fixture
     args = [
-        "-d",
+        arg,
         "-c",
         config,
         "mirror",
         "create",
     ]
     main.main(args)
-    assert logging.getLogger().level == logging.DEBUG
+    assert logging.getLogger().level == expect
 
 
 @pytest.mark.parametrize("config", ["mirror-extra.toml"], indirect=True)

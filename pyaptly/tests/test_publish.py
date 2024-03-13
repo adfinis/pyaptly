@@ -1,4 +1,5 @@
 """Test publish functionality."""
+
 import pytest
 
 from .. import command, main, state_reader

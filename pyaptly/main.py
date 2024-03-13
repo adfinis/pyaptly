@@ -1,11 +1,20 @@
 """Aptly mirror/snapshot managment automation."""
+
 import argparse
 import logging
 import sys
 
 import tomli
 
-from . import command, mirror, publish, repo, snapshot, state_reader
+from . import (
+    command,
+    custom_logger,
+    mirror,
+    publish,
+    repo,
+    snapshot,
+    state_reader,
+)
 
 _logging_setup = False
 
@@ -37,6 +46,12 @@ def main(argv=None):
         action="store_true",
     )
     parser.add_argument(
+        "--info",
+        "-i",
+        help="Enable info output (show executed commands)",
+        action="store_true",
+    )
+    parser.add_argument(
         "--pretend",
         "-p",
         help="Do not do anything, just print out what WOULD be done",
@@ -64,14 +79,16 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
     root = logging.getLogger()
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    formatter = custom_logger.CustomFormatter()
     if not _logging_setup:  # noqa
         handler = logging.StreamHandler(sys.stderr)
         handler.setFormatter(formatter)
         root.addHandler(handler)
-        handler.setLevel(logging.CRITICAL)
+        root.setLevel(logging.WARNING)
+        handler.setLevel(logging.WARNING)
+        if args.info:
+            root.setLevel(logging.INFO)
+            handler.setLevel(logging.INFO)
         if args.debug:
             root.setLevel(logging.DEBUG)
             handler.setLevel(logging.DEBUG)

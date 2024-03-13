@@ -1,14 +1,13 @@
 """Test the util.py module."""
+
 from datetime import datetime
 
 import pytest
 
 from .. import snapshot, util
 
-EXPECT = """
-stdout:     'first
-             second'
-""".strip()
+EXPECT = """stdout:     'first
+               second'"""
 
 
 @pytest.mark.parametrize("decode", [True, False])
@@ -29,7 +28,7 @@ def test_run(test_path, debug_mode, caplog, decode, unicode_error):
     caplog.clear()
     util.run_command(["sh", "-c", "printf error 1>&2; false"], decode=decode)
     assert "stderr:     'error'" in caplog.messages[0]
-    assert "returncode: 1" in caplog.messages[0]
+    assert "-> 1" in caplog.messages[0]
     caplog.clear()
     util.run_command(["sh", "-c", "printf 'first\nsecond'"], decode=decode)
     assert EXPECT in caplog.messages[0]

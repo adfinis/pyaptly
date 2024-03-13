@@ -1,4 +1,5 @@
 """Commands with dependencies."""
+
 import collections
 import logging
 
@@ -291,7 +292,7 @@ class Command(object):
         incoming_set = set([cmd for cmd in commands])
         assert incoming_set == scheduled_set
 
-        lg.info("Reordered commands: %s", [str(cmd) for cmd in scheduled])
+        lg.debug("Reordered commands: %s", [str(cmd) for cmd in scheduled])
 
         return scheduled
 
