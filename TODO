@@ -1,58 +1,18 @@
-# All code moves somewhere else
+# CHANGELOG
 
-- Tests to the tests/ directory
-- Everything else away from legacy.py
-- Remove version.py completely
+- CHANGELOG convert to toml
+- CHANGELOG.rst rename to CHANGELOG.md
+- CHANELOG.md generate from toml
+- RPM_SPEC generate changelog from toml
 
-# Update old files
+# Docs
 
-The following files have just been copied without checking if their content is ok:
+- Remove sphinx-doc tags from documentation -> currently deferred
 
-- CHANELOG
-- CHANELOG.rst
-- README.rst
+# Release
 
-The reason for this is to ensure the continuity of the git history.
-
-# Tool to convert yaml config to toml
-
-- This is probably just a sub-command of pyaptly
-- We probably still want to switch to a modern yaml parser
-
-# Replace all subprocess commands with a modern one (run_command())
-
-# All logging should be done via logging (no stdout/stderr)
-
-# Remove all top-level `# type: ignore` and all `# type: ignore  # TODO`
-
-# Add good documentation to every function and module, but plan to review all of
-  it once everything is in place
-
-# Do all output via logging module
-
-- Idea show INFO and above, but display info without timestamp etc.
-
-# latest, maybe repeat:
-
-- replace all prints with logging
-- correctly do getLogger
-- is this unit_or_list... thing still needed
-- remove codecs.open
-- use pathlib.Path
-- replace state_reader.state with function
-- remove six
-- remote test.py completely
-
-- Build package
-
-  sudo dnf install python3-click python3-frozendict python3-pyyaml python3-tomli python3-tomli-w python3-devel python3-setuptools
-
-- remove pyp2rpm and just put a spec into build-rpm, like in venv-rpm
+- remove pyp2rpm and just put a spec into build-rpm, like in venv-rpm (maybe)
 
 - venv-rpm hardcodes version 2.0.0 in some places
 
 - review rpm build and improve it later
-
-- This is string is wrong in several places:
-
-  Automates the creation and managment of aptly mirrors and snapshots based on toml input files
