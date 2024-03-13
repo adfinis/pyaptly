@@ -175,4 +175,11 @@ class SystemStateReader(object):
             raise ValueError("Unknown dependency to resolve: %s" % str(dependency))
 
 
-state = SystemStateReader()
+_state_reader: SystemStateReader | None = None
+
+
+def state_reader():
+    global _state_reader
+    if not _state_reader:
+        _state_reader = SystemStateReader()
+    return _state_reader

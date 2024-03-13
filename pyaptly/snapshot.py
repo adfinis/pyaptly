@@ -43,7 +43,7 @@ def snapshot(cfg, args):
 
         if len(commands) > 0:
             for cmd in command.Command.order_commands(
-                commands, state_reader.state.has_dependency
+                commands, state_reader.state_reader().has_dependency
             ):
                 cmd.execute()
 
@@ -55,7 +55,7 @@ def snapshot(cfg, args):
 
             if len(commands) > 0:
                 for cmd in command.Command.order_commands(
-                    commands, state_reader.state.has_dependency
+                    commands, state_reader.state_reader().has_dependency
                 ):
                     cmd.execute()
 
@@ -115,7 +115,9 @@ def dependents_of_snapshot(snapshot_name):
 
     :rtype: generator
     """
-    for dependent in state_reader.state.snapshot_map.get(snapshot_name, []):
+    for dependent in state_reader.state_reader().snapshot_map.get(
+        snapshot_name, []
+    ):
         yield dependent
         # TODO I fixed a bug, but there is no test. We do not test recursive dependants
         yield from dependents_of_snapshot(dependent)
@@ -140,7 +142,7 @@ def rotate_snapshot(cfg, snapshot_name):
     # First, verify that our snapshot environment is in a sane state_reader.state.
     # Fixing the environment is not currently our task.
 
-    if rotated_name in state_reader.state.snapshots:  # pragma: no cover
+    if rotated_name in state_reader.state_reader().snapshots:  # pragma: no cover
         raise Exception(
             "Cannot update snapshot %s - rotated name %s already exists"
             % (snapshot_name, rotated_name)
@@ -185,7 +187,7 @@ def cmd_snapshot_update(
 
     # The "intermediate" command causes the state reader to refresh.  At the
     # same time, it provides a collection point for dependency handling.
-    intermediate = command.FunctionCommand(state_reader.state.read)
+    intermediate = command.FunctionCommand(state_reader.state_reader().read)
     intermediate.provide("virtual", "all-snapshots-rotated")
 
     for cmd in rename_cmds:
@@ -200,7 +202,7 @@ def cmd_snapshot_update(
 
     # Same as before - create a focal point to "collect" dependencies
     # after the snapshots have been rebuilt. Also reload state once again
-    intermediate2 = command.FunctionCommand(state_reader.state.read)
+    intermediate2 = command.FunctionCommand(state_reader.state_reader().read)
     intermediate2.provide("virtual", "all-snapshots-rebuilt")
 
     create_cmds = []
@@ -245,7 +247,7 @@ def cmd_snapshot_update(
     def is_publish_affected(name, publish_info):
         if (
             "%s %s" % (name, publish_info["distribution"])
-            in state_reader.state.publishes
+            in state_reader.state_reader().publishes
         ):
             try:
                 for snap in publish_info["snapshots"]:
@@ -316,7 +318,10 @@ def cmd_snapshot_create(
 
     snapshot_name = date_tools.expand_timestamped_name(snapshot_name, snapshot_config)
 
-    if snapshot_name in state_reader.state.snapshots and not ignore_existing:
+    if (
+        snapshot_name in state_reader.state_reader().snapshots
+        and not ignore_existing
+    ):
         return []
 
     default_aptly_cmd = ["aptly", "snapshot", "create"]

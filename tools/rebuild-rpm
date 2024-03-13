@@ -18,6 +18,7 @@ def main():
             "python3-tomli-w",
             "python3-devel",
             "python3-setuptools",
+            "python3-colorama",
         ],
         check=True,
     )

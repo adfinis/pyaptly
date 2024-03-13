@@ -30,7 +30,7 @@ def repo(cfg, args):
         ]
 
         for cmd in command.Command.order_commands(
-            commands, state_reader.state.has_dependency
+            commands, state_reader.state_reader().has_dependency
         ):
             cmd.execute()
 
@@ -38,7 +38,7 @@ def repo(cfg, args):
         if args.repo_name in cfg["repo"]:
             commands = [cmd_repo(cfg, args.repo_name, cfg["repo"][args.repo_name])]
             for cmd in command.Command.order_commands(
-                commands, state_reader.state.has_dependency
+                commands, state_reader.state_reader().has_dependency
             ):
                 cmd.execute()
         else:
@@ -57,7 +57,7 @@ def repo_cmd_create(cfg, repo_name, repo_config):
     :param repo_config: Configuration of the repo from the toml file.
     :type  repo_config: dict
     """
-    if repo_name in state_reader.state.repos:  # pragma: no cover
+    if repo_name in state_reader.state_reader().repos:  # pragma: no cover
         # Nothing to do, repo already created
         return
 
