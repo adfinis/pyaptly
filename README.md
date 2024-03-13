@@ -8,12 +8,41 @@ input files.
 - For for the old version [switch to the master branch](https://github.com/adfinis/pyaptly/tree/master)
 - Main branch builds contain [alpha packages](https://github.com/adfinis/pyaptly/actions/runs/8147002919), see Artifacts
 
-# Debugging
+## Example commands
 
-The most interesting mode for users is not `--debug` but `--info` which show all commands executed.
+Initialize a new aptly server.
+
+```shell
+pyaptly -c mirrors.toml mirror create
+pyaptly -c mirrors.toml mirror update
+pyaptly -c mirrors.toml snapshot create
+pyaptly -c mirrors.toml publish create
+```
+
+Update mirrors and snapshots and switch publish endpoints with
+```automatic-update: true``` to the new snapshots.
+
+```shell
+pyaptly -c mirrors.toml mirror update
+pyaptly -c mirrors.toml snapshot create
+pyaptly -c mirrors.toml publish create
+pyaptly -c mirrors.toml publish update
+```
+
+Manually trigger a switch to the new snapshots for the publish endpoint
+ubuntu/stable.
+
+```shell
+pyaptly -c mirrors.toml publish update ubuntu/stable
+```
+
+## Debugging
+
+The most interesting mode for users is not `--debug` but `--info` which shows
+all commands executed.
 
 ```bash
-# pyaptly legacy -- --info --config pyaptly/tests/repo.toml repo create
+> pyaptly legacy -- --info --config pyaptly/tests/repo.toml repo create
 Command call
   cmd:         gpg --no-default-keyring --keyring trustedkeys.gpg --list-keys --with-colons -> 0
   stdout:     'tru::1:1709575833:0:3:1:5
@@ -42,4 +71,5 @@ Command call
                You can run 'aptly repo add centrify ...' to add packages to repository.'
 ```
 
-Commands that fail are always displayed in red on a tty, but actually only happen if something is broken.
+Commands that fail are always displayed in red on a tty, but that actually only
+happens if something is broken.
