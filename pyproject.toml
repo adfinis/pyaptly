@@ -50,6 +50,7 @@ pyyaml = "^6.0.1"
 click = "^8.0.0"
 tomli = "^2.0.1"
 tomli-w = "^1.0.0"
+colorama = "^0.4.6"
 frozendict = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]

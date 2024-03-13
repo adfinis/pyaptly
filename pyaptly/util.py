@@ -1,9 +1,12 @@
 """Basic function like running processes and logging."""
 
 import logging
+import os
 import subprocess
 from pathlib import Path
-from subprocess import DEVNULL, PIPE, CalledProcessError  # noqa: F401
+
+from colorama import Fore, Style, init
+from subprocess import PIPE, CalledProcessError  # noqa: F401
 from typing import Optional, Sequence
 
 _DEFAULT_KEYSERVER: str = "hkps://keys.openpgp.org"
@@ -14,20 +17,30 @@ _PYTEST_DEBUG = False
 
 RESULT_LOG = """
 Command call
-args:       {args}
-returncode: {returncode}
-stdout:     '{stdout}'
-stderr:     '{stderr}'
+  cmd:         {cmd} {color_begin}-> {returncode}{color_end}
 """.strip()
-_indent = " " * 13
+OUTPUT_LOG = "  {out_type}:     '{output}'"
+_indent = " " * 15
 
-logger = logging.getLogger(__name__)
+_isatty_cache = None
+
+
+lg = logging.getLogger(__name__)
+
+
+def isatty():
+    global _isatty_cache
+    if _isatty_cache is None:
+        _isatty_cache = os.isatty(1)
+        if _isatty_cache:
+            init()  # pragma: no cover
+    return _isatty_cache
 
 
 def unit_or_list_to_list(thingy):
-    """Ensure that a yml entry is always a list.
+    """Ensure that a toml entry is always a list.
 
-    Used to allow lists and single units in the yml file.
+    Used to allow lists and single units in the toml file.
 
     :param thingy: The data to ensure it is a list
     :type  thingy: list, tuple or other
@@ -45,36 +58,42 @@ def get_default_keyserver():
     else:
         return _DEFAULT_KEYSERVER
 
-
-def is_debug_mode():
-    """Check if we are in debug mode."""
-    return _DEBUG or _PYTEST_DEBUG
-
-
-def run_command(cmd_args: Sequence[str | Path], *, decode: bool = True, **kwargs):
+def run_command(
+    cmd_args: Sequence[str | Path],
+    *,
+    decode: bool = True,
+    hide_error: bool = False,
+    **kwargs,
+):
     """Instrumented subprocess.run for easier debugging.
 
-    By default this run command will add `encoding="UTF-8"` to kwargs. Disable
-    with `decode=False`.
+    - By default this run command will add `encoding="UTF-8"` to kwargs. Disable
+      with `decode=False`.
+    - Command that often or normally fail can also set `hide_error=True` to only
+      show them in if the loglevel is `INFO` (Logging and output in DEVELOPMENT.md)
     """
-    debug = is_debug_mode()
     added_stdout = False
     added_stderr = False
-    if debug:
-        if "stdout" not in kwargs:
-            kwargs["stdout"] = PIPE
-            added_stdout = True
-        if "stderr" not in kwargs:
-            kwargs["stderr"] = PIPE
-            added_stderr = True
+    # TODO assert PIPE or None
+    if "stdout" not in kwargs:
+        kwargs["stdout"] = PIPE
+        added_stdout = True
+    if "stderr" not in kwargs:
+        kwargs["stderr"] = PIPE
+        added_stderr = True
     result = None
     if decode and "encoding" not in kwargs:
         kwargs["encoding"] = "UTF-8"
     try:
         result = subprocess.run(cmd_args, **kwargs)
     finally:
-        if debug and result:
-            log_run_result(result)
+        if result:
+            log_msg = format_run_result(result, result.returncode)
+            if result.returncode == 0:
+                lg.info(log_msg)
+            else:
+                if not hide_error or lg.root.level <= 20:
+                    lg.error(log_msg)
             # Do not change returned result by debug mode
             if added_stdout:
                 delattr(result, "stdout")
@@ -112,15 +131,34 @@ def indent_out(output: bytes | str) -> str:
     return "\n".join(result)
 
 
-def log_run_result(result: subprocess.CompletedProcess):
-    """Log a CompletedProcess result log debug."""
-    msg = RESULT_LOG.format(
-        args=result.args,
-        returncode=result.returncode,
-        stdout=indent_out(result.stdout),
-        stderr=indent_out(result.stderr),
-    )
-    logger.debug(msg)
+def format_run_result(result: subprocess.CompletedProcess, returncode: int):
+    """Format a CompletedProcess result log."""
+    color_begin = ""
+    color_end = ""
+    if isatty():  # pragma: no cover
+        if returncode == 0:
+            color_begin = Fore.RED
+            color_end = Fore.YELLOW
+        else:
+            color_begin = Fore.YELLOW
+            color_end = Fore.RED
+    msg = [
+        RESULT_LOG.format(
+            cmd=" ".join([str(x) for x in result.args]),
+            returncode=result.returncode,
+            color_begin=color_begin,
+            color_end=color_end,
+            stdout=indent_out(result.stdout),
+            stderr=indent_out(result.stderr),
+        )
+    ]
+    for out_type, output in [("stdout", result.stdout), ("stderr", result.stderr)]:
+        output = output.strip()
+        if output:
+            output = indent_out(output)
+            msg.append(OUTPUT_LOG.format(out_type=out_type, output=output))
+        pass
+    return "\n".join(msg)
 
 
 def parse_aptly_show_command(show: str) -> dict[str, str]:
