@@ -5,7 +5,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from colorama import Fore, Style, init
+from colorama import Fore, init
 from subprocess import PIPE, CalledProcessError  # noqa: F401
 from typing import Optional, Sequence
 
@@ -22,7 +22,7 @@ Command call
 OUTPUT_LOG = "  {out_type}:     '{output}'"
 _indent = " " * 15
 
-_isatty_cache = None
+_isatty_cache: bool | None = None
 
 
 lg = logging.getLogger(__name__)
@@ -57,6 +57,7 @@ def get_default_keyserver():
         return _PYTEST_KEYSERVER
     else:
         return _DEFAULT_KEYSERVER
+
 
 def run_command(
     cmd_args: Sequence[str | Path],

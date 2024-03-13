@@ -38,7 +38,7 @@ wait-for-ready: up ## wait for web-server to be ready for testing
 
 .PHONY: poetry-install
 poetry-install: wait-for-ready ## install dev environment
-	@docker compose exec testing poetry install
+	@docker compose exec testing poetry install --without lsp
 
 .PHONY: mypy
 mypy: poetry-install
@@ -48,24 +48,17 @@ mypy: poetry-install
 pytest: poetry-install ## run pytest
 	@docker compose exec testing poetry run pytest -vv --cov
 
-.PHONY: check-isort
-check-isort: poetry-install ## check isort
-	@docker compose exec testing poetry run isort --check pyaptly
+.PHONY: format
+format: poetry-install ## format code with ruff
+	@docker compose exec testing poetry run ruff format pyaptly
 
-.PHONY: check-black
-check-black: poetry-install ## check black
-	@docker compose exec testing poetry run black --check pyaptly
-
-.PHONY: check-black
-format-black: poetry-install ## format code with black
-	@docker compose exec testing poetry run black pyaptly
-
-.PHONY: flake8
-flake8: poetry-install ## run flake8
-	@docker compose exec testing poetry run flake8 pyaptly
+.PHONY: fix
+fix: poetry-install ## fix code with ruff
+	@docker compose exec testing poetry run ruff check --fix pyaptly
 
 .PHONY: lint-code
-lint-code: check-isort check-black flake8 ## check all linters
+lint-code:  ## check all linters
+	@docker compose exec testing poetry run ruff check pyaptly
 
 .PHONY: test
 test: pytest mypy lint-code ## run all testing
@@ -82,9 +75,9 @@ entr-pytest: poetry-install ## run pytest with entr
 entr-mypy: poetry-install ## run pytest with entr
 	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'make local-mypy; echo ---'"
 
-.PHONY: entr-flake8
-entr-flake8: poetry-install ## run flake8 with entr
-	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'flake8 pyaptly; echo ---'"
+.PHONY: entr-lint
+entr-lint: poetry-install ## run ruff with entr
+	@docker compose exec testing bash -c "find -name '*.py' | SHELL=bash poetry run entr bash -c 'ruff check pyaptly; echo ---'"
 
 .PHONY: local-mypy
 local-mypy: ## Run mypy as daemon locally (requires local-dev)

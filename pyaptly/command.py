@@ -1,4 +1,5 @@
 """Commands with dependencies."""
+
 import collections
 import logging
 

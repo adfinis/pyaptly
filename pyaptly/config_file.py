@@ -1,4 +1,5 @@
 """Handling pyaptly config-files."""
+
 from pathlib import Path
 
 import tomli_w

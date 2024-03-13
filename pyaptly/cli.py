@@ -1,4 +1,5 @@
 """python-click based command line interface for pyaptly."""
+
 import sys
 from pathlib import Path
 

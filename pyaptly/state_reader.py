@@ -1,4 +1,5 @@
 """The state reader helps to find the delta between current and target state."""
+
 import logging
 import re
 

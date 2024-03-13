@@ -1,4 +1,5 @@
 """Test mirror functionality."""
+
 import logging
 
 import pytest

@@ -1,4 +1,5 @@
 """Test the util.py module."""
+
 from datetime import datetime
 
 import pytest

@@ -1,4 +1,5 @@
 """Aptly mirror/snapshot managment automation."""
+
 import argparse
 import logging
 import sys
@@ -13,7 +14,6 @@ from . import (
     repo,
     snapshot,
     state_reader,
-    util,
 )
 
 _logging_setup = False

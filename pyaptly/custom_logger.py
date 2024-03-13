@@ -28,7 +28,7 @@ class CustomFormatter(logging.Formatter):
 
     def format(self, record):
         if util.isatty():
-            formats = self.FORMATS_COLOR   # pragma: no cover
+            formats = self.FORMATS_COLOR  # pragma: no cover
         else:
             formats = self.FORMATS
 
