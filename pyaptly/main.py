@@ -22,13 +22,42 @@ _logging_setup = False
 lg = logging.getLogger(__name__)
 
 
+def setup_logger(args):
+    """Setup the logger."""
+    global _logging_setup
+    root = logging.getLogger()
+    formatter = custom_logger.CustomFormatter()
+    if not _logging_setup:  # noqa
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
+        root.setLevel(logging.WARNING)
+        handler.setLevel(logging.WARNING)
+        if args.info:
+            root.setLevel(logging.INFO)
+            handler.setLevel(logging.INFO)
+        if args.debug:
+            root.setLevel(logging.DEBUG)
+            handler.setLevel(logging.DEBUG)
+        _logging_setup = True  # noqa
+
+
+def prepare(args):
+    """Set pretend mode, read config and load state."""
+    command.Command.pretend_mode = args.pretend
+
+    with open(args.config, "rb") as f:
+        cfg = tomli.load(f)
+    state_reader.state.read()
+    return cfg
+
+
 def main(argv=None):
     """Define parsers and executes commands.
 
     :param argv: Arguments usually taken from sys.argv
     :type  argv: list
     """
-    global _logging_setup
     if not argv:  # pragma: no cover
         argv = sys.argv[1:]
     parser = argparse.ArgumentParser(description="Manage aptly")
@@ -78,31 +107,8 @@ def main(argv=None):
     repo_parser.add_argument("repo_name", type=str, nargs="?", default="all")
 
     args = parser.parse_args(argv)
-    root = logging.getLogger()
-    formatter = custom_logger.CustomFormatter()
-    if not _logging_setup:  # noqa
-        handler = logging.StreamHandler(sys.stderr)
-        handler.setFormatter(formatter)
-        root.addHandler(handler)
-        root.setLevel(logging.WARNING)
-        handler.setLevel(logging.WARNING)
-        if args.info:
-            root.setLevel(logging.INFO)
-            handler.setLevel(logging.INFO)
-        if args.debug:
-            root.setLevel(logging.DEBUG)
-            handler.setLevel(logging.DEBUG)
-    if args.pretend:
-        command.Command.pretend_mode = True
-    else:
-        command.Command.pretend_mode = False
-
-        _logging_setup = True  # noqa
-    lg.debug("Args: %s", vars(args))
-
-    with open(args.config, "rb") as f:
-        cfg = tomli.load(f)
-    state_reader.state.read()
+    setup_logger(args)
+    cfg = prepare(args)
 
     # run function for selected subparser
     args.func(cfg, args)

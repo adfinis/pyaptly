@@ -3,11 +3,13 @@
 import logging
 import os
 import subprocess
+import traceback
 from pathlib import Path
+from subprocess import PIPE, CalledProcessError  # noqa: F401
+from tempfile import NamedTemporaryFile
+from typing import Optional, Sequence
 
 from colorama import Fore, init
-from subprocess import PIPE, CalledProcessError  # noqa: F401
-from typing import Optional, Sequence
 
 _DEFAULT_KEYSERVER: str = "hkps://keys.openpgp.org"
 _PYTEST_KEYSERVER: Optional[str] = None
@@ -26,6 +28,13 @@ _isatty_cache: bool | None = None
 
 
 lg = logging.getLogger(__name__)
+
+
+def write_traceback():  # pragma: no cover
+    with NamedTemporaryFile("w", delete=False) as tmp:
+        tmp.write(traceback.format_exc())
+        tmp.close()
+    return tmp.name
 
 
 def isatty():
