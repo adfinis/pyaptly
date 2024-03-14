@@ -65,7 +65,7 @@ def main():
     shutil.rmtree("/root/rpmbuild", ignore_errors=True)
     run(["rpmbuild", "--bb", spec], check=True)
     rpms = Path("/root/rpmbuild/RPMS/noarch")
-    file = Path(list(rpms.glob("python3-pyaptly-*.noarch.rpm"))[0])
+    file = Path(list(rpms.glob("python3-pyaptly-*.rpm"))[0])
     shutil.copy2(file, dist)
 
 
