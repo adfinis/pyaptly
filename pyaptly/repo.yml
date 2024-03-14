@@ -1,5 +1,0 @@
-repo:
-    centrify:
-        architectures: [ "amd64", "i386" ]
-        distribution: "stable"
-        component: "main"

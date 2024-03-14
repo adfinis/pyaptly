@@ -1,9 +1,0 @@
-snapshot:
-  fakerepo01-%T:
-    mirror: "fakerepo01"
-    timestamp: {"time": "00:00"}
-  fakerepo02-%T:
-    mirror: "fakerepo02"
-    timestamp: {"time": "00:00", "repeat-weekly": "sat"}
-merge:
-  - "mirror-no-google.yml"
