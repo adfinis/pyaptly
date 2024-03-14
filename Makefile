@@ -90,5 +90,4 @@ build-packages: poetry-install ## build source package, wheel and srpm
 .PHONY: rebuild-packages
 rebuild-packages: ## build binary rpms
 	@docker run -v ./:/source rockylinux:9 sh -c "dnf install -y git; git config --global --add safe.directory /source; /source/tools/venv-rpm"
-	@docker run -v ./:/source fedora:39 /source/tools/rebuild-rpm
 	@docker run -v ./:/source fedora:40 /source/tools/rebuild-rpm
