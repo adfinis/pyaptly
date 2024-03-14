@@ -1,24 +1,53 @@
 """python-click based command line interface for pyaptly."""
 
+import logging
 import sys
 from pathlib import Path
+from subprocess import CalledProcessError
 
 import click
 
-# I decided it is a good pattern to do lazy imports in the cli module. I had to
-# do this in a few other CLIs for startup performance.
+lg = logging.getLogger(__name__)
 
 
-# TODO this makes the legacy command more usable. remove and set the entry point
-# back to `pyaptly = 'pyaptly.cli:cli'
 def entry_point():
     """Fix args then call click."""
+    # TODO this makes the legacy command more usable. remove legacy commands when
+    # we are out of beta
     argv = list(sys.argv)
     len_argv = len(argv)
     if len_argv > 0 and argv[0].endswith("pyaptly"):
         if len_argv > 2 and argv[1] == "legacy" and argv[2] != "--":
             argv = argv[:2] + ["--"] + argv[2:]
-    cli.main(argv[1:])
+
+    try:
+        cli.main(argv[1:])
+    except CalledProcessError:
+        pass  # already logged
+    except Exception as e:
+        from . import util
+
+        path = util.write_traceback()
+        tb = f"Wrote traceback to: {path}"
+        msg = " ".join([str(x) for x in e.args])
+        lg.error(f"{msg}\n               {tb}")
+
+
+# I want to release the new cli interface with 2.0, so we do not repeat breaking changes.
+# But changing all functions that use argparse, means also changing all the tests, which
+# (ab)use the argparse interface. So we currently fake that interface, so we can roll-out
+# the new interface early.
+# TODO: remove this, once argparse is gone
+class FakeArgs:
+    """Helper for compatiblity."""
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+
+# I decided it is a good pattern to do lazy imports in the cli module. I had to
+# do this in a few other CLIs for startup performance.
 
 
 @click.group()
@@ -45,6 +74,98 @@ def legacy(passthrough):
     from . import main
 
     main.main(argv=passthrough)
+
+
+@cli.command()
+@click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
+@click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
+@click.option(
+    "--pretend/--no-pretend",
+    "-p/-np",
+    default=False,
+    type=bool,
+    help="Do not change anything",
+)
+@click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
+@click.argument("task", type=click.Choice(["create"]))
+@click.option("--repo-name", "-n", default="all", type=str, help='deafult: "all"')
+def repo(**kwargs):
+    """Create aptly repos."""
+    from . import main, repo
+
+    fake_args = FakeArgs(**kwargs)
+    main.setup_logger(fake_args)
+    cfg = main.prepare(fake_args)
+    repo.repo(cfg, args=fake_args)
+
+
+@cli.command()
+@click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
+@click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
+@click.option(
+    "--pretend/--no-pretend",
+    "-p/-np",
+    default=False,
+    type=bool,
+    help="Do not change anything",
+)
+@click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
+@click.argument("task", type=click.Choice(["create", "update"]))
+@click.option("--mirror-name", "-n", default="all", type=str, help='deafult: "all"')
+def mirror(**kwargs):
+    """Manage aptly mirrors."""
+    from . import main, mirror
+
+    fake_args = FakeArgs(**kwargs)
+    main.setup_logger(fake_args)
+    cfg = main.prepare(fake_args)
+    mirror.mirror(cfg, args=fake_args)
+
+
+@cli.command()
+@click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
+@click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
+@click.option(
+    "--pretend/--no-pretend",
+    "-p/-np",
+    default=False,
+    type=bool,
+    help="Do not change anything",
+)
+@click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
+@click.argument("task", type=click.Choice(["create", "update"]))
+@click.option("--snapshot-name", "-n", default="all", type=str, help='deafult: "all"')
+def snapshot(**kwargs):
+    """Manage aptly snapshots."""
+    from . import main, snapshot
+
+    fake_args = FakeArgs(**kwargs)
+    main.setup_logger(fake_args)
+    cfg = main.prepare(fake_args)
+    snapshot.snapshot(cfg, args=fake_args)
+
+
+@cli.command()
+@click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
+@click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
+@click.option(
+    "--pretend/--no-pretend",
+    "-p/-np",
+    default=False,
+    type=bool,
+    help="Do not change anything",
+)
+@click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
+@click.argument("task", type=click.Choice(["create", "update"]))
+@click.option("--publish-name", "-n", default="all", type=str, help='deafult: "all"')
+def publish(**kwargs):
+    """Manage aptly publishs."""
+    from . import main, publish
+
+    fake_args = FakeArgs(**kwargs)
+    main.setup_logger(fake_args)
+    cfg = main.prepare(fake_args)
+    publish.publish(cfg, args=fake_args)
 
 
 @cli.command(help="convert yaml- to toml-comfig")
