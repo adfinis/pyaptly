@@ -3,7 +3,7 @@
 Automates the creation and managment of aptly mirrors and snapshots based on toml
 input files.
 
-**Important**: Corrently under heavy development:
+**Important**: Currently under heavy development:
 
 - For for the old version [switch to the master branch](https://github.com/adfinis/pyaptly/tree/master)
 - Main branch builds contain [alpha packages](https://github.com/adfinis/pyaptly/actions/runs/8147002919), see Artifacts
@@ -13,27 +13,27 @@ input files.
 Initialize a new aptly server.
 
 ```shell
-pyaptly -c mirrors.toml mirror create
-pyaptly -c mirrors.toml mirror update
-pyaptly -c mirrors.toml snapshot create
-pyaptly -c mirrors.toml publish create
+pyaptly mirror mirrors.toml create
+pyaptly mirror mirrors.toml update
+pyaptly snapshot mirrors.toml create
+pyaptly publish mirrors.toml create
 ```
 
 Update mirrors and snapshots and switch publish endpoints with
 ```automatic-update: true``` to the new snapshots.
 
 ```shell
-pyaptly -c mirrors.toml mirror update
-pyaptly -c mirrors.toml snapshot create
-pyaptly -c mirrors.toml publish create
-pyaptly -c mirrors.toml publish update
+pyaptly mirror mirrors.toml update
+pyaptly snapshot mirrors.toml create
+pyaptly publish mirrors.toml create
+pyaptly publish mirrors.toml update
 ```
 
 Manually trigger a switch to the new snapshots for the publish endpoint
 ubuntu/stable.
 
 ```shell
-pyaptly -c mirrors.toml publish update ubuntu/stable
+pyaptly publish mirrors.toml update -n ubuntu/stable
 ```
 
 ## Debugging
