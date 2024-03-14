@@ -48,7 +48,7 @@ def prepare(args):
 
     with open(args.config, "rb") as f:
         cfg = tomli.load(f)
-    state_reader.state.read()
+    state_reader.state_reader().read()
     return cfg
 
 
