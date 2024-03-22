@@ -9,30 +9,8 @@ readme = "README.md"
 [tool.mypy]
 check_untyped_defs = true
 
-[tool.isort]
-profile = "black"
-
 [tool.poetry.scripts]
 pyaptly = 'pyaptly.cli:entry_point'
-
-[tool.flake8]
-ignore = [
-    # whitespace before ':'
-    "E203",
-    # too many leading ### in a block comment
-    "E266",
-    # expected 2 blank lines, found 1 (flake8 and black disagree on what to do
-    # with multiple comment blocks at top level)
-    "E302",
-    # line too long (managed by black)
-    "E501",
-    # Line break occurred before a binary operator (this is not PEP8 compatible)
-    "W503",
-    # We do not document __init__
-    "D107",
-]
-
-max-line-length = 88
 
 [tool.coverage.report]
 fail_under = 100
