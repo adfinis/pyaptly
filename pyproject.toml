@@ -6,6 +6,27 @@ authors = ["Jean-Louis Fuchs <jean-louis.fuchs@adfinis.com>"]
 license = "AGPL-3.0-or-later"
 readme = "README.md"
 
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # pydocstyle
+    "D",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    #"UP", # TODO enable
+    # flake8-bugbear
+    "B",
+    # isort
+    "I",
+]
+ignore = [
+    "D203",
+    "D212",
+    "D107", # TODO remove
+]
+
 [tool.mypy]
 check_untyped_defs = true
 
