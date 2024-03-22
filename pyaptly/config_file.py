@@ -7,9 +7,13 @@ import yaml
 
 
 def yaml_to_toml(yaml_path: Path, toml_path: Path, *, add_defaults: bool = False):
-    """Convert pyaptly config files from yaml to toml.
+    """
+    Convert pyaptly config files from YAML to TOML format.
 
-    Setting `add_defaults=True` will set common default during conversion.
+    The conversion process reads a configuration from the file located at `yaml_path`,
+    converts it to TOML format, and writes the result to the file specified by
+    `toml_path`. If `add_defaults` is set to True, common defaults are applied during
+    the conversion.
     """
     with yaml_path.open("r", encoding="UTF-8") as yf:
         with toml_path.open("wb") as tf:
@@ -19,8 +23,14 @@ def yaml_to_toml(yaml_path: Path, toml_path: Path, *, add_defaults: bool = False
             tomli_w.dump(config, tf)
 
 
-def add_default_to_config(config):
-    """Set common default in config if the fields are missing."""
+def add_default_to_config(config: dict):
+    """
+    Set common defaults in `config` if the fields are missing.
+
+    This function checks for missing 'components' and 'distribution' fields under both
+    'mirror' and 'publish' sections of the configuration. If these fields are missing,
+    it sets them to 'main'.
+    """
     if "mirror" in config:
         for mirror in config["mirror"].values():
             if "components" not in mirror:
