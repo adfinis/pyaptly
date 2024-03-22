@@ -1,17 +1,18 @@
 """Create and update mirrors in aptly."""
 
 import logging
+import typing as t
 
 from . import state_reader, util
 
 lg = logging.getLogger(__name__)
 
 
-def add_gpg_keys(mirror_config):
-    """Use the gpg to download and add gpg keys needed to create mirrors.
+def add_gpg_keys(mirror_config: dict):
+    """
+    Use the gpg to download and add gpg keys needed to create mirrors.
 
-    :param  mirror_config: The configuration toml as dict
-    :type   mirror_config: dict
+    The configuration for mirrors is specified in `mirror_config`.
     """
     keyserver = mirror_config.get("keyserver")
     if not keyserver:
@@ -62,13 +63,12 @@ def add_gpg_keys(mirror_config):
     state_reader.state_reader().read_gpg()
 
 
-def mirror(cfg, args):
-    """Create mirror commands, orders and executes them.
+def mirror(cfg: dict, args: t.Any):
+    """
+    Create mirror commands, orders, and executes them.
 
-    :param  cfg: The configuration toml as dict
-    :type   cfg: dict
-    :param args: The command-line arguments read with :py:mod:`argparse`
-    :type  args: namespace
+    The configuration is provided by `cfg`, and the command-line arguments are passed in
+    through `args`.
     """
     lg.debug("Mirrors to create: %s", cfg["mirror"])
 
@@ -92,15 +92,14 @@ def mirror(cfg, args):
             )
 
 
-def cmd_mirror_create(cfg, mirror_name, mirror_config):
-    """Create a mirror create command to be ordered and executed later.
+def cmd_mirror_create(cfg: dict, mirror_name: str, mirror_config: dict):
+    """
+    Create a mirror create command to be ordered and executed later.
 
-    :param           cfg: The configuration toml as dict
-    :type            cfg: dict
-    :param   mirror_name: Name of the mirror to create
-    :type    mirror_name: str
-    :param mirror_config: Configuration of the snapshot from the toml file.
-    :type  mirror_config: dict
+    This function prepares a command to create a new mirror based on the provided `cfg`
+    for overall configuration, `mirror_name` as the identifier for the mirror, and
+    `mirror_config` which contains specific configuration details for the mirror being
+    created.
     """
     if mirror_name in state_reader.state_reader().mirrors:  # pragma: no cover
         return
@@ -132,15 +131,13 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     util.run_command(aptly_cmd, check=True)
 
 
-def cmd_mirror_update(cfg, mirror_name, mirror_config):
-    """Create a mirror update command to be ordered and executed later.
+def cmd_mirror_update(cfg: dict, mirror_name: str, mirror_config: dict):
+    """
+    Create a mirror update command to be ordered and executed later.
 
-    :param           cfg: pyaptly config
-    :type            cfg: dict
-    :param   mirror_name: Name of the mirror to create
-    :type    mirror_name: str
-    :param mirror_config: Configuration of the snapshot from the toml file.
-    :type  mirror_config: dict
+    The pyaptly configuration is provided by `cfg`, the name of the mirror to be created
+    is specified by `mirror_name`, and the configuration of the snapshot from the toml
+    file is given by `mirror_config`.
     """
     if mirror_name not in state_reader.state_reader().mirrors:  # pragma: no cover
         raise Exception("Mirror not created yet")
