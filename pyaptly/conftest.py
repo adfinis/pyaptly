@@ -18,7 +18,7 @@ setup_base = Path("/setup")
 
 @pytest.fixture()
 def debug_mode():
-    """Enable debug mode, set log-level and log run() commands."""
+    """Enable debug mode, set log-level, and log `run()` commands."""
     from pyaptly import util
 
     level = logging.root.getEffectiveLevel()
@@ -35,17 +35,18 @@ def debug_mode():
 
 @pytest.fixture()
 def test_path():
-    """Return test_base as test_path to find assets for testing."""
+    """Return `test_base` as `test_path` to find assets for testing."""
     yield test_base
 
 
 @pytest.fixture()
 def environment(debug_mode):
-    """Get a test environment.
+    """
+    Get a test environment.
 
-    - An aptly config and directory
-    - An gnupg directory
-    - web-server and key-server are always running in the docker-container
+    This environment setup is ensuring that each test has a clean, isolated
+    environment. It creates temporary directories for aptly and gnupg,
+    configures the environment variables, and cleans up after the test is done.
     """
     tempdir_obj = tempfile.TemporaryDirectory()
     tempdir = Path(tempdir_obj.name).absolute()
@@ -75,22 +76,27 @@ def environment(debug_mode):
 
 @pytest.fixture()
 def test_key_03(environment):
-    """Get test gpg-key number 3."""
+    """
+    Get test GPG key number 3.
+
+    This function imports the test GPG key number 3 into the environment's
+    keyring.
+    """
     util.run_command(["gpg", "--import", setup_base / "test03.key"], check=True)
     util.run_command(["gpg", "--import", setup_base / "test03.pub"], check=True)
 
 
 @pytest.fixture()
 def freeze(request):
-    """Freeze to datetime.
+    """
+    Freeze to a specific datetime.
 
-    Can be configured with:
+    This can be configured in tests using `pytest.mark.parametrize` to set a
+    specific datetime. For example:
 
-    ```python
-    @pytest.mark.parametrize("freeze", ["2012-10-10 10:10:10"], indirect=True)
-    def test_snapshot_create_basic(environment, config, freeze):
-    ...
-    ```
+    ```python @pytest.mark.parametrize("freeze", ["2012-10-10 10:10:10"],
+    indirect=True) def test_snapshot_create_basic(environment, config, freeze):
+    ... ```
     """
     if hasattr(request, "param"):
         freeze = request.param
@@ -102,13 +108,16 @@ def freeze(request):
 
 @pytest.fixture()
 def config(request):
-    """Get a config.
+    """
+    Get a configuration for testing.
 
-    Can be configured with:
+    This fixture can be configured with a specific configuration file. For
+    example, to use "mirror-extra.toml" as the configuration, annotate a test
+    function like this:
 
     ```python
-    @pytest.mark.parametrize("config", ["mirror-extra.toml"], indirect=True)
-    def test_mirror_create(environment, config, caplog):
+    @pytest.mark.parametrize("freeze", ["2012-10-10 10:10:10"], indirect=True)
+    def test_snapshot_create_basic(environment, config, freeze):
     ...
     ```
     """
@@ -117,7 +126,12 @@ def config(request):
 
 @pytest.fixture()
 def mirror_update(environment, config):
-    """Test if updating mirrors works."""
+    """
+    Test if updating mirrors works.
+
+    It verifies that the mirror identified by "fakerepo01" is correctly updated
+    and contains the expected number of packages.
+    """
     args = ["-c", config, "mirror", "create"]
     state = state_reader.SystemStateReader()
     state.read()
@@ -140,7 +154,13 @@ def mirror_update(environment, config):
 
 @pytest.fixture()
 def snapshot_create(config, mirror_update, freeze):
-    """Test if createing snapshots works."""
+    """
+    Test if creating snapshots works.
+
+    This function tests the creation of snapshots by executing the snapshot
+    creation command with the provided `config`, after performing
+    `mirror_update` and applying the `freeze` time.
+    """
     args = ["-c", config, "snapshot", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
@@ -153,7 +173,13 @@ def snapshot_create(config, mirror_update, freeze):
 
 @pytest.fixture()
 def snapshot_update_rotating(config, mirror_update, freeze):
-    """Rotate snapshots."""
+    """
+    Test if rotating snapshot works.
+
+    This function initiates the rotation of snapshots based on the provided
+    `config`. It first creates snapshots and then updates them to simulate a
+    rotation process.
+    """
     args = [
         "-c",
         config,
@@ -203,7 +229,13 @@ def snapshot_update_rotating(config, mirror_update, freeze):
 
 @pytest.fixture()
 def repo_create(environment, config, test_key_03):
-    """Test if creating repositories works."""
+    """
+    Test if creating repositories works.
+
+    This function attempts to create a repository using the provided `config`
+    and verifies if the repository creation was successful by checking the
+    state.
+    """
     args = ["-c", config, "repo", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
@@ -222,7 +254,13 @@ def repo_create(environment, config, test_key_03):
 
 @pytest.fixture()
 def publish_create(config, snapshot_create, test_key_03):
-    """Test if creating publishes works."""
+    """
+    Test if creating publishes works.
+
+    This function tests the creation of publishes using the configuration
+    provided by `config`, after creating snapshots with `snapshot_create` and
+    GPG key `test_key_03` is used in the publish config.
+    """
     args = ["-c", config, "publish", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
@@ -237,7 +275,13 @@ def publish_create(config, snapshot_create, test_key_03):
 
 @pytest.fixture()
 def publish_create_rotating(config, snapshot_update_rotating, test_key_03):
-    """Test if creating publishes works."""
+    """
+    Test if creating publishes works.
+
+    This function tests the creation of publishes by using the configuration
+    provided by `config`, applying updates from `snapshot_update_rotating`, and
+    GPG key `test_key_03` is used in the publish config.
+    """
     args = ["-c", config, "publish", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
@@ -262,7 +306,12 @@ def publish_create_rotating(config, snapshot_update_rotating, test_key_03):
 
 @pytest.fixture()
 def publish_create_republish(config, publish_create, caplog):
-    """Test if creating republishes works."""
+    """
+    Test if creating republishes works.
+
+    This function checks if republishing operations are correctly deferred and
+    then executed.
+    """
     found = False
     for rec in caplog.records:
         if rec.levelname == "CRITICAL":
