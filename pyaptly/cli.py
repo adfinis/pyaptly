@@ -51,19 +51,9 @@ class FakeArgs:
 
 
 @click.group()
-@click.option(
-    "-d/-nd",
-    "--debug/--no-debug",
-    type=bool,
-    default=False,
-    help="Add default values to fields if missing",
-)
 def cli(debug: bool):
     """Show basic command group."""
-    from pyaptly import util
-
-    util._DEBUG = debug
-
+    pass
 
 # TODO legacy is here to be able to do early alpha and get feedback from users.
 # remove when there is full replacement.
