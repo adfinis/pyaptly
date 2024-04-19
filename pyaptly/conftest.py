@@ -65,6 +65,14 @@ def environment(debug_mode):
     os.environ["GNUPGHOME"] = str(gnupg)
     util._PYTEST_KEYSERVER = "hkp://127.0.0.1:8080"
 
+    # Make sure we start with a clean slate
+    state_reader.state_reader().mirrors.cache_clear()
+    state_reader.state_reader().snapshots.cache_clear()
+    state_reader.state_reader().snapshot_map.cache_clear()
+    state_reader.state_reader().repos.cache_clear()
+    state_reader.state_reader().publishes.cache_clear()
+    state_reader.state_reader().publish_map.cache_clear()
+
     try:
         yield
     finally:
@@ -78,6 +86,7 @@ def test_key_03(environment):
     """Get test gpg-key number 3."""
     util.run_command(["gpg", "--import", setup_base / "test03.key"], check=True)
     util.run_command(["gpg", "--import", setup_base / "test03.pub"], check=True)
+    state_reader.state_reader().gpg_keys.cache_clear()
 
 
 @pytest.fixture()
@@ -211,6 +220,7 @@ def repo_create(environment, config, test_key_03):
             "/source/compose/setup/hellome_0.1-1_amd64.deb",
         ]
     )
+    state_reader.state_reader().repos.cache_clear()
     assert set(["centrify"]) == state.repos()
 
 

@@ -2,6 +2,7 @@
 
 import logging
 import re
+from functools import lru_cache
 
 from . import util
 
@@ -13,6 +14,7 @@ class SystemStateReader(object):
 
     To find out what operations have to be performed to reach the state defined
     in the toml config-file.
+    Functions are cached and execution commands clear the cache of functions which need to be rerun
     """
 
     known_dependency_types = ("repo", "snapshot", "mirror", "gpg_key")
@@ -41,6 +43,7 @@ class SystemStateReader(object):
 
         return sources
 
+    @lru_cache(maxsize=None)
     def gpg_keys(self):
         """Read all trusted keys in gp and cache in lru_cache."""
         gpg_keys = set()
@@ -62,6 +65,7 @@ class SystemStateReader(object):
                 gpg_keys.add(key_short)
         return gpg_keys
 
+    @lru_cache(maxsize=None)
     def publish_map(self):
         publish_map = {}
         re_snap = re.compile(r"\s+[\w\d-]+\:\s([\w\d-]+)\s\[snapshot\]")
@@ -77,6 +81,7 @@ class SystemStateReader(object):
         lg.debug("Joined snapshots and publishes: %s", publish_map)
         return publish_map
 
+    @lru_cache(maxsize=None)
     def snapshot_map(self):
         snapshot_map = {}
         # match example:  test-snapshot [snapshot]
@@ -93,18 +98,22 @@ class SystemStateReader(object):
         lg.debug("Joined snapshots with self(snapshots): %s", snapshot_map)
         return snapshot_map
 
+    @lru_cache(maxsize=None)
     def publishes(self):
         """Read all available publishes and cache in lru_cache"""
         return self.read_aptly_list("publish")
 
+    @lru_cache(maxsize=None)
     def repos(self):
         """Read all available repo and cache in lru_cache."""
         return self.read_aptly_list("repo")
 
+    @lru_cache(maxsize=None)
     def mirrors(self):
         """Read all available mirror and cache in lru_cache."""
         return self.read_aptly_list("mirror")
 
+    @lru_cache(maxsize=None)
     def snapshots(self):
         """Read all available snapshot and cache in lru_cache."""
         return self.read_aptly_list("snapshot")

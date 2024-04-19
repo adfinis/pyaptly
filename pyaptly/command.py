@@ -84,6 +84,23 @@ class Command(object):
         assert type_ in self._known_dependency_types
         self._provides.add((type_, str(identifier)))
 
+    def clear_caches(self):
+        """Clear state_reader caches of functions which have changed"""
+        provides = set(p[0] for p in self.get_provides())
+        for provide in provides:
+            lg.debug("clearing cache for " + provide)
+            match provide:
+                case "mirrors":
+                    state_reader.state_reader().mirrors.cache_clear()
+                case "snapshot":
+                    state_reader.state_reader().snapshots.cache_clear()
+                    state_reader.state_reader().snapshot_map.cache_clear()
+                case "repo":
+                    state_reader.state_reader().repos.cache_clear()
+                case "publish":
+                    state_reader.state_reader().publishes.cache_clear()
+                    state_reader.state_reader().publish_map.cache_clear()
+
     def execute(self):
         """Execute the command. Return the return value of the command.
 
@@ -103,6 +120,7 @@ class Command(object):
             # So I decided to change that. For now we fail hard if a `Command` fails.
             # I guess we will see in production what happens.
             util.run_command(self.cmd, check=True)
+            self.clear_caches()
         else:
             lg.info("Pretending to run command: %s", " ".join(self.cmd))
         self._finished = True

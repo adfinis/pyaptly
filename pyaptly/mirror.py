@@ -59,8 +59,7 @@ def add_gpg_keys(mirror_config):
                 util.run_command(["bash", "-c", key_shell], check=True)
             else:
                 raise
-    #state_reader.state_reader().read_gpg()
-
+    state_reader.state_reader().gpg_keys.cache_clear()
 
 def mirror(cfg, args):
     """Create mirror commands, orders and executes them.
@@ -130,6 +129,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
 
     lg.debug("Running command: %s", " ".join(aptly_cmd))
     util.run_command(aptly_cmd, check=True)
+    state_reader.state_reader().mirrors.cache_clear()
 
 
 def cmd_mirror_update(cfg, mirror_name, mirror_config):
@@ -152,3 +152,4 @@ def cmd_mirror_update(cfg, mirror_name, mirror_config):
     aptly_cmd.append(mirror_name)
     lg.debug("Running command: %s", " ".join(aptly_cmd))
     util.run_command(aptly_cmd, check=True)
+    state_reader.state_reader().mirrors.cache_clear()
