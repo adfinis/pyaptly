@@ -269,8 +269,6 @@ class Command(object):
                             # Break out of the requirements loop, as the
                             # command cannot be scheduled anyway.
                             break
-                            # command cannot be scheduled anyway.
-                            break
 
                 if can_schedule:
                     lg.debug("%s: all dependencies fulfilled" % cmd)
@@ -298,7 +296,7 @@ class Command(object):
 
 
 class FunctionCommand(Command):
-    """Repesents a function command.
+    """Represents a function command.
 
     Is used to resolve dependencies between such commands. This command executes
     the given function. *args and **kwargs are passed through.

@@ -88,7 +88,7 @@ def legacy(passthrough):
 )
 @click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
 @click.argument("task", type=click.Choice(["create"]))
-@click.option("--repo-name", "-n", default="all", type=str, help='deafult: "all"')
+@click.option("--repo-name", "-n", default="all", type=str, help='default: "all"')
 def repo(**kwargs):
     """Create aptly repos."""
     from . import main, repo
@@ -111,7 +111,7 @@ def repo(**kwargs):
 )
 @click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
 @click.argument("task", type=click.Choice(["create", "update"]))
-@click.option("--mirror-name", "-n", default="all", type=str, help='deafult: "all"')
+@click.option("--mirror-name", "-n", default="all", type=str, help='default: "all"')
 def mirror(**kwargs):
     """Manage aptly mirrors."""
     from . import main, mirror
@@ -134,7 +134,7 @@ def mirror(**kwargs):
 )
 @click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
 @click.argument("task", type=click.Choice(["create", "update"]))
-@click.option("--snapshot-name", "-n", default="all", type=str, help='deafult: "all"')
+@click.option("--snapshot-name", "-n", default="all", type=str, help='default: "all"')
 def snapshot(**kwargs):
     """Manage aptly snapshots."""
     from . import main, snapshot
@@ -157,7 +157,7 @@ def snapshot(**kwargs):
 )
 @click.argument("config", type=click.Path(file_okay=True, dir_okay=False, exists=True))
 @click.argument("task", type=click.Choice(["create", "update"]))
-@click.option("--publish-name", "-n", default="all", type=str, help='deafult: "all"')
+@click.option("--publish-name", "-n", default="all", type=str, help='default: "all"')
 def publish(**kwargs):
     """Manage aptly publishs."""
     from . import main, publish
