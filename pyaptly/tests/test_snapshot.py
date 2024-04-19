@@ -10,7 +10,7 @@ def test_snapshot_create_basic(config, snapshot_create):
     """Test if snapshot create works."""
     assert (
         set(["fakerepo01-20121010T0000Z", "fakerepo02-20121006T0000Z"])
-        == snapshot_create.snapshots
+        == snapshot_create.snapshots()
     )
 
 
@@ -43,7 +43,7 @@ def test_snapshot_create_rotating(mirror_update, config):
             "fakerepo01-current",
             "fakerepo02-current",
         ]
-    ).issubset(state.snapshots)
+    ).issubset(state.snapshots())
 
 
 @pytest.mark.parametrize("config", ["snapshot-current.toml"], indirect=True)
@@ -73,7 +73,7 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
             "fakerepo01-current-rotated-20121011T1010Z",
             "fakerepo02-current-rotated-20121011T1010Z",
         ]
-    ).issubset(state.snapshots)
+    ).issubset(state.snapshots())
     expected = {
         "fake-current": set(["fakerepo01-current", "fakerepo02-current"]),
         "fake-current-rotated-20121010T1010Z": set(
@@ -95,7 +95,7 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
         "fakerepo02-current-rotated-20121010T1010Z": set([]),
         "fakerepo02-current-rotated-20121011T1010Z": set([]),
     }
-    assert state.snapshot_map == expected
+    assert state.snapshot_map() == expected
 
     freeze.move_to("2012-10-12 10:10:10")
     args = [
@@ -115,7 +115,7 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
             "fakerepo01-current-rotated-20121012T1010Z",
             "fakerepo02-current-rotated-20121012T1010Z",
         ]
-    ).issubset(state.snapshots)
+    ).issubset(state.snapshots())
     expected = {
         "fake-current": set(["fakerepo01-current", "fakerepo02-current"]),
         "fake-current-rotated-20121010T1010Z": set(
@@ -145,7 +145,7 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
         "fakerepo02-current-rotated-20121011T1010Z": set([]),
         "fakerepo02-current-rotated-20121012T1010Z": set([]),
     }
-    assert state.snapshot_map == expected
+    assert state.snapshot_map() == expected
 
 
 @pytest.mark.parametrize("config", ["snapshot-repo.toml"], indirect=True)
@@ -155,8 +155,7 @@ def test_snapshot_create_repo(config, repo_create):
     main.main(args)
     state = state_reader.SystemStateReader()
     state.read()
-    assert set(["centrify-latest"]).issubset(state.snapshots)
-    return state
+    assert set(["centrify-latest"]).issubset(state.snapshots())
 
 
 @pytest.mark.parametrize("config", ["snapshot-merge.toml"], indirect=True)
@@ -170,7 +169,7 @@ def test_snapshot_create_merge(config, snapshot_create):
                 "superfake-20121010T0000Z",
             ]
         )
-        == snapshot_create.snapshots
+        == snapshot_create.snapshots()
     )
     expect = {
         "fakerepo01-20121010T0000Z": set([]),
@@ -179,7 +178,7 @@ def test_snapshot_create_merge(config, snapshot_create):
             ["fakerepo01-20121010T0000Z", "fakerepo02-20121006T0000Z"]
         ),
     }
-    assert expect == snapshot_create.snapshot_map
+    assert expect == snapshot_create.snapshot_map()
 
 
 @pytest.mark.parametrize("config", ["snapshot-filter.toml"], indirect=True)

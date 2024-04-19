@@ -115,7 +115,7 @@ def dependents_of_snapshot(snapshot_name):
 
     :rtype: generator
     """
-    for dependent in state_reader.state_reader().snapshot_map.get(
+    for dependent in state_reader.state_reader().snapshot_map().get(
         snapshot_name, []
     ):
         yield dependent
@@ -142,7 +142,7 @@ def rotate_snapshot(cfg, snapshot_name):
     # First, verify that our snapshot environment is in a sane state_reader.state.
     # Fixing the environment is not currently our task.
 
-    if rotated_name in state_reader.state_reader().snapshots:  # pragma: no cover
+    if rotated_name in state_reader.state_reader().snapshots():  # pragma: no cover
         raise Exception(
             "Cannot update snapshot %s - rotated name %s already exists"
             % (snapshot_name, rotated_name)
@@ -246,7 +246,7 @@ def cmd_snapshot_update(
     def is_publish_affected(name, publish_info):
         if (
             "%s %s" % (name, publish_info["distribution"])
-            in state_reader.state_reader().publishes
+            in state_reader.state_reader().publishes()
         ):
             try:
                 for snap in publish_info["snapshots"]:
@@ -318,7 +318,7 @@ def cmd_snapshot_create(
     snapshot_name = date_tools.expand_timestamped_name(snapshot_name, snapshot_config)
 
     if (
-        snapshot_name in state_reader.state_reader().snapshots
+        snapshot_name in state_reader.state_reader().snapshots()
         and not ignore_existing
     ):
         return []

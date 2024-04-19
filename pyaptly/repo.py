@@ -57,7 +57,7 @@ def repo_cmd_create(cfg, repo_name, repo_config):
     :param repo_config: Configuration of the repo from the toml file.
     :type  repo_config: dict
     """
-    if repo_name in state_reader.state_reader().repos:  # pragma: no cover
+    if repo_name in state_reader.state_reader().repos():  # pragma: no cover
         # Nothing to do, repo already created
         return
 

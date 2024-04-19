@@ -17,9 +17,9 @@ def test_publish_create_single(config, snapshot_create, test_key_03, repo):
     main.main(args)
     state = state_reader.SystemStateReader()
     state.read()
-    assert set(["fakerepo01 main"]) == state.publishes
+    assert set(["fakerepo01 main"]) == state.publishes()
     expect = {"fakerepo01 main": set(["fakerepo01-20121010T0000Z"])}
-    assert expect == state.publish_map
+    assert expect == state.publish_map()
 
 
 @pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
@@ -54,8 +54,8 @@ def test_pretend(config, snapshot_create, test_key_03):
     main.main(args)
     state = state_reader.SystemStateReader()
     state.read()
-    assert set() == state.publishes
-    assert {} == state.publish_map
+    assert set() == state.publishes()
+    assert {} == state.publish_map()
     assert command.Command.pretend_mode
 
 
@@ -78,8 +78,8 @@ def test_publish_create_repo(config, repo_create):
     main.main(args)
     state = state_reader.SystemStateReader()
     state.read()
-    assert set(["centrify latest"]) == state.publishes
-    assert {"centrify latest": set([])} == state.publish_map
+    assert set(["centrify latest"]) == state.publishes()
+    assert {"centrify latest": set([])} == state.publish_map()
 
 
 @pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
@@ -102,7 +102,7 @@ def test_publish_update_rotating(config, freeze, publish_create_rotating, via):
         "fakerepo01/current stable": set(["fakerepo01-current"]),
         "fakerepo02/current stable": set(["fakerepo02-current"]),
     }
-    assert expect == state.publish_map
+    assert expect == state.publish_map()
     if via == "snapshot":
         expect2 = {
             "fakerepo02-current",
@@ -115,7 +115,7 @@ def test_publish_update_rotating(config, freeze, publish_create_rotating, via):
             "fake-current-rotated-20121010T1010Z",
             "fake-current-rotated-20121011T1010Z",
         }
-        assert expect2 == state.snapshots
+        assert expect2 == state.snapshots()
 
 
 @pytest.mark.parametrize("config", ["publish-current.toml"], indirect=True)
@@ -140,7 +140,7 @@ def test_publish_update_republish(config, publish_create_republish, freeze):
     main.main(args)
     state = state_reader.SystemStateReader()
     state.read()
-    assert "fakerepo01-stable main" in state.publishes
+    assert "fakerepo01-stable main" in state.publishes()
     # As you see fakerepo01-stable main points to the old snapshot
     # this is theoretically not correct, but it will be fixed with
     # the next call to publish update. Since we use this from a hourly cron
@@ -152,7 +152,7 @@ def test_publish_update_republish(config, publish_create_republish, freeze):
         "fakerepo02 main": set(["fakerepo02-20121006T0000Z"]),
         "fakerepo01 main": set(["fakerepo01-20121011T0000Z"]),
     }
-    assert expect == state.publish_map
+    assert expect == state.publish_map()
 
 
 @pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
@@ -173,12 +173,12 @@ def test_publish_updating_basic(config, publish_create, freeze):
             "fakerepo01-20121010T0000Z",
         ]
     )
-    assert expect == state.snapshots
+    assert expect == state.snapshots()
     expect2 = {
         "fakerepo02 main": set(["fakerepo02-20121006T0000Z"]),
         "fakerepo01 main": set(["fakerepo01-20121011T0000Z"]),
     }
-    assert expect2 == state.publish_map
+    assert expect2 == state.publish_map()
 
 
 @pytest.mark.parametrize("repo", ["centrify", "asdfasdf"])
@@ -193,4 +193,4 @@ def test_repo_create_single(config, repo, test_key_03):
     main.main(args)
     state = state_reader.SystemStateReader()
     state.read()
-    assert set(["centrify"]) == state.repos
+    assert set(["centrify"]) == state.repos()

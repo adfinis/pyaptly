@@ -44,7 +44,7 @@ def test_mirror_create(environment, config, caplog):
 
     state = state_reader.SystemStateReader()
     state.read()
-    assert state.mirrors == {"fakerepo03"}
+    assert state.mirrors() == {"fakerepo03"}
 
 
 @pytest.mark.parametrize("config", ["mirror-basic.toml"], indirect=True)
