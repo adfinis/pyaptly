@@ -41,10 +41,6 @@ class SystemStateReader(object):
 
         return sources
 
-    def read(self):
-        """Read all available system states."""
-        pass
-
     def gpg_keys(self):
         """Read all trusted keys in gp and cache in lru_cache."""
         gpg_keys = set()

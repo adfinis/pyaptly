@@ -36,7 +36,6 @@ def test_snapshot_create_rotating(mirror_update, config):
     args = ["-c", config, "snapshot", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(
         [
             "fake-current",
@@ -64,7 +63,6 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(
         [
             "fake-current",
@@ -106,7 +104,6 @@ def test_snapshot_update_threetimes_rotating(snapshot_update_rotating, config, f
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(
         [
             "fake-current",
@@ -154,7 +151,6 @@ def test_snapshot_create_repo(config, repo_create):
     args = ["-c", config, "snapshot", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(["centrify-latest"]).issubset(state.snapshots())
 
 

@@ -16,7 +16,6 @@ def test_publish_create_single(config, snapshot_create, test_key_03, repo):
         return
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(["fakerepo01 main"]) == state.publishes()
     expect = {"fakerepo01 main": set(["fakerepo01-20121010T0000Z"])}
     assert expect == state.publish_map()
@@ -53,7 +52,6 @@ def test_pretend(config, snapshot_create, test_key_03):
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set() == state.publishes()
     assert {} == state.publish_map()
     assert command.Command.pretend_mode
@@ -77,7 +75,6 @@ def test_publish_create_repo(config, repo_create):
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(["centrify latest"]) == state.publishes()
     assert {"centrify latest": set([])} == state.publish_map()
 
@@ -96,7 +93,6 @@ def test_publish_update_rotating(config, freeze, publish_create_rotating, via):
     args = ["-c", config, via, "update"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     expect = {
         "fake/current stable": set(["fake-current"]),
         "fakerepo01/current stable": set(["fakerepo01-current"]),
@@ -139,7 +135,6 @@ def test_publish_update_republish(config, publish_create_republish, freeze):
     args = ["-c", config, "publish", "update"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert "fakerepo01-stable main" in state.publishes()
     # As you see fakerepo01-stable main points to the old snapshot
     # this is theoretically not correct, but it will be fixed with
@@ -164,7 +159,6 @@ def test_publish_updating_basic(config, publish_create, freeze):
     args = ["-c", config, "publish", "update"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     expect = set(
         [
             "archived-fakerepo01-20121011T1010Z",
@@ -192,5 +186,4 @@ def test_repo_create_single(config, repo, test_key_03):
         return
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(["centrify"]) == state.repos()

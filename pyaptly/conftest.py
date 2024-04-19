@@ -120,10 +120,8 @@ def mirror_update(environment, config):
     """Test if updating mirrors works."""
     args = ["-c", config, "mirror", "create"]
     state = state_reader.SystemStateReader()
-    state.read()
     assert "fakerepo01" not in state.mirrors()
     main.main(args)
-    state.read()
     assert "fakerepo01" in state.mirrors()
     args[3] = "update"
     main.main(args)
@@ -144,7 +142,6 @@ def snapshot_create(config, mirror_update, freeze):
     args = ["-c", config, "snapshot", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(["fakerepo01-20121010T0000Z", "fakerepo02-20121006T0000Z"]).issubset(
         state.snapshots()
     )
@@ -162,7 +159,6 @@ def snapshot_update_rotating(config, mirror_update, freeze):
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(
         [
             "fake-current",
@@ -177,7 +173,6 @@ def snapshot_update_rotating(config, mirror_update, freeze):
         "update",
     ]
     main.main(args)
-    state.read()
     assert set(
         [
             "fake-current",
@@ -207,7 +202,6 @@ def repo_create(environment, config, test_key_03):
     args = ["-c", config, "repo", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     util.run_command(
         [
             "aptly",
@@ -226,7 +220,6 @@ def publish_create(config, snapshot_create, test_key_03):
     args = ["-c", config, "publish", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(["fakerepo02 main", "fakerepo01 main"]) == state.publishes()
     expect = {
         "fakerepo02 main": set(["fakerepo02-20121006T0000Z"]),
@@ -241,7 +234,6 @@ def publish_create_rotating(config, snapshot_update_rotating, test_key_03):
     args = ["-c", config, "publish", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert (
         set(
             [
@@ -277,5 +269,4 @@ def publish_create_republish(config, publish_create, caplog):
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert "fakerepo01-stable main" in state.publishes()

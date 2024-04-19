@@ -43,7 +43,6 @@ def test_mirror_create(environment, config, caplog):
     assert len(keys_added) == len(set(keys_added)), "Key multiple times added"
 
     state = state_reader.SystemStateReader()
-    state.read()
     assert state.mirrors() == {"fakerepo03"}
 
 
