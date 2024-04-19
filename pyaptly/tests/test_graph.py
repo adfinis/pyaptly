@@ -105,16 +105,11 @@ def run_graph(tree):
     commands = []
     index = list(range(len(tree[0])))
     random.shuffle(index)
-    cmd: Union[command.Command, command.FunctionCommand]
+    cmd: Union[command.Command, command.DummyCommand]
     for i in index:
 
-        def dummy(i):  # pragma: no cover
-            return i
-
         if tree[2][i]:
-            func = partial(dummy, i)
-            func.__name__ = dummy.__name__  # type: ignore
-            cmd = command.FunctionCommand(func)
+            cmd = command.DummyCommand('dummy %s' % i)
         else:
             cmd = command.Command([str(i)])
         for provides in tree[0][i]:
