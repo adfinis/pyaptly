@@ -80,7 +80,9 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
 
     if "repo" in publish_config:
         publish_cmd.append("update")
-        return command.Command(publish_cmd + options + args)
+        cmd = command.Command(publish_cmd + options + args)
+        cmd.provide("publish", publish_name)
+        return cmd
 
     publish_fullname = "%s %s" % (publish_name, publish_config["distribution"])
     current_snapshots = state_reader.state_reader().publish_map()[publish_fullname]
@@ -141,7 +143,9 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
     if "skip-contents" in publish_config and publish_config["skip-contents"]:
         options.append("-skip-contents=true")
 
-    return command.Command(publish_cmd + options + args + new_snapshots)
+    cmd = command.Command(publish_cmd + options + args + new_snapshots)
+    cmd.provide("publish", publish_fullname)
+    return cmd
 
 
 def publish_cmd_create(cfg, publish_name, publish_config, ignore_existing=False):
@@ -256,4 +260,6 @@ def publish_cmd_create(cfg, publish_name, publish_config, ignore_existing=False)
     assert has_source
     assert len(components) == num_sources
 
-    return command.Command(publish_cmd + options + source_args + endpoint_args)
+    cmd = command.Command(publish_cmd + options + source_args + endpoint_args)
+    cmd.provide("publish", publish_fullname)
+    return cmd
