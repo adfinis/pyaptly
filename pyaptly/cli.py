@@ -51,9 +51,10 @@ class FakeArgs:
 
 
 @click.group()
-def cli(debug: bool):
+def cli():
     """Show basic command group."""
     pass
+
 
 # TODO legacy is here to be able to do early alpha and get feedback from users.
 # remove when there is full replacement.
