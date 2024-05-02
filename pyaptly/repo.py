@@ -86,7 +86,6 @@ def repo_cmd_create(cfg, repo_name, repo_config):
                 )
             )
 
-
     cmd = command.Command(repo_cmd + options + endpoint_args)
     cmd.provide("repo", repo_name)
     return cmd

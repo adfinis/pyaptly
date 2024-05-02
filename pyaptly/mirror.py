@@ -61,6 +61,7 @@ def add_gpg_keys(mirror_config):
                 raise
     state_reader.state_reader().gpg_keys.cache_clear()
 
+
 def mirror(cfg, args):
     """Create mirror commands, orders and executes them.
 

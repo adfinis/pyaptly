@@ -1,7 +1,6 @@
 """Testing dependency graphs."""
 
 import random
-from functools import partial
 from typing import Union
 
 from hypothesis import given, settings
@@ -107,9 +106,8 @@ def run_graph(tree):
     random.shuffle(index)
     cmd: Union[command.Command, command.DummyCommand]
     for i in index:
-
         if tree[2][i]:
-            cmd = command.DummyCommand('dummy %s' % i)
+            cmd = command.DummyCommand("dummy %s" % i)
         else:
             cmd = command.Command([str(i)])
         for provides in tree[0][i]:

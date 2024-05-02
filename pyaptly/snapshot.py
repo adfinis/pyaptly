@@ -115,9 +115,7 @@ def dependents_of_snapshot(snapshot_name):
 
     :rtype: generator
     """
-    for dependent in state_reader.state_reader().snapshot_map().get(
-        snapshot_name, []
-    ):
+    for dependent in state_reader.state_reader().snapshot_map().get(snapshot_name, []):
         yield dependent
         # TODO I fixed a bug, but there is no test. We do not test recursive dependants
         yield from dependents_of_snapshot(dependent)
@@ -315,10 +313,7 @@ def cmd_snapshot_create(
 
     snapshot_name = date_tools.expand_timestamped_name(snapshot_name, snapshot_config)
 
-    if (
-        snapshot_name in state_reader.state_reader().snapshots()
-        and not ignore_existing
-    ):
+    if snapshot_name in state_reader.state_reader().snapshots() and not ignore_existing:
         return []
 
     default_aptly_cmd = ["aptly", "snapshot", "create"]

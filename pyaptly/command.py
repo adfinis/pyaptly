@@ -3,8 +3,6 @@
 import collections
 import logging
 
-from frozendict import frozendict
-
 from . import state_reader, util
 
 lg = logging.getLogger(__name__)
@@ -334,27 +332,18 @@ class DummyCommand(Command):
 
     def __eq__(self, other):
         """Compare the class."""
-        return (
-            self._eq_base(other)
-            and self.identifier == other.identifier
-        )
+        return self._eq_base(other) and self.identifier == other.identifier
 
     def execute(self):
         """Mark command as executed"""
         if self._finished:  # pragma: no cover
             return self._finished
         if not Command.pretend_mode:
-            lg.debug(
-                "Running dummy Command with provides %s",
-                self._provides
-            )
+            lg.debug("Running dummy Command with provides %s", self._provides)
 
             self._finished = True
         else:  # pragma: no cover
-            lg.info(
-                "Pretending to run dummy Command with provides: %s",
-                self._provides
-            )
+            lg.info("Pretending to run dummy Command with provides: %s", self._provides)
 
         return self._finished
 
