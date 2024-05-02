@@ -134,13 +134,13 @@ class SystemStateReader(object):
         :param list_: list
         """
         cmd = ["aptly", type_, "list", "-raw"]
-        set_ = set()
+        clean_lines = set()
         result = util.run_command(cmd, stdout=util.PIPE, check=True)
         for line in result.stdout.split("\n"):
             clean_line = line.strip()
             if clean_line:
-                set_.add(clean_line)
-        return set_
+                clean_lines.add(clean_line)
+        return clean_lines
 
     def has_dependency(self, dependency):
         """Check system state dependencies.
