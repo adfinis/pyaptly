@@ -27,7 +27,6 @@ class Command(object):
         self._finished: bool = False
         self._known_dependency_types = (
             "snapshot",
-            "mirror",
             "repo",
             "publish",
             "virtual",
@@ -90,8 +89,6 @@ class Command(object):
         for provide in provides:
             lg.debug("clearing cache for " + provide)
             match provide:
-                case "mirrors":
-                    state_reader.state_reader().mirrors.cache_clear()
                 case "snapshot":
                     state_reader.state_reader().snapshots.cache_clear()
                     state_reader.state_reader().snapshot_map.cache_clear()
