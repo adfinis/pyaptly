@@ -67,6 +67,9 @@ class SystemStateReader(object):
 
     @lru_cache(maxsize=None)
     def publish_map(self):
+        """Create a publish map. publish -> snapshots.
+        Cached in the lru_cache.
+        """
         publish_map = {}
         re_snap = re.compile(r"\s+[\w\d-]+\:\s([\w\d-]+)\s\[snapshot\]")
         for publish in self.publishes():
@@ -83,6 +86,10 @@ class SystemStateReader(object):
 
     @lru_cache(maxsize=None)
     def snapshot_map(self):
+        """Create a snapshot map. snapshot -> snapshots.
+        This is also called merge-tree.
+        Cached in the lru_cache.
+        """
         snapshot_map = {}
         # match example:  test-snapshot [snapshot]
         re_snap = re.compile(r"\s+([\w\d-]+)\s\[snapshot\]")
