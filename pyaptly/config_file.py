@@ -1,9 +1,12 @@
 """Handling pyaptly config-files."""
 
+# TODO: remove this as soon as most people have converted their config.
+
 from pathlib import Path
 
-import tomli_w
 import yaml
+
+from pyaptly import tomli_w
 
 
 def yaml_to_toml(yaml_path: Path, toml_path: Path, *, add_defaults: bool = False):

@@ -27,7 +27,6 @@ python = "^3.11"
 pyyaml = "^6.0.1"
 click = "^8.0.0"
 tomli = "^2.0.1"
-tomli-w = "^1.0.0"
 colorama = "^0.4.6"
 frozendict = "^2.2.0"
 
@@ -53,6 +52,9 @@ ruff = "^0.3.2"
 python-lsp-server = "^1.9.0"
 python-lsp-ruff = "^2.2.0"
 
+# TODO: remove this as soon as most people have converted their config.
+[tool.coverage.run]
+omit = ["pyaptly/tomli_w/_writer.py"]
 
 [build-system]
 requires = ["poetry-core"]

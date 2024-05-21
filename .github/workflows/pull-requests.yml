@@ -30,4 +30,4 @@ jobs:
 
     - name: Run tests
       run: |
-        make test
+        HYPOTHESIS_PROFILE=ci make test
