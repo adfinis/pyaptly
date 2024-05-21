@@ -1,0 +1,50 @@
+mirror:
+  fakerepo01:
+    archive: http://localhost:3123/fakerepo01
+    components: main
+    distribution: main
+    gpg-keys:
+    - 2841988729C7F3FF
+    max-tries: 2
+  fakerepo02:
+    archive: http://localhost:3123/fakerepo02
+    components: main
+    distribution: main
+    gpg-keys:
+    - 2841988729C7F3FF
+publish:
+  fakerepo01:
+  - automatic-update: true
+    components: main
+    distribution: main
+    gpg-key: 6D79A810B9B7ABAE
+    skip-contents: true
+    snapshots:
+    - archive-on-update: archived-fakerepo01-%T
+      name: fakerepo01-%T
+      timestamp: current
+  fakerepo01-stable:
+  - automatic-update: true
+    components: main
+    distribution: main
+    gpg-key: 6D79A810B9B7ABAE
+    publish: fakerepo01 main
+  fakerepo02:
+  - automatic-update: true
+    components: main
+    distribution: main
+    gpg-key: 6D79A810B9B7ABAE
+    snapshots:
+    - archive-on-update: archived-fakerepo02-%T
+      name: fakerepo02-%T
+      timestamp: current
+snapshot:
+  fakerepo01-%T:
+    mirror: fakerepo01
+    timestamp:
+      time: 00:00
+  fakerepo02-%T:
+    mirror: fakerepo02
+    timestamp:
+      repeat-weekly: sat
+      time: 00:00

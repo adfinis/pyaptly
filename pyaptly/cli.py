@@ -7,6 +7,8 @@ from subprocess import CalledProcessError
 
 import click
 
+from .util import PyaptlyCliError
+
 lg = logging.getLogger(__name__)
 
 
@@ -19,12 +21,18 @@ def entry_point():
     if len_argv > 0 and argv[0].endswith("pyaptly"):
         if len_argv > 2 and argv[1] == "legacy" and argv[2] != "--":
             argv = argv[:2] + ["--"] + argv[2:]
+    if "--debug" in argv or "-d" in argv:
+        debug = True
+    else:
+        debug = False
 
     try:
         cli.main(argv[1:])
-    except CalledProcessError:
+    except (CalledProcessError, PyaptlyCliError):
         pass  # already logged
     except Exception as e:
+        if debug:
+            raise
         from . import util
 
         path = util.write_traceback()
@@ -160,6 +168,7 @@ def publish(**kwargs):
 
 
 @cli.command(help="convert yaml- to toml-comfig")
+@click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.argument(
     "yaml_path",
     type=click.Path(
@@ -187,7 +196,7 @@ def publish(**kwargs):
     default=False,
     help="Add default values to fields if missing",
 )
-def yaml_to_toml(yaml_path: Path, toml_path: Path, add_defaults: bool):
+def yaml_to_toml(yaml_path: Path, toml_path: Path, add_defaults: bool, debug: bool):
     """Convert pyaptly config files from yaml to toml."""
     from . import config_file
 

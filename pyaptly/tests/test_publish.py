@@ -120,7 +120,11 @@ def test_publish_create_rotating(config, publish_create_rotating):
     pass
 
 
-@pytest.mark.parametrize("config", ["publish-publish.toml"], indirect=True)
+@pytest.mark.parametrize(
+    "config",
+    ["publish-publish.toml", "publish-publish.json", "publish-publish.yaml"],
+    indirect=True,
+)
 def test_publish_create_republish(config, publish_create_republish):
     """Test if creating republishes works."""
     pass

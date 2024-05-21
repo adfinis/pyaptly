@@ -31,6 +31,15 @@ _isatty_cache: bool | None = None
 lg = logging.getLogger(__name__)
 
 
+class PyaptlyCliError(Exception):
+    pass
+
+
+def exit_with_error(error):
+    lg.error(error)
+    raise PyaptlyCliError()
+
+
 def write_traceback():  # pragma: no cover
     with NamedTemporaryFile("w", delete=False) as tmp:
         tmp.write(traceback.format_exc())
