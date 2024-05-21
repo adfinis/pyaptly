@@ -33,7 +33,7 @@ def add_gpg_keys(mirror_config):
                 keys_urls[key] = None
 
     for key in keys_urls.keys():
-        if key in state_reader.state_reader().gpg_keys:
+        if key in state_reader.state_reader().gpg_keys():
             continue
         try:
             key_command = [
@@ -59,7 +59,7 @@ def add_gpg_keys(mirror_config):
                 util.run_command(["bash", "-c", key_shell], check=True)
             else:
                 raise
-    state_reader.state_reader().read_gpg()
+    state_reader.state_reader().gpg_keys.cache_clear()
 
 
 def mirror(cfg, args):
@@ -102,7 +102,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     :param mirror_config: Configuration of the snapshot from the toml file.
     :type  mirror_config: dict
     """
-    if mirror_name in state_reader.state_reader().mirrors:  # pragma: no cover
+    if mirror_name in state_reader.state_reader().mirrors():  # pragma: no cover
         return
 
     add_gpg_keys(mirror_config)
@@ -130,6 +130,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
 
     lg.debug("Running command: %s", " ".join(aptly_cmd))
     util.run_command(aptly_cmd, check=True)
+    state_reader.state_reader().mirrors.cache_clear()
 
 
 def cmd_mirror_update(cfg, mirror_name, mirror_config):
@@ -142,7 +143,7 @@ def cmd_mirror_update(cfg, mirror_name, mirror_config):
     :param mirror_config: Configuration of the snapshot from the toml file.
     :type  mirror_config: dict
     """
-    if mirror_name not in state_reader.state_reader().mirrors:  # pragma: no cover
+    if mirror_name not in state_reader.state_reader().mirrors():  # pragma: no cover
         raise Exception("Mirror not created yet")
     add_gpg_keys(mirror_config)
     aptly_cmd = ["aptly", "mirror", "update"]
@@ -152,3 +153,4 @@ def cmd_mirror_update(cfg, mirror_name, mirror_config):
     aptly_cmd.append(mirror_name)
     lg.debug("Running command: %s", " ".join(aptly_cmd))
     util.run_command(aptly_cmd, check=True)
+    state_reader.state_reader().mirrors.cache_clear()

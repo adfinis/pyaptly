@@ -3,8 +3,6 @@
 import collections
 import logging
 
-from frozendict import frozendict
-
 from . import state_reader, util
 
 lg = logging.getLogger(__name__)
@@ -27,7 +25,6 @@ class Command(object):
         self._finished: bool = False
         self._known_dependency_types = (
             "snapshot",
-            "mirror",
             "repo",
             "publish",
             "virtual",
@@ -84,6 +81,21 @@ class Command(object):
         assert type_ in self._known_dependency_types
         self._provides.add((type_, str(identifier)))
 
+    def clear_caches(self):
+        """Clear state_reader caches of functions which have changed"""
+        provides = set(p[0] for p in self.get_provides())
+        for provide in provides:
+            lg.debug("clearing cache for " + provide)
+            match provide:
+                case "snapshot":
+                    state_reader.state_reader().snapshots.cache_clear()
+                    state_reader.state_reader().snapshot_map.cache_clear()
+                case "repo":
+                    state_reader.state_reader().repos.cache_clear()
+                case "publish":
+                    state_reader.state_reader().publishes.cache_clear()
+                    state_reader.state_reader().publish_map.cache_clear()
+
     def execute(self):
         """Execute the command. Return the return value of the command.
 
@@ -103,6 +115,7 @@ class Command(object):
             # So I decided to change that. For now we fail hard if a `Command` fails.
             # I guess we will see in production what happens.
             util.run_command(self.cmd, check=True)
+            self.clear_caches()
         else:
             lg.info("Pretending to run command: %s", " ".join(self.cmd))
         self._finished = True
@@ -269,8 +282,6 @@ class Command(object):
                             # Break out of the requirements loop, as the
                             # command cannot be scheduled anyway.
                             break
-                            # command cannot be scheduled anyway.
-                            break
 
                 if can_schedule:
                     lg.debug("%s: all dependencies fulfilled" % cmd)
@@ -297,70 +308,42 @@ class Command(object):
         return scheduled
 
 
-class FunctionCommand(Command):
-    """Repesents a function command.
+class DummyCommand(Command):
+    """Represents a dummy command.
 
-    Is used to resolve dependencies between such commands. This command executes
-    the given function. *args and **kwargs are passed through.
+    Is used to resolve dependencies between commands, but does nothing itself
 
     :param func: The function to execute
     :type  func: callable
     """
 
-    def __init__(self, func, *args, **kwargs):
+    def __init__(self, identifier: str):
         super().__init__([])
-
-        assert callable(func)
-        self.cmd = [str(id(func))]
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
+        self.identifier = identifier
 
     def freeze(self):
         """Freeze the class to make it hashable."""
         self._freeze_common()
-        # manually checking using self.frozen
-        self.kwargs = frozendict(self.kwargs)  # type: ignore
 
     def __hash__(self):
         """Hash the class."""
         dependencies_hash = self._hash_base()
-        return hash((id(self.func), self.args, self.kwargs, dependencies_hash))
+        return hash((self.identifier, dependencies_hash))
 
     def __eq__(self, other):
         """Compare the class."""
-        return (
-            self._eq_base(other)
-            and id(self.func) == id(other.func)
-            and self.args == other.args
-            and self.kwargs == other.kwargs
-        )
+        return self._eq_base(other) and self.identifier == other.identifier
 
     def execute(self):
-        """Execute the command.
-
-        Call the function.
-        """
+        """Mark command as executed"""
         if self._finished:  # pragma: no cover
             return self._finished
         if not Command.pretend_mode:
-            lg.debug(
-                "Running code: %s(args=%s, kwargs=%s)",
-                self.func.__name__,
-                repr(self.args),
-                repr(self.kwargs),
-            )
-
-            self.func(*self.args, **self.kwargs)
+            lg.debug("Running dummy Command with provides %s", self._provides)
 
             self._finished = True
         else:  # pragma: no cover
-            lg.info(
-                "Pretending to run code: %s(args=%s, kwargs=%s)",
-                self.repr_cmd(),
-                repr(self.args),
-                repr(self.kwargs),
-            )
+            lg.info("Pretending to run dummy Command with provides: %s", self._provides)
 
         return self._finished
 
@@ -369,13 +352,11 @@ class FunctionCommand(Command):
 
         :rtype: str
         """
-        # We need to "id" ourselves here so that multiple commands that call a
-        # function with the same name won't be shown as being equal.
-        return "%s|%s" % (self.func.__name__, id(self))
+        return self.identifier
 
     def __repr__(self):
-        """Show repr for FunctionCommand."""
-        return "FunctionCommand<%s requires %s, provides %s>\n" % (
+        """Show repr for DummyCommand."""
+        return "DummyCommand<%s requires %s, provides %s>\n" % (
             self.repr_cmd(),
             ", ".join([repr(x) for x in self._requires]),
             ", ".join([repr(x) for x in self._provides]),

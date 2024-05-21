@@ -13,7 +13,6 @@ from . import (
     publish,
     repo,
     snapshot,
-    state_reader,
 )
 
 _logging_setup = False
@@ -48,7 +47,6 @@ def prepare(args):
 
     with open(args.config, "rb") as f:
         cfg = tomli.load(f)
-    state_reader.state_reader().read()
     return cfg
 
 

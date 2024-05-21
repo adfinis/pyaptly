@@ -65,6 +65,14 @@ def environment(debug_mode):
     os.environ["GNUPGHOME"] = str(gnupg)
     util._PYTEST_KEYSERVER = "hkp://127.0.0.1:8080"
 
+    # Make sure we start with a clean slate
+    state_reader.state_reader().mirrors.cache_clear()
+    state_reader.state_reader().snapshots.cache_clear()
+    state_reader.state_reader().snapshot_map.cache_clear()
+    state_reader.state_reader().repos.cache_clear()
+    state_reader.state_reader().publishes.cache_clear()
+    state_reader.state_reader().publish_map.cache_clear()
+
     try:
         yield
     finally:
@@ -78,6 +86,7 @@ def test_key_03(environment):
     """Get test gpg-key number 3."""
     util.run_command(["gpg", "--import", setup_base / "test03.key"], check=True)
     util.run_command(["gpg", "--import", setup_base / "test03.pub"], check=True)
+    state_reader.state_reader().gpg_keys.cache_clear()
 
 
 @pytest.fixture()
@@ -120,11 +129,9 @@ def mirror_update(environment, config):
     """Test if updating mirrors works."""
     args = ["-c", config, "mirror", "create"]
     state = state_reader.SystemStateReader()
-    state.read()
-    assert "fakerepo01" not in state.mirrors
+    assert "fakerepo01" not in state.mirrors()
     main.main(args)
-    state.read()
-    assert "fakerepo01" in state.mirrors
+    assert "fakerepo01" in state.mirrors()
     args[3] = "update"
     main.main(args)
     args = [
@@ -144,9 +151,8 @@ def snapshot_create(config, mirror_update, freeze):
     args = ["-c", config, "snapshot", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(["fakerepo01-20121010T0000Z", "fakerepo02-20121006T0000Z"]).issubset(
-        state.snapshots
+        state.snapshots()
     )
     yield state
 
@@ -162,14 +168,13 @@ def snapshot_update_rotating(config, mirror_update, freeze):
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert set(
         [
             "fake-current",
             "fakerepo01-current",
             "fakerepo02-current",
         ]
-    ).issubset(state.snapshots)
+    ).issubset(state.snapshots())
     args = [
         "-c",
         config,
@@ -177,14 +182,13 @@ def snapshot_update_rotating(config, mirror_update, freeze):
         "update",
     ]
     main.main(args)
-    state.read()
     assert set(
         [
             "fake-current",
             "fakerepo01-current-rotated-20121010T1010Z",
             "fakerepo02-current-rotated-20121010T1010Z",
         ]
-    ).issubset(state.snapshots)
+    ).issubset(state.snapshots())
     expected = {
         "fake-current": set(["fakerepo01-current", "fakerepo02-current"]),
         "fake-current-rotated-20121010T1010Z": set(
@@ -198,7 +202,7 @@ def snapshot_update_rotating(config, mirror_update, freeze):
         "fakerepo02-current": set([]),
         "fakerepo02-current-rotated-20121010T1010Z": set([]),
     }
-    assert state.snapshot_map == expected
+    assert state.snapshot_map() == expected
 
 
 @pytest.fixture()
@@ -207,7 +211,6 @@ def repo_create(environment, config, test_key_03):
     args = ["-c", config, "repo", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     util.run_command(
         [
             "aptly",
@@ -217,7 +220,8 @@ def repo_create(environment, config, test_key_03):
             "/source/compose/setup/hellome_0.1-1_amd64.deb",
         ]
     )
-    assert set(["centrify"]) == state.repos
+    state_reader.state_reader().repos.cache_clear()
+    assert set(["centrify"]) == state.repos()
 
 
 @pytest.fixture()
@@ -226,13 +230,12 @@ def publish_create(config, snapshot_create, test_key_03):
     args = ["-c", config, "publish", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
-    assert set(["fakerepo02 main", "fakerepo01 main"]) == state.publishes
+    assert set(["fakerepo02 main", "fakerepo01 main"]) == state.publishes()
     expect = {
         "fakerepo02 main": set(["fakerepo02-20121006T0000Z"]),
         "fakerepo01 main": set(["fakerepo01-20121010T0000Z"]),
     }
-    assert expect == state.publish_map
+    assert expect == state.publish_map()
 
 
 @pytest.fixture()
@@ -241,7 +244,6 @@ def publish_create_rotating(config, snapshot_update_rotating, test_key_03):
     args = ["-c", config, "publish", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
     assert (
         set(
             [
@@ -250,14 +252,14 @@ def publish_create_rotating(config, snapshot_update_rotating, test_key_03):
                 "fakerepo02/current stable",
             ]
         )
-        == state.publishes
+        == state.publishes()
     )
     expect = {
         "fake/current stable": set(["fake-current"]),
         "fakerepo01/current stable": set(["fakerepo01-current"]),
         "fakerepo02/current stable": set(["fakerepo02-current"]),
     }
-    assert expect == state.publish_map
+    assert expect == state.publish_map()
 
 
 @pytest.fixture()
@@ -277,5 +279,4 @@ def publish_create_republish(config, publish_create, caplog):
     ]
     main.main(args)
     state = state_reader.SystemStateReader()
-    state.read()
-    assert "fakerepo01-stable main" in state.publishes
+    assert "fakerepo01-stable main" in state.publishes()
