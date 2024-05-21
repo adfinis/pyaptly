@@ -2,7 +2,7 @@
 
 import logging
 
-from . import state_reader, util
+from . import command, state_reader, util
 
 lg = logging.getLogger(__name__)
 
@@ -79,17 +79,24 @@ def mirror(cfg, args):
 
     cmd_mirror = mirror_cmds[args.task]
 
+    cmds = []
     if args.mirror_name == "all":
         for mirror_name, mirror_config in cfg["mirror"].items():
-            cmd_mirror(cfg, mirror_name, mirror_config)
+            cmds.extend(cmd_mirror(cfg, mirror_name, mirror_config))
     else:
         if args.mirror_name in cfg["mirror"]:
-            cmd_mirror(cfg, args.mirror_name, cfg["mirror"][args.mirror_name])
+            cmds.extend(
+                cmd_mirror(cfg, args.mirror_name, cfg["mirror"][args.mirror_name])
+            )
         else:
             raise ValueError(
                 "Requested mirror is not defined in config file: %s"
                 % (args.mirror_name)
             )
+    for cmd in command.Command.order_commands(
+        cmds, state_reader.state_reader().has_dependency
+    ):
+        cmd.execute()
 
 
 def cmd_mirror_create(cfg, mirror_name, mirror_config):
@@ -103,7 +110,7 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     :type  mirror_config: dict
     """
     if mirror_name in state_reader.state_reader().mirrors():  # pragma: no cover
-        return
+        return []
 
     add_gpg_keys(mirror_config)
     aptly_cmd = ["aptly", "mirror", "create"]
@@ -128,9 +135,9 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     aptly_cmd.append(mirror_config["distribution"])
     aptly_cmd.extend(util.unit_or_list_to_list(mirror_config["components"]))
 
-    lg.debug("Running command: %s", " ".join(aptly_cmd))
-    util.run_command(aptly_cmd, check=True)
-    state_reader.state_reader().mirrors.cache_clear()
+    cmd = command.Command(aptly_cmd)
+    cmd.provide("mirror", mirror_name)
+    return [cmd]
 
 
 def cmd_mirror_update(cfg, mirror_name, mirror_config):
@@ -143,14 +150,12 @@ def cmd_mirror_update(cfg, mirror_name, mirror_config):
     :param mirror_config: Configuration of the snapshot from the toml file.
     :type  mirror_config: dict
     """
-    if mirror_name not in state_reader.state_reader().mirrors():  # pragma: no cover
-        raise Exception("Mirror not created yet")
     add_gpg_keys(mirror_config)
     aptly_cmd = ["aptly", "mirror", "update"]
     if "max-tries" in mirror_config:
         aptly_cmd.append("-max-tries=%d" % mirror_config["max-tries"])
 
     aptly_cmd.append(mirror_name)
-    lg.debug("Running command: %s", " ".join(aptly_cmd))
-    util.run_command(aptly_cmd, check=True)
-    state_reader.state_reader().mirrors.cache_clear()
+    cmd = command.Command(aptly_cmd)
+    cmd.require("mirror", mirror_name)
+    return cmd_mirror_create(cfg, mirror_name, mirror_config) + [cmd]
