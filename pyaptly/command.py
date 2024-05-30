@@ -24,6 +24,7 @@ class Command(object):
         self._provides: set[tuple[str, str]] = set()
         self._finished: bool = False
         self._known_dependency_types = (
+            "mirror",
             "snapshot",
             "repo",
             "publish",
@@ -87,6 +88,8 @@ class Command(object):
         for provide in provides:
             lg.debug("clearing cache for " + provide)
             match provide:
+                case "mirror":
+                    state_reader.state_reader().mirrors.cache_clear()
                 case "snapshot":
                     state_reader.state_reader().snapshots.cache_clear()
                     state_reader.state_reader().snapshot_map.cache_clear()
