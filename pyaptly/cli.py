@@ -167,7 +167,7 @@ def publish(**kwargs):
     publish.publish(cfg, args=fake_args)
 
 
-@cli.command(help="convert yaml- to toml-comfig")
+@cli.command()
 @click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.argument(
     "yaml_path",
@@ -202,6 +202,46 @@ def yaml_to_toml(yaml_path: Path, toml_path: Path, add_defaults: bool, debug: bo
 
     config_file.yaml_to_toml(
         yaml_path,
+        toml_path,
+        add_defaults=add_defaults,
+    )
+
+
+@cli.command()
+@click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
+@click.argument(
+    "in_path",
+    type=click.Path(
+        file_okay=True,
+        dir_okay=False,
+        exists=True,
+        readable=True,
+        path_type=Path,
+    ),
+)
+@click.argument(
+    "toml_path",
+    type=click.Path(
+        file_okay=True,
+        dir_okay=False,
+        exists=False,
+        writable=True,
+        path_type=Path,
+    ),
+)
+@click.option(
+    "-a/-na",
+    "--add-defaults/--no-add-defaults",
+    type=bool,
+    default=False,
+    help="Add default values to fields if missing",
+)
+def toml_to_toml(in_path: Path, toml_path: Path, add_defaults: bool, debug: bool):
+    """Convert pyaptly config files from toml to toml."""
+    from . import config_file
+
+    config_file.toml_to_toml(
+        in_path,
         toml_path,
         add_defaults=add_defaults,
     )

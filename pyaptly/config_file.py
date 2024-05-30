@@ -4,6 +4,7 @@
 
 from pathlib import Path
 
+import tomli
 import yaml
 
 from pyaptly import tomli_w
@@ -17,6 +18,19 @@ def yaml_to_toml(yaml_path: Path, toml_path: Path, *, add_defaults: bool = False
     with yaml_path.open("r", encoding="UTF-8") as yf:
         with toml_path.open("wb") as tf:
             config = yaml.safe_load(yf)
+            if add_defaults:
+                add_default_to_config(config)
+            tomli_w.dump(config, tf)
+
+
+def toml_to_toml(in_path: Path, toml_path: Path, *, add_defaults: bool = False):
+    """Convert pyaptly config files from toml to toml.
+
+    Setting `add_defaults=True` will set common default during conversion.
+    """
+    with in_path.open("rb") as nf:
+        with toml_path.open("wb") as tf:
+            config = tomli.load(nf)
             if add_defaults:
                 add_default_to_config(config)
             tomli_w.dump(config, tf)

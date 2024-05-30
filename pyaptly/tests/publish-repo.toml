@@ -1,12 +1,14 @@
-[repo.centrify]
-architectures = [ "amd64", "i386",]
-distribution = "stable"
-component = "main"
-
-[publish]
 [[publish.centrify]]
 distribution = "latest"
 repo = "centrify"
 gpg-key = "6D79A810B9B7ABAE"
 automatic-update = true
 components = "main"
+
+[repo.centrify]
+architectures = [
+    "amd64",
+    "i386",
+]
+distribution = "stable"
+component = "main"

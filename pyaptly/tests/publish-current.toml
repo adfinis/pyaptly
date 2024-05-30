@@ -1,13 +1,56 @@
+[[publish."fakerepo01/current"]]
+distribution = "stable"
+architectures = [
+    "amd64",
+]
+components = [
+    "main",
+]
+snapshots = [
+    "fakerepo01-current",
+]
+automatic-update = true
+
+[[publish."fakerepo02/current"]]
+distribution = "stable"
+architectures = [
+    "amd64",
+]
+components = [
+    "main",
+]
+snapshots = [
+    "fakerepo02-current",
+]
+automatic-update = true
+
+[[publish."fake/current"]]
+distribution = "stable"
+architectures = [
+    "amd64",
+]
+components = [
+    "main",
+]
+snapshots = [
+    "fake-current",
+]
+automatic-update = true
+
 [mirror.fakerepo01]
 max-tries = 2
 archive = "http://localhost:3123/fakerepo01"
-gpg-keys = [ "2841988729C7F3FF",]
+gpg-keys = [
+    "2841988729C7F3FF",
+]
 components = "main"
 distribution = "main"
 
 [mirror.fakerepo02]
 archive = "http://localhost:3123/fakerepo02"
-gpg-keys = [ "2841988729C7F3FF",]
+gpg-keys = [
+    "2841988729C7F3FF",
+]
 components = "main"
 distribution = "main"
 
@@ -18,27 +61,7 @@ mirror = "fakerepo01"
 mirror = "fakerepo02"
 
 [snapshot.fake-current]
-merge = [ "fakerepo01-current", "fakerepo02-current",]
-
-[publish]
-[[publish."fakerepo01/current"]]
-distribution = "stable"
-architectures = [ "amd64",]
-components = [ "main",]
-snapshots = [ "fakerepo01-current",]
-automatic-update = true
-
-[[publish."fakerepo02/current"]]
-distribution = "stable"
-architectures = [ "amd64",]
-components = [ "main",]
-snapshots = [ "fakerepo02-current",]
-automatic-update = true
-
-[[publish."fake/current"]]
-distribution = "stable"
-architectures = [ "amd64",]
-components = [ "main",]
-snapshots = [ "fake-current",]
-automatic-update = true
-
+merge = [
+    "fakerepo01-current",
+    "fakerepo02-current",
+]
