@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from .. import main, state_reader
+from .. import main, state_reader, util
 
 
 @pytest.mark.parametrize("config", ["debug.toml"], indirect=True)
@@ -44,6 +44,14 @@ def test_mirror_create(environment, config, caplog):
 
     state = state_reader.SystemStateReader()
     assert state.mirrors() == {"fakerepo03"}
+
+
+@pytest.mark.parametrize("config", ["mirror.wuff"], indirect=True)
+def test_mirror_config_fail(config):
+    """Test if checking for unknown config file type works."""
+    args = ["-c", config, "mirror", "update", "asdfasdf"]
+    with pytest.raises(util.PyaptlyCliError):
+        main.main(args)
 
 
 @pytest.mark.parametrize("config", ["mirror-basic.toml"], indirect=True)

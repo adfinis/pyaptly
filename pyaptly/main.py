@@ -3,17 +3,9 @@
 import argparse
 import logging
 import sys
+from pathlib import Path
 
-import tomli
-
-from . import (
-    command,
-    custom_logger,
-    mirror,
-    publish,
-    repo,
-    snapshot,
-)
+from . import command, custom_logger, mirror, publish, repo, snapshot, util
 
 _logging_setup = False
 
@@ -45,8 +37,25 @@ def prepare(args):
     """Set pretend mode, read config and load state."""
     command.Command.pretend_mode = args.pretend
 
+    path = Path(args.config)
     with open(args.config, "rb") as f:
-        cfg = tomli.load(f)
+        if path.suffix == ".toml":
+            import tomli
+
+            cfg = tomli.load(f)
+        elif path.suffix == ".json":
+            import json
+
+            cfg = json.load(f)
+        elif path.suffix in (".yaml", ".yml"):
+            import yaml
+
+            cfg = yaml.safe_load(f)
+            lg.warn(
+                "NOTE: yaml has beed deprecated and will be remove on the next major release."
+            )
+        else:
+            util.exit_with_error(f"unknown config file extension: {path.suffix}")
     return cfg
 
 

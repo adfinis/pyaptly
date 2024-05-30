@@ -7,6 +7,8 @@ from subprocess import CalledProcessError
 
 import click
 
+from .util import PyaptlyCliError
+
 lg = logging.getLogger(__name__)
 
 
@@ -26,7 +28,7 @@ def entry_point():
 
     try:
         cli.main(argv[1:])
-    except CalledProcessError:
+    except (CalledProcessError, PyaptlyCliError):
         pass  # already logged
     except Exception as e:
         if debug:
