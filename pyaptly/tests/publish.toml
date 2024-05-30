@@ -1,50 +1,43 @@
-[mirror.fakerepo01]
-max-tries = 2
-archive = "http://localhost:3123/fakerepo01"
-gpg-keys = [ "2841988729C7F3FF",]
-components = "main"
-distribution = "main"
-
-[mirror.fakerepo02]
-archive = "http://localhost:3123/fakerepo02"
-gpg-keys = [ "2841988729C7F3FF",]
-components = "main"
-distribution = "main"
-
-[snapshot."fakerepo01-%T"]
-mirror = "fakerepo01"
-
-[snapshot."fakerepo02-%T"]
-mirror = "fakerepo02"
-
-[snapshot."fakerepo01-%T".timestamp]
-time = "00:00"
-
-[snapshot."fakerepo02-%T".timestamp]
-time = "00:00"
-repeat-weekly = "sat"
-
-[publish]
 [[publish.fakerepo01]]
 gpg-key = "6D79A810B9B7ABAE"
 skip-contents = true
 automatic-update = true
 components = "main"
 distribution = "main"
-[[publish.fakerepo01.snapshots]]
-name = "fakerepo01-%T"
-timestamp = "current"
-archive-on-update = "archived-fakerepo01-%T"
-
+snapshots = [
+    { name = "fakerepo01-%T", timestamp = "current", archive-on-update = "archived-fakerepo01-%T" },
+]
 
 [[publish.fakerepo02]]
 gpg-key = "6D79A810B9B7ABAE"
 automatic-update = true
 components = "main"
 distribution = "main"
-[[publish.fakerepo02.snapshots]]
-name = "fakerepo02-%T"
-timestamp = "current"
-archive-on-update = "archived-fakerepo02-%T"
+snapshots = [
+    { name = "fakerepo02-%T", timestamp = "current", archive-on-update = "archived-fakerepo02-%T" },
+]
 
+[mirror.fakerepo01]
+max-tries = 2
+archive = "http://localhost:3123/fakerepo01"
+gpg-keys = [
+    "2841988729C7F3FF",
+]
+components = "main"
+distribution = "main"
 
+[mirror.fakerepo02]
+archive = "http://localhost:3123/fakerepo02"
+gpg-keys = [
+    "2841988729C7F3FF",
+]
+components = "main"
+distribution = "main"
+
+[snapshot."fakerepo01-%T"]
+mirror = "fakerepo01"
+timestamp = { time = "00:00" }
+
+[snapshot."fakerepo02-%T"]
+mirror = "fakerepo02"
+timestamp = { time = "00:00", repeat-weekly = "sat" }

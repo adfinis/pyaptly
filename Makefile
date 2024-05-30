@@ -46,7 +46,7 @@ mypy: poetry-install
 
 .PHONY: pytest
 pytest: poetry-install ## run pytest
-	@docker compose exec testing poetry run pytest -vv --cov
+	@docker compose exec testing poetry run sh -c "HYPOTHESIS_PROFILE=$(HYPOTHESIS_PROFILE) pytest -vv --cov"
 
 .PHONY: format
 format: poetry-install ## format code with ruff
