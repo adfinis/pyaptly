@@ -8,7 +8,8 @@ from subprocess import PIPE, run
 from tempfile import NamedTemporaryFile
 
 from tomli import load
-from tomli_w import dump
+
+from pyaptly.tomli_w import dump
 
 base = Path(__file__).resolve().absolute().parent.parent
 
