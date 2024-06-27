@@ -85,6 +85,9 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
         return cmd
 
     publish_fullname = "%s %s" % (publish_name, publish_config["distribution"])
+    # This line might fail if no publish has been created yet
+    # TODO: add clag --create to create publishes when they haven't been created yet
+    # TODO: Fail gracefully and show an error when there is no existing publish
     current_snapshots = state_reader.state_reader().publish_map()[publish_fullname]
     if "snapshots" in publish_config:
         snapshots_config = publish_config["snapshots"]
@@ -129,11 +132,13 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
                     continue
                 prefix_to_search = re.sub("%T$", "", snap["name"])
 
-                current_snapshot = [
-                    snap_name
-                    for snap_name in sorted(current_snapshots, key=lambda x: -len(x))
-                    if snap_name.startswith(prefix_to_search)
-                ][0]
+                current_snapshot = None
+                for snap_name in sorted(current_snapshots, key=lambda x: -len(x)):
+                    if snap_name.startswith(prefix_to_search):
+                        current_snapshot = snap_name
+                        break
+                if current_snapshot is None:
+                    lg.warn("Snapshot %s doesn't exist on to-be archived publish %s." % (snap["name"], publish_fullname))
 
                 snapshot.clone_snapshot(current_snapshot, archive).execute()
 
