@@ -85,10 +85,12 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
         return cmd
 
     publish_fullname = "%s %s" % (publish_name, publish_config["distribution"])
-    # This line might fail if no publish has been created yet
-    # TODO: add clag --create to create publishes when they haven't been created yet
+    # TODO: add flag --create to create publishes when they haven't been created yet
     # TODO: Fail gracefully and show an error when there is no existing publish
-    current_snapshots = state_reader.state_reader().publish_map()[publish_fullname]
+    try:
+        current_snapshots = state_reader.state_reader().publish_map()[publish_fullname]
+    except KeyError as e:
+        util.exit_with_error("The publish hasn't been created yet: " + e)
     if "snapshots" in publish_config:
         snapshots_config = publish_config["snapshots"]
         new_snapshots = [
