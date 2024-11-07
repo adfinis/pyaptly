@@ -155,7 +155,7 @@ def test_publish_update_republish(config, publish_create_republish, freeze):
 
 
 @pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
-def test_publish_updating_basic(config, publish_create, freeze):
+def test_publish_update_basic(config, publish_create, freeze):
     """Test if updating publishes works."""
     freeze.move_to("2012-10-11 10:10:10")
     args = ["-c", config, "snapshot", "create"]
@@ -191,3 +191,28 @@ def test_repo_create_single(config, repo, test_key_03):
     main.main(args)
     state = state_reader.SystemStateReader()
     assert set(["centrify"]) == state.repos()
+
+
+@pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
+def test_publish_update_wrong_snapshots(config, publish_create, freeze):
+    """Test if updating publishes works when the snapshot history is wrong."""
+    freeze.move_to("2012-10-11 10:10:10")
+    args = ["-c", config, "snapshot", "create"]
+    main.main(args)
+    args = ["-c", config.replace('.toml','-bad.toml'), "publish", "update"]
+    main.main(args)
+    state = state_reader.SystemStateReader()
+    expect = set(
+        [
+            "fakerepo01-20121011T0000Z",
+            "fakerepo02-20121006T0000Z",
+            "fakerepo01-20121010T0000Z",
+        ]
+    )
+    assert expect == state.snapshots()
+    # Reversed!
+    expect2 = {
+        "fakerepo01 main": set(["fakerepo02-20121006T0000Z"]),
+        "fakerepo02 main": set(["fakerepo01-20121011T0000Z"]),
+    }
+    assert expect2 == state.publish_map()
