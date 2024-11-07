@@ -147,7 +147,7 @@ def mirror_update(environment, config):
 
 @pytest.fixture()
 def snapshot_create(config, mirror_update, freeze):
-    """Test if createing snapshots works."""
+    """Test if creating snapshots works."""
     args = ["-c", config, "snapshot", "create"]
     main.main(args)
     state = state_reader.SystemStateReader()

@@ -155,7 +155,7 @@ def test_publish_update_republish(config, publish_create_republish, freeze):
 
 
 @pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
-def test_publish_updating_basic(config, publish_create, freeze):
+def test_publish_update_basic(config, publish_create, freeze):
     """Test if updating publishes works."""
     freeze.move_to("2012-10-11 10:10:10")
     args = ["-c", config, "snapshot", "create"]

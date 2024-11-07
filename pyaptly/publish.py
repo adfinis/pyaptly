@@ -140,7 +140,7 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
                         current_snapshot = snap_name
                         break
                 if current_snapshot is None:
-                    lg.warn("Snapshot %s doesn't exist on to-be archived publish %s." % (snap["name"], publish_fullname))
+                    lg.warning("Snapshot %s doesn't exist on to-be archived publish %s." % (snap["name"], publish_fullname))
                 else:
                     snapshot.clone_snapshot(current_snapshot, archive).execute()
 

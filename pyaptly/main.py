@@ -51,7 +51,7 @@ def prepare(args):
             import yaml
 
             cfg = yaml.safe_load(f)
-            lg.warn(
+            lg.warning(
                 "NOTE: yaml has beed deprecated and will be remove on the next major release."
             )
         else:
