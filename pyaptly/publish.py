@@ -89,8 +89,8 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
     # TODO: Fail gracefully and show an error when there is no existing publish
     try:
         current_snapshots = state_reader.state_reader().publish_map()[publish_fullname]
-    except KeyError as e:
-        util.exit_with_error("The publish hasn't been created yet: " + e)
+    except KeyError: # pragma: no cover
+        util.exit_with_error(f"The publish {publish_fullname} hasn't been created yet.")
     if "snapshots" in publish_config:
         snapshots_config = publish_config["snapshots"]
         new_snapshots = [
