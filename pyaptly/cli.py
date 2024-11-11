@@ -27,7 +27,7 @@ def entry_point():
         debug = False
 
     try:
-        cli.main(argv[1:])
+        pyaptly.main(argv[1:])
     except (CalledProcessError, PyaptlyCliError):
         pass  # already logged
     except Exception as e:
@@ -59,14 +59,15 @@ class FakeArgs:
 
 
 @click.group()
-def cli():
+@click.version_option()
+def pyaptly():
     """Show basic command group."""
     pass
 
 
 # TODO legacy is here to be able to do early alpha and get feedback from users.
 # remove when there is full replacement.
-@cli.command(help="run legacy command parser")
+@pyaptly.command(help="run legacy command parser")
 @click.argument("passthrough", nargs=-1)
 def legacy(passthrough):
     """Run legacy pyaptly cli."""
@@ -75,7 +76,7 @@ def legacy(passthrough):
     main.main(argv=passthrough)
 
 
-@cli.command()
+@pyaptly.command()
 @click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
 @click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.option(
@@ -98,7 +99,7 @@ def repo(**kwargs):
     repo.repo(cfg, args=fake_args)
 
 
-@cli.command()
+@pyaptly.command()
 @click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
 @click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.option(
@@ -121,7 +122,7 @@ def mirror(**kwargs):
     mirror.mirror(cfg, args=fake_args)
 
 
-@cli.command()
+@pyaptly.command()
 @click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
 @click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.option(
@@ -144,7 +145,7 @@ def snapshot(**kwargs):
     snapshot.snapshot(cfg, args=fake_args)
 
 
-@cli.command()
+@pyaptly.command()
 @click.option("--info/--no-info", "-i/-ni", default=False, type=bool)
 @click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.option(
@@ -167,7 +168,7 @@ def publish(**kwargs):
     publish.publish(cfg, args=fake_args)
 
 
-@cli.command()
+@pyaptly.command()
 @click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.argument(
     "yaml_path",
@@ -207,7 +208,7 @@ def yaml_to_toml(yaml_path: Path, toml_path: Path, add_defaults: bool, debug: bo
     )
 
 
-@cli.command()
+@pyaptly.command()
 @click.option("--debug/--no-debug", "-d/-nd", default=False, type=bool)
 @click.argument(
     "in_path",

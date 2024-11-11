@@ -1,3 +1,5 @@
+# Getting Started
+
 > Note: This tutorial assumes basic knowledge of [Aptly](https://www.aptly.info/).
 
 Pyaptly is capable of managing mirrors, snapshots and publishes.
@@ -6,11 +8,11 @@ But for the purpose of this tutorial we assume a clean [install of Aptly](https:
 
 TODO: Note to jump to the relevant chapter if only a subset should be managed by aptly.
 
-# Installation
+## Installation
 
 TODO (once packages are available)
 
-# Aptly Mirror
+## Aptly Mirror
 
 Pyaptly can create and update mirrors. Since mirrors are nor a very complicated construct, there's no extra logic not available within aptly.
 Configuring a mirror with pyaptly is pretty much the same as writing a command for aptly - except that it's declarative.
@@ -42,7 +44,7 @@ Pyaptly also takes care of downloading the gpp key if it isn't availble yet. If 
 
 > For a list of all configuration options of a mirror, check out [the reference](TODO: Reference link).
 
-## updating mirrors
+### updating mirrors
 
 We can also tell pyaptly to update all defined mirrors:
 ```bash
@@ -52,9 +54,9 @@ pyaptly mirror ./config.toml update
 This is exactly the same as `aptly mirror update aptly` with the above config.
 But it will update all defined mirrors if more than one is defined, making it a bit more convenient than using `aptly` directly.
 
-# Snapshots
+## Snapshots
 
-## Basic snapshots
+### Basic snapshots
 
 Pyaptly has some extra features for snapshots, but let's start by creating a very simple snapshot first.
 
@@ -87,7 +89,7 @@ As you see, `pyaptly` first "rotates" the snapshot by just renaming and postfixi
 
 > Similar to mirrors, pyaptly allows a variety of configuration options for snapshots. Check out [the reference](TODO: Link to reference).
 
-## Snapshots with retention
+### Snapshots with retention
 
 Snapshots with retention are a bit more complicated than simple snapshots.
 The retention time is either 1 day or 1 week. Other types of retention are currently not implemented.
@@ -134,7 +136,7 @@ It's also important to understand that `pyaptly snapshot config.toml update` wil
 If we were to patch our systems only once a week, then what we want is to uncomment the line `repeat-weekly: "mon"`. This way, our snapshot would be backdated a full day to `aptly-20240102T0000Z`.
 This means that pyaptly would only create a new snapshot once a week, no matter how often the command has run.
 
-# Publish
+## Publish
 
 Pyaptly publishes also come with some extra sugar building on the features of the snapshots. But let's start with a simple publish again:
 ```bash
