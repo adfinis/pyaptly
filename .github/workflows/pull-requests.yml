@@ -31,3 +31,34 @@ jobs:
     - name: Run tests
       run: |
         HYPOTHESIS_PROFILE=ci make test
+
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        buildkitd-flags: --debug
+
+    - name: Build container
+      uses: docker/build-push-action@v5
+      with:
+        context: compose
+        push: false
+        load: true
+        tags: ghcr.io/adfinis/pyaptly/cache:latest
+        cache-from: type=registry,ref=ghcr.io/adfinis/pyaptly/cache:gha
+
+    - name: Generate the docs
+      run: |
+        make docs
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-docs
+        path: docs/_build/html/
