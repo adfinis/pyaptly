@@ -15,9 +15,14 @@ release = '2.0'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'myst_parser', # No need to add all click files manually to TO
+    'myst_parser',
     'sphinx.ext.autosectionlabel',
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+]
+myst_enable_extensions = [
+    "linkify",
+    "replacements",
+    "smartquotes",
 ]
 
 # For autodoc
