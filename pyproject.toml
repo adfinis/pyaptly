@@ -29,6 +29,8 @@ click = "^8.0.0"
 tomli = "^2.0.1"
 colorama = "^0.4.6"
 frozendict = "^2.2.0"
+jsonschema = "^4.23.0"
+types-jsonschema = "^4.23.0"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.2.2"
