@@ -479,6 +479,20 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "jsonschema2md"
+version = "1.3.0"
+description = "Convert JSON Schema to human-readable Markdown documentation"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "jsonschema2md-1.3.0-py3-none-any.whl", hash = "sha256:ba089d46a3ac6f43b10caeaf8cd1b3978c7bd15c8e287de78d247666cb8857c0"},
+    {file = "jsonschema2md-1.3.0.tar.gz", hash = "sha256:5ee8f6674c9fec7303daa24c79023805caf2f2fefb99834813bd746227d146ea"},
+]
+
+[package.dependencies]
+PyYAML = ">=6.0.0,<7.0.0"
+
+[[package]]
 name = "linkify-it-py"
 version = "2.0.3"
 description = "Links recognition library with FULL unicode support."
@@ -1527,4 +1541,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d1921ab788c7e844883ad0d32916b2da668eab57242c7fdd74153dce3e3feea0"
+content-hash = "5b14e8f26512aa60495f51a2b5e6e3151a35acf345a4edec8b9e47de7663472c"

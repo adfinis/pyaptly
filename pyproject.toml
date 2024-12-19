@@ -59,6 +59,7 @@ sphinx = "^8.1.3"
 myst-parser = "^4.0.0"
 sphinx-rtd-theme = "^3.0.1"
 linkify-it-py = "^2.0.3"
+jsonschema2md = "^1.3.0"
 
 [tool.coverage.run]
 omit = ["pyaptly/tomli_w/_writer.py"]

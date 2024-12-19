@@ -12,6 +12,7 @@
 
    README.md
    Getting_Started.md
+   Config_Reference.md
    Command_Line_Reference.md
    Code_Reference.rst
 

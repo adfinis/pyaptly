@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/adfinis/pyaptly/blob/main/pyaptly/config.schema.json",
+  "title": "Pyaptly Configuration Schema",
+  "description": "The schema used for pyaptly configurations. See also https://github.com/adfinis/pyaptly/tree/main/pyaptly/tests for examples using the TOML language.",
+  "type": "object",
+  "examples": [
+    {
+      "mirror": {
+        "fakerepo01": {
+          "max-tries": 2,
+          "archive": "http://localhost:3123/fakerepo01",
+          "gpg-keys": [
+            "2841988729C7F3FF"
+          ],
+          "components": "main",
+          "distribution": "main"
+        }
+      },
+      "snapshot": {
+        "fakerepo01-%T": {
+          "mirror": "fakerepo01",
+          "timestamp": {
+            "time": "00:00"
+          }
+        }
+      },
+      "publish": {
+        "fakerepo01": [
+          {
+            "gpg-key": "6D79A810B9B7ABAE",
+            "skip-contents": true,
+            "automatic-update": true,
+            "components": "main",
+            "distribution": "main",
+            "snapshots": [
+              {
+                "name": "fakerepo01-%T",
+                "timestamp": "current",
+                "archive-on-update": "archived-fakerepo01-%T"
+              }
+            ]
+          }
+        ],
+        "fakerepo01-stable": [
+          {
+            "publish": "fakerepo01 main",
+            "gpg-key": "6D79A810B9B7ABAE",
+            "automatic-update": true,
+            "components": "main",
+            "distribution": "main"
+          }
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "mirror": {
+      "description": "A configuration for a mirror",
+      "type": "object", "additionalProperties": false,
+      "examples": [
+        {
+          "repo1": {
+            "max-tries": 2,
+            "archive": "http://localhost:3123/fakerepo01",
+            "gpg-keys": [ "2841988729C7F3FF" ],
+            "components": "main",
+            "distribution": "main"
+          },
+          "repo2": {
+            "archive": "http://localhost:3123/fakerepo02",
+            "gpg-keys": [ "2841988729C7F3FF" ],
+            "gpg-urls": [ "http://localhost:3123/keys/test02.key" ],
+            "components": "main",
+            "distribution": "main"
+          }
+        }
+      ],
+      "patternProperties": { ".*": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "archive": { "type": "string", "description": "The URL of a remote archive to sync" },
+            "architectures": { "type": "array", "description": "A list of architectures. E.g. ['amd64']", "items": { "type": "string" } },
+            "components": { "type": ["array", "string"], "description": "A single component or list of components to download", "items": { "type": "string" } },
+            "distribution": { "type": "string", "description": "The Distribution of the mirror, e.g. 'squeeze'. Use './' for flat repositories." },
+            "gpg-keys": { "type": "array", "description": "List of GPG Key Fingerprints used to sign the packages and metadata", "items": { "type": "string" } },
+            "gpg-urls": { "type": "array", "description": "List of URLs to retrieve the GPG keys", "items": { "type": "string" } },
+            "keyserver": { "type": "string", "description": "A PGP Key Server to retrieve keys for verification" },
+            "max-tries": { "type": "integer", "description": "Number of tries when updating package contents" },
+            "sources": { "type": "boolean", "description": "If '-with-sources' should be passed to aptly" },
+            "udeb": { "type": "boolean", "description": "If '-with-udebs' should be passed to aptly" }
+          }
+      } }
+    },
+    "snapshot": {
+      "type": "object", "additionalProperties": false,
+      "examples": [
+        {
+          "fakerepo01-current": {
+            "mirror": "fakerepo01"
+          },
+          "fakerepo02-%T": {
+            "mirror": "fakrepo02",
+            "timestamp": { "time": "00:00", "repeat-weekly": "sat" }
+          },
+          "fakerepo03-%T": {
+            "timestamp": { "time": "00:00" },
+            "filter": { "query": "libhello_0.1-1_amd64",
+                        "source": { "name": "fakerepo01-%T", "timestamp": "current" }
+            }
+          }
+        }
+      ],
+      "patternProperties": { ".*": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "filter": { "type": "object", "additionalProperties": false, "properties": {
+                "query": { "type": "string" },
+                "source": { "type": "object", "additionalProperties": false, "properties": {
+                    "name": { "type": "string" },
+                    "timestamp": { "type": "string" }
+                } }
+            } },
+            "merge": {
+              "type": "array",
+              "items": {
+                "type": ["string", "object"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "timestamp": { "enum": ["current", "previous", 0] }
+                }
+              }
+            },
+            "mirror": { "type": "string" },
+            "timestamp": { "type": "object", "additionalProperties": false, "properties": {
+                "time": { "type": "string" },
+                "repeat-weekly": { "type": "string" }
+              }
+            },
+            "repo": { "type": "string" }
+          }
+      } }
+    },
+    "publish": {
+      "type": "object", "additionalProperties": false,
+      "examples": [
+        {
+          "fakerepo01": [
+            {
+              "gpg-key": "6D79A810B9B7ABAE",
+              "skip-contents": true,
+              "automatic-update": true,
+              "components": "main",
+              "distribution": "main",
+              "snapshots": [
+                {
+                  "name": "fakerepo01-%T",
+                  "timestamp": "current",
+                  "archive-on-update": "archived-fakerepo01-%T"
+                }
+              ]
+            }
+          ],
+          "fakerepo01-stable": [
+            {
+              "publish": "fakerepo01 main",
+              "gpg-key": "6D79A810B9B7ABAE",
+              "automatic-update": true,
+              "components": "main",
+              "distribution": "main"
+            }
+          ]
+        }
+      ],
+      "patternProperties": { ".*": {
+          "type": "array", "items": { "type": "object", "additionalProperties": false,
+            "properties": {
+              "architectures": { "type": "array", "description": "Which architectures should be in the publish", "items": { "type": "string" } },
+              "automatic-update": { "type": "boolean", "description": "If the publish should be updated when it's not explicitly mentioned as argument to pyaptly" },
+            "components": { "type": ["array", "string"], "description": "A single component or list of components to download", "items": { "type": "string" } },
+              "distribution": { "type": "string" },
+              "gpg-key": { "type": "string" },
+              "publish": { "type": "string" },
+              "repo": { "type": "string" },
+              "skip-contents": { "type": "boolean" },
+              "snapshots": { "type": "array", "items": { "type": ["object", "string"], "additionalProperties": false, "properties": {
+                      "name": { "type": "string" },
+                      "timestamp": { "type": "string" },
+                      "archive-on-update": { "type": "string" }
+              } } }
+          } }
+      } }
+    }
+  }
+} 
