@@ -89,7 +89,7 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
     # TODO: Fail gracefully and show an error when there is no existing publish
     try:
         current_snapshots = state_reader.state_reader().publish_map()[publish_fullname]
-    except KeyError: # pragma: no cover
+    except KeyError:  # pragma: no cover
         util.exit_with_error(f"The publish {publish_fullname} hasn't been created yet.")
     if "snapshots" in publish_config:
         snapshots_config = publish_config["snapshots"]
@@ -140,7 +140,10 @@ def publish_cmd_update(cfg, publish_name, publish_config, ignore_existing=False)
                         current_snapshot = snap_name
                         break
                 if current_snapshot is None:
-                    lg.warning("Snapshot %s doesn't exist on to-be archived publish %s." % (snap["name"], publish_fullname))
+                    lg.warning(
+                        "Snapshot %s doesn't exist on to-be archived publish %s."
+                        % (snap["name"], publish_fullname)
+                    )
                 else:
                     snapshot.clone_snapshot(current_snapshot, archive).execute()
 
