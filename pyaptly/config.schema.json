@@ -4,6 +4,21 @@
   "title": "Pyaptly Configuration Schema",
   "description": "The schema used for pyaptly configurations. See also https://github.com/adfinis/pyaptly/tree/main/pyaptly/tests for examples using the TOML language.",
   "type": "object",
+  "$defs": {
+    "timestamp-reference": {
+      "description": "if the 'current' (newest) snapshot should be used or the 'previous'ly created (e.g. from a week ago). Useful to delay a publish for a certain period.",
+      "enum": [ "current", "previous", 0, 1 ]
+    },
+    "snapshot-reference": {
+      "description": "A pointer to an existing snapshot.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "description": "name of the snapshot" },
+        "timestamp": { "$ref": "#/$defs/timestamp-reference" }
+      }
+    }
+  },
   "examples": [
     {
       "mirror": {
@@ -79,16 +94,16 @@
       "patternProperties": { ".*": {
           "type": "object", "additionalProperties": false,
           "properties": {
-            "archive": { "type": "string", "description": "The URL of a remote archive to sync" },
-            "architectures": { "type": "array", "description": "A list of architectures. E.g. ['amd64']", "items": { "type": "string" } },
-            "components": { "type": ["array", "string"], "description": "A single component or list of components to download", "items": { "type": "string" } },
-            "distribution": { "type": "string", "description": "The Distribution of the mirror, e.g. 'squeeze'. Use './' for flat repositories." },
+            "archive": { "type": "string", "description": "The aptly 'archive' argument" },
+            "architectures": { "type": "array", "description": "Set '-architectures' for aptly", "items": { "type": "string" } },
+            "components": { "type": ["array", "string"], "description": "The aptly 'component' arguments", "items": { "type": "string" } },
+            "distribution": { "type": "string", "description": "The aptly 'distribution' argument" },
             "gpg-keys": { "type": "array", "description": "List of GPG Key Fingerprints used to sign the packages and metadata", "items": { "type": "string" } },
             "gpg-urls": { "type": "array", "description": "List of URLs to retrieve the GPG keys", "items": { "type": "string" } },
             "keyserver": { "type": "string", "description": "A PGP Key Server to retrieve keys for verification" },
-            "max-tries": { "type": "integer", "description": "Number of tries when updating package contents" },
-            "sources": { "type": "boolean", "description": "If '-with-sources' should be passed to aptly" },
-            "udeb": { "type": "boolean", "description": "If '-with-udebs' should be passed to aptly" }
+            "max-tries": { "type": "integer", "description": "Set '-max-tries' for 'aptly repo update'" },
+            "sources": { "type": "boolean", "description": "Set '-with-sources' for aptly" },
+            "udeb": { "type": "boolean", "description": "Set '-with-udebs' for aptly" }
           }
       } }
     },
@@ -111,35 +126,35 @@
           }
         }
       ],
-      "patternProperties": { ".*": {
+      "patternProperties": {
+        ".*": {
           "type": "object", "additionalProperties": false,
           "properties": {
             "filter": { "type": "object", "additionalProperties": false, "properties": {
                 "query": { "type": "string" },
-                "source": { "type": "object", "additionalProperties": false, "properties": {
-                    "name": { "type": "string" },
-                    "timestamp": { "type": "string" }
-                } }
-            } },
+                "source": { "$ref": "#/$defs/snapshot-reference" }
+              }
+            },
             "merge": {
               "type": "array",
               "items": {
                 "type": ["string", "object"],
                 "properties": {
                   "name": { "type": "string" },
-                  "timestamp": { "enum": ["current", "previous", 0] }
+                  "timestamp": { }
                 }
               }
             },
             "mirror": { "type": "string" },
             "timestamp": { "type": "object", "additionalProperties": false, "properties": {
                 "time": { "type": "string" },
-                "repeat-weekly": { "type": "string" }
+                "repeat-weekly": { "enum": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] }
               }
             },
             "repo": { "type": "string" }
           }
-      } }
+        }
+      }
     },
     "publish": {
       "type": "object", "additionalProperties": false,
@@ -175,18 +190,19 @@
       "patternProperties": { ".*": {
           "type": "array", "items": { "type": "object", "additionalProperties": false,
             "properties": {
-              "architectures": { "type": "array", "description": "Which architectures should be in the publish", "items": { "type": "string" } },
+              "architectures": { "type": "array", "description": "Set '-architectures' for aptly", "items": { "type": "string" } },
               "automatic-update": { "type": "boolean", "description": "If the publish should be updated when it's not explicitly mentioned as argument to pyaptly" },
-            "components": { "type": ["array", "string"], "description": "A single component or list of components to download", "items": { "type": "string" } },
-              "distribution": { "type": "string" },
-              "gpg-key": { "type": "string" },
-              "publish": { "type": "string" },
-              "repo": { "type": "string" },
-              "skip-contents": { "type": "boolean" },
-              "snapshots": { "type": "array", "items": { "type": ["object", "string"], "additionalProperties": false, "properties": {
-                      "name": { "type": "string" },
-                      "timestamp": { "type": "string" },
-                      "archive-on-update": { "type": "string" }
+              "components": { "type": ["array", "string"], "description": "Set '-component' for aptly", "items": { "type": "string" } },
+              "distribution": { "type": "string", "description": "Set '-distribution' for aptly" },
+              "gpg-key": { "type": "string", "description": "Set '-gpg-key' for aptly" },
+              "publish": { "type": "string", "description": "Use the snapshots of another named publish. Space separated name and component. E.g. 'fakerepo01 main'" },
+              "repo": { "type": "string", "description": "Use 'publish repo' with this repo name" },
+              "skip-contents": { "type": "boolean", "description": "Set '-skip-contents' for aptly" },
+              "snapshots": { "type": "array", "description": "A list of snapshots to be merged", "items": {
+                "type": ["object", "string"], "additionalProperties": false, "properties": {
+                      "name": { "type": "string", "description": "Name of the snapshot" },
+                      "timestamp": { "$ref": "#/$defs/timestamp-reference" },
+                      "archive-on-update": { "type": "string", "description": "Rename the Snapshot to this and replace %T with the current timestamp on update. E.g. 'archive-snap-%T'" }
               } } }
           } }
       } }
