@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pyaptly Configuration Schema &mdash; Pyaptly</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/adsy.css?v=16061422" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=60dbed4a"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command Line Reference" href="Command_Line_Reference.html" />
+    <link rel="prev" title="Getting Started" href="Getting_Started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Pyaptly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Pyaptly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pyaptly Configuration Schema</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Command_Line_Reference.html">Command Line Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Code_Reference.html">Code Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pyaptly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Pyaptly Configuration Schema</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Config_Reference.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyaptly-configuration-schema">
+<h1>Pyaptly Configuration Schema<a class="headerlink" href="#pyaptly-configuration-schema" title="Link to this heading"></a></h1>
+<p><em>The schema used for pyaptly configurations. See also <a class="reference external" href="https://github.com/adfinis/pyaptly/tree/main/pyaptly/tests">https://github.com/adfinis/pyaptly/tree/main/pyaptly/tests</a> for examples using the TOML language.</em></p>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Link to this heading"></a></h2>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">mirror</span></code></strong> <em>(object)</em>: A configuration for a mirror. Cannot contain additional properties.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">.*</span></code></strong> <em>(object)</em>: Cannot contain additional properties.</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">archive</span></code></strong> <em>(string)</em>: The aptly ‘archive’ argument.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">architectures</span></code></strong> <em>(array)</em>: Set ‘-architectures’ for aptly.</p>
+<ul>
+<li><p><strong>Items</strong> <em>(string)</em></p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">components</span></code></strong> <em>([‘array’, ‘string’])</em>: The aptly ‘component’ arguments.</p>
+<ul>
+<li><p><strong>Items</strong> <em>(string)</em></p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">distribution</span></code></strong> <em>(string)</em>: The aptly ‘distribution’ argument.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">gpg-keys</span></code></strong> <em>(array)</em>: List of GPG Key Fingerprints used to sign the packages and metadata.</p>
+<ul>
+<li><p><strong>Items</strong> <em>(string)</em></p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">gpg-urls</span></code></strong> <em>(array)</em>: List of URLs to retrieve the GPG keys.</p>
+<ul>
+<li><p><strong>Items</strong> <em>(string)</em></p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">keyserver</span></code></strong> <em>(string)</em>: A PGP Key Server to retrieve keys for verification.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">max-tries</span></code></strong> <em>(integer)</em>: Set ‘-max-tries’ for ‘aptly repo update’.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">sources</span></code></strong> <em>(boolean)</em>: Set ‘-with-sources’ for aptly.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">udeb</span></code></strong> <em>(boolean)</em>: Set ‘-with-udebs’ for aptly.</p></li>
+</ul>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;repo1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;max-tries&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;archive&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3123/fakerepo01&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;gpg-keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;2841988729C7F3FF&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;repo2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;archive&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3123/fakerepo02&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;gpg-keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;2841988729C7F3FF&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;gpg-urls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;http://localhost:3123/keys/test02.key&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">snapshot</span></code></strong> <em>(object)</em>: Cannot contain additional properties.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">.*</span></code></strong> <em>(object)</em>: Cannot contain additional properties.</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">filter</span></code></strong> <em>(object)</em>: Cannot contain additional properties.</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">query</span></code></strong> <em>(string)</em></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">source</span></code></strong>: Refer to <em><a class="reference internal" href="#%24defs/snapshot-reference"><span class="xref myst">#/$defs/snapshot-reference</span></a></em>.</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">merge</span></code></strong> <em>(array)</em></p>
+<ul>
+<li><p><strong>Items</strong> <em>([‘string’, ‘object’])</em></p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">name</span></code></strong> <em>(string)</em></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></strong></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">mirror</span></code></strong> <em>(string)</em></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></strong> <em>(object)</em>: Cannot contain additional properties.</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">time</span></code></strong> <em>(string)</em></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">repeat-weekly</span></code></strong>: Must be one of: <code class="docutils literal notranslate"><span class="pre">[&quot;mon&quot;,</span> <span class="pre">&quot;tue&quot;,</span> <span class="pre">&quot;wed&quot;,</span> <span class="pre">&quot;thu&quot;,</span> <span class="pre">&quot;fri&quot;,</span> <span class="pre">&quot;sat&quot;,</span> <span class="pre">&quot;sun&quot;]</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">repo</span></code></strong> <em>(string)</em></p></li>
+</ul>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;fakerepo01-current&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;mirror&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakerepo01&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;fakerepo02-%T&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;mirror&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakrepo02&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;00:00&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;repeat-weekly&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sat&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;fakerepo03-%T&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;00:00&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;libhello_0.1-1_amd64&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakerepo01-%T&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">publish</span></code></strong> <em>(object)</em>: Cannot contain additional properties.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">.*</span></code></strong> <em>(array)</em></p>
+<ul>
+<li><p><strong>Items</strong> <em>(object)</em>: Cannot contain additional properties.</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">architectures</span></code></strong> <em>(array)</em>: Set ‘-architectures’ for aptly.</p>
+<ul>
+<li><p><strong>Items</strong> <em>(string)</em></p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">automatic-update</span></code></strong> <em>(boolean)</em>: If the publish should be updated when it’s not explicitly mentioned as argument to pyaptly.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">components</span></code></strong> <em>([‘array’, ‘string’])</em>: Set ‘-component’ for aptly.</p>
+<ul>
+<li><p><strong>Items</strong> <em>(string)</em></p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">distribution</span></code></strong> <em>(string)</em>: Set ‘-distribution’ for aptly.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">gpg-key</span></code></strong> <em>(string)</em>: Set ‘-gpg-key’ for aptly.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">publish</span></code></strong> <em>(string)</em>: Use the snapshots of another named publish. Space separated name and component. E.g. ‘fakerepo01 main’.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">repo</span></code></strong> <em>(string)</em>: Use ‘publish repo’ with this repo name.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">skip-contents</span></code></strong> <em>(boolean)</em>: Set ‘-skip-contents’ for aptly.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">snapshots</span></code></strong> <em>(array)</em>: A list of snapshots to be merged.</p>
+<ul>
+<li><p><strong>Items</strong> <em>([‘object’, ‘string’])</em>: Cannot contain additional properties.</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">name</span></code></strong> <em>(string)</em>: Name of the snapshot.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></strong>: Refer to <em><a class="reference internal" href="#%24defs/timestamp-reference"><span class="xref myst">#/$defs/timestamp-reference</span></a></em>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">archive-on-update</span></code></strong> <em>(string)</em>: Rename the Snapshot to this and replace %T with the current timestamp on update. E.g. ‘archive-snap-%T’.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;fakerepo01&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;gpg-key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6D79A810B9B7ABAE&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;skip-contents&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;automatic-update&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;snapshots&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakerepo01-%T&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;archive-on-update&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;archived-fakerepo01-%T&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;fakerepo01-stable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;publish&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakerepo01 main&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;gpg-key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6D79A810B9B7ABAE&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;automatic-update&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="definitions">
+<h2>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a id="%24defs/timestamp-reference"></a><strong><code class="docutils literal notranslate"><span class="pre">timestamp-reference</span></code></strong>: if the ‘current’ (newest) snapshot should be used or the ‘previous’ly created (e.g. from a week ago). Useful to delay a publish for a certain period. Must be one of: <code class="docutils literal notranslate"><span class="pre">[&quot;current&quot;,</span> <span class="pre">&quot;previous&quot;,</span> <span class="pre">0,</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><a id="%24defs/snapshot-reference"></a><strong><code class="docutils literal notranslate"><span class="pre">snapshot-reference</span></code></strong> <em>(object)</em>: A pointer to an existing snapshot. Cannot contain additional properties.</p>
+<ul>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">name</span></code></strong> <em>(string)</em>: name of the snapshot.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></strong>: Refer to <em><a class="reference internal" href="#%24defs/timestamp-reference"><span class="xref myst">#/$defs/timestamp-reference</span></a></em>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mirror&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;fakerepo01&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;max-tries&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;archive&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3123/fakerepo01&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;gpg-keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;2841988729C7F3FF&quot;</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;snapshot&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;fakerepo01-%T&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;mirror&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakerepo01&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;00:00&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;publish&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;fakerepo01&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;gpg-key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6D79A810B9B7ABAE&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;skip-contents&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;automatic-update&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;snapshots&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakerepo01-%T&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;archive-on-update&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;archived-fakerepo01-%T&quot;</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">]</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;fakerepo01-stable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;publish&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fakerepo01 main&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;gpg-key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6D79A810B9B7ABAE&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;automatic-update&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Getting_Started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Command_Line_Reference.html" class="btn btn-neutral float-right" title="Command Line Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Adfinis AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pyaptly &mdash; Pyaptly</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/adsy.css?v=16061422" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=60dbed4a"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="Getting_Started.html" />
+    <link rel="prev" title="Pyaptly" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Pyaptly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pyaptly</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-how">Why &amp; How</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-commands">Example commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Config_Reference.html">Pyaptly Configuration Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Command_Line_Reference.html">Command Line Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Code_Reference.html">Code Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pyaptly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Pyaptly</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyaptly">
+<h1>Pyaptly<a class="headerlink" href="#pyaptly" title="Link to this heading"></a></h1>
+<p>Automates the creation and managment of aptly mirrors and snapshots based on toml
+input files.</p>
+<p><strong>Important</strong>: Currently under heavy development:</p>
+<ul class="simple">
+<li><p>For for the old version <a class="reference external" href="https://github.com/adfinis/pyaptly/tree/master">switch to the master branch</a></p></li>
+<li><p>Main branch builds contain <a class="reference external" href="https://github.com/adfinis/pyaptly/actions/runs/8147002919">alpha packages</a>, see Artifacts</p></li>
+</ul>
+<section id="why-how">
+<h2>Why &amp; How<a class="headerlink" href="#why-how" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://www.aptly.info/">Aptly</a> is great tool for creating Debian repositories.
+But as soon as it’s required to maintain repositories for different <a class="reference external" href="https://en.wikipedia.org/wiki/Deployment_environment">environments</a> it gets very complicated fast.</p>
+<p>This is where Pyaptly comes in.
+First of all, a single <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> can be used to define <code class="docutils literal notranslate"><span class="pre">mirrors</span></code>, <code class="docutils literal notranslate"><span class="pre">snapshots</span></code> and <code class="docutils literal notranslate"><span class="pre">publishes</span></code> instead of using command line arguments.
+The definition includes exactly how the entities are created and updated.</p>
+<p>Secondly, aptly isn’t really layed out to have retention policies. Updating a <code class="docutils literal notranslate"><span class="pre">snapshot</span></code> will lose the information of the previous state.
+That means it’s hard to roll back to a previous state if required.
+This problem is fixed by using fix timestamps in snapshot names.
+That behaviour also allows to define a fixed update spacing. It’s possible to say for example “only update this snapshot once a week”.</p>
+</section>
+<section id="example-commands">
+<h2>Example commands<a class="headerlink" href="#example-commands" title="Link to this heading"></a></h2>
+<p>Initialize a new aptly server.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pyaptly<span class="w"> </span>mirror<span class="w"> </span>mirrors.toml<span class="w"> </span>create
+pyaptly<span class="w"> </span>mirror<span class="w"> </span>mirrors.toml<span class="w"> </span>update
+pyaptly<span class="w"> </span>snapshot<span class="w"> </span>mirrors.toml<span class="w"> </span>create
+pyaptly<span class="w"> </span>publish<span class="w"> </span>mirrors.toml<span class="w"> </span>create
+</pre></div>
+</div>
+<p>Update mirrors and snapshots and switch publish endpoints with
+<code class="docutils literal notranslate"><span class="pre">automatic-update:</span> <span class="pre">true</span></code> to the new snapshots.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pyaptly<span class="w"> </span>mirror<span class="w"> </span>mirrors.toml<span class="w"> </span>update
+pyaptly<span class="w"> </span>snapshot<span class="w"> </span>mirrors.toml<span class="w"> </span>create
+pyaptly<span class="w"> </span>publish<span class="w"> </span>mirrors.toml<span class="w"> </span>create
+pyaptly<span class="w"> </span>publish<span class="w"> </span>mirrors.toml<span class="w"> </span>update
+</pre></div>
+</div>
+<p>Manually trigger a switch to the new snapshots for the publish endpoint
+ubuntu/stable.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pyaptly<span class="w"> </span>publish<span class="w"> </span>mirrors.toml<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>ubuntu/stable
+</pre></div>
+</div>
+</section>
+<section id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
+<p>The most interesting mode for users is not <code class="docutils literal notranslate"><span class="pre">--debug</span></code> but <code class="docutils literal notranslate"><span class="pre">--info</span></code> which shows
+all commands executed.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>pyaptly<span class="w"> </span>legacy<span class="w"> </span>--<span class="w"> </span>--info<span class="w"> </span>--config<span class="w"> </span>pyaptly/tests/repo.toml<span class="w"> </span>repo<span class="w"> </span>create
+Command<span class="w"> </span>call
+<span class="w">  </span>cmd:<span class="w">         </span>gpg<span class="w"> </span>--no-default-keyring<span class="w"> </span>--keyring<span class="w"> </span>trustedkeys.gpg<span class="w"> </span>--list-keys<span class="w"> </span>--with-colons<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">0</span>
+<span class="w">  </span>stdout:<span class="w">     </span><span class="s1">&#39;tru::1:1709575833:0:3:1:5</span>
+<span class="s1">               pub:-:255:22:2841988729C7F3FF:1701882080:::-:::scESC:::::ed25519:::0:</span>
+<span class="s1">               fpr:::::::::6380C07FF6496016E01CF4522841988729C7F3FF:</span>
+<span class="s1">               uid:-::::1701882080::5BBE9C7E7AA5EEE3538F66274125D69FA727FD1E::Pyaptly Test 01 &lt;test01@pyaptly.nowhere&gt;::::::::::0:</span>
+<span class="s1">               sub:-:255:18:0A1CBEF26FE4F36E:1701882080::::::e:::::cv25519::</span>
+<span class="s1">               fpr:::::::::9EE64E40A5E3530D3E18A97C0A1CBEF26FE4F36E:</span>
+<span class="s1">               pub:-:255:22:EC54D33E5B5EBE98:1701882297:::-:::scESC:::::ed25519:::0:</span>
+<span class="s1">               fpr:::::::::660D45228AB6B59CCE48AFB3EC54D33E5B5EBE98:</span>
+<span class="s1">               uid:-::::1701882297::F3EF71B78669C0FC259A4078151BDC5815A6015D::Pyaptly Test 02 &lt;test02@pyaptly.nowhere&gt;::::::::::0:</span>
+<span class="s1">               sub:-:255:18:042FE0F5BB743B60:1701882297::::::e:::::cv25519::</span>
+<span class="s1">               fpr:::::::::AE58B62134E02AF8E5D55FF4042FE0F5BB743B60:&#39;</span>
+Command<span class="w"> </span>call
+<span class="w">  </span>cmd:<span class="w">         </span>aptly<span class="w"> </span>repo<span class="w"> </span>list<span class="w"> </span>-raw<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">0</span>
+<span class="w">  </span>stderr:<span class="w">     </span><span class="s1">&#39;Config file not found, creating default config at /root/.aptly.conf&#39;</span>
+Command<span class="w"> </span>call
+<span class="w">  </span>cmd:<span class="w">         </span>aptly<span class="w"> </span>mirror<span class="w"> </span>list<span class="w"> </span>-raw<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">0</span>
+Command<span class="w"> </span>call
+<span class="w">  </span>cmd:<span class="w">         </span>aptly<span class="w"> </span>snapshot<span class="w"> </span>list<span class="w"> </span>-raw<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">0</span>
+Command<span class="w"> </span>call
+<span class="w">  </span>cmd:<span class="w">         </span>aptly<span class="w"> </span>publish<span class="w"> </span>list<span class="w"> </span>-raw<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">0</span>
+Command<span class="w"> </span>call
+<span class="w">  </span>cmd:<span class="w">         </span>aptly<span class="w"> </span>repo<span class="w"> </span>-architectures<span class="o">=</span>amd64,i386<span class="w"> </span>-distribution<span class="o">=</span>stable<span class="w"> </span>-component<span class="o">=</span>main<span class="w"> </span>create<span class="w"> </span>centrify<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">0</span>
+<span class="w">  </span>stdout:<span class="w">     </span><span class="s1">&#39;Local repo [centrify] successfully added.</span>
+<span class="s1">               You can run &#39;</span>aptly<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>centrify<span class="w"> </span>...<span class="s1">&#39; to add packages to repository.&#39;</span>
+</pre></div>
+</div>
+<p>Commands that fail are always displayed in red on a tty, but that actually only
+happens if something is broken.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Pyaptly" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Getting_Started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Adfinis AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

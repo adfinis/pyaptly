@@ -1,0 +1,721 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Command Line Reference &mdash; Pyaptly</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/adsy.css?v=16061422" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=60dbed4a"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code Reference" href="Code_Reference.html" />
+    <link rel="prev" title="Pyaptly Configuration Schema" href="Config_Reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Pyaptly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Pyaptly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Config_Reference.html">Pyaptly Configuration Schema</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly">pyaptly</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#options">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cli-help">CLI Help</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly-legacy">pyaptly legacy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">CLI Help</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly-mirror">pyaptly mirror</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">CLI Help</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly-publish">pyaptly publish</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">CLI Help</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly-repo">pyaptly repo</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">CLI Help</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly-snapshot">pyaptly snapshot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">CLI Help</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly-toml-to-toml">pyaptly toml-to-toml</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">CLI Help</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyaptly-yaml-to-toml">pyaptly yaml-to-toml</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">CLI Help</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Code_Reference.html">Code Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pyaptly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Command Line Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Command_Line_Reference.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <!-- This file is generated with mdclick -->
+<section id="command-line-reference">
+<h1>Command Line Reference<a class="headerlink" href="#command-line-reference" title="Link to this heading"></a></h1>
+<section id="pyaptly">
+<h2>pyaptly<a class="headerlink" href="#pyaptly" title="Link to this heading"></a></h2>
+<p>Show basic command group.</p>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">COMMAND</span> <span class="p">[</span><span class="n">ARGS</span><span class="p">]</span><span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="options">
+<h3>Options<a class="headerlink" href="#options" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--version</span></code></p></li>
+</ul>
+<p>Show the version and exit.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="cli-help">
+<h3>CLI Help<a class="headerlink" href="#cli-help" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">COMMAND</span> <span class="p">[</span><span class="n">ARGS</span><span class="p">]</span><span class="o">...</span>
+
+  <span class="n">Show</span> <span class="n">basic</span> <span class="n">command</span> <span class="n">group</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">--</span><span class="n">version</span>  <span class="n">Show</span> <span class="n">the</span> <span class="n">version</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+  <span class="o">--</span><span class="n">help</span>     <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+
+<span class="n">Commands</span><span class="p">:</span>
+  <span class="n">legacy</span>        <span class="n">run</span> <span class="n">legacy</span> <span class="n">command</span> <span class="n">parser</span>
+  <span class="n">mirror</span>        <span class="n">Manage</span> <span class="n">aptly</span> <span class="n">mirrors</span><span class="o">.</span>
+  <span class="n">publish</span>       <span class="n">Manage</span> <span class="n">aptly</span> <span class="n">publishs</span><span class="o">.</span>
+  <span class="n">repo</span>          <span class="n">Create</span> <span class="n">aptly</span> <span class="n">repos</span><span class="o">.</span>
+  <span class="n">snapshot</span>      <span class="n">Manage</span> <span class="n">aptly</span> <span class="n">snapshots</span><span class="o">.</span>
+  <span class="n">toml</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">toml</span>  <span class="n">Convert</span> <span class="n">pyaptly</span> <span class="n">config</span> <span class="n">files</span> <span class="kn">from</span> <span class="nn">toml</span> <span class="n">to</span> <span class="n">toml</span><span class="o">.</span>
+  <span class="n">yaml</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">toml</span>  <span class="n">Convert</span> <span class="n">pyaptly</span> <span class="n">config</span> <span class="n">files</span> <span class="kn">from</span> <span class="nn">yaml</span> <span class="n">to</span> <span class="n">toml</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pyaptly-legacy">
+<h2>pyaptly legacy<a class="headerlink" href="#pyaptly-legacy" title="Link to this heading"></a></h2>
+<p>run legacy command parser</p>
+<section id="id1">
+<h3>Usage<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">legacy</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="p">[</span><span class="n">PASSTHROUGH</span><span class="p">]</span><span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>Options<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">passthrough</span></code>:</p>
+<ul class="simple">
+<li><p>Type: STRING</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">passthrough</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h3>CLI Help<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">legacy</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="p">[</span><span class="n">PASSTHROUGH</span><span class="p">]</span><span class="o">...</span>
+
+  <span class="n">run</span> <span class="n">legacy</span> <span class="n">command</span> <span class="n">parser</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">--</span><span class="n">help</span>  <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pyaptly-mirror">
+<h2>pyaptly mirror<a class="headerlink" href="#pyaptly-mirror" title="Link to this heading"></a></h2>
+<p>Manage aptly mirrors.</p>
+<section id="id4">
+<h3>Usage<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">mirror</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="o">|</span><span class="n">update</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>Options<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">info</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--info</span> <span class="pre">-i</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">-d</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pretend</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--pretend</span> <span class="pre">-p</span></code></p></li>
+</ul>
+<p>Do not change anything</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad3f66890&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">config</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">task</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: Choice(‘[‘create’, ‘update’]’)</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">task</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mirror_name</span></code>:</p>
+<ul class="simple">
+<li><p>Type: STRING</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">all</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--mirror-name</span> <span class="pre">-n</span></code></p></li>
+</ul>
+<p>default: “all”</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="id6">
+<h3>CLI Help<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">mirror</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="o">|</span><span class="n">update</span><span class="p">]</span>
+
+  <span class="n">Manage</span> <span class="n">aptly</span> <span class="n">mirrors</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="o">--</span><span class="n">info</span> <span class="o">/</span> <span class="o">-</span><span class="n">ni</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">info</span>
+  <span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span> <span class="o">/</span> <span class="o">-</span><span class="n">nd</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span>
+  <span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">pretend</span> <span class="o">/</span> <span class="o">-</span><span class="n">np</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pretend</span>
+                                  <span class="n">Do</span> <span class="ow">not</span> <span class="n">change</span> <span class="n">anything</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">mirror</span><span class="o">-</span><span class="n">name</span> <span class="n">TEXT</span>          <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span>
+  <span class="o">--</span><span class="n">help</span>                          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pyaptly-publish">
+<h2>pyaptly publish<a class="headerlink" href="#pyaptly-publish" title="Link to this heading"></a></h2>
+<p>Manage aptly publishs.</p>
+<section id="id7">
+<h3>Usage<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">publish</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="o">|</span><span class="n">update</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>Options<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">info</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--info</span> <span class="pre">-i</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">-d</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pretend</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--pretend</span> <span class="pre">-p</span></code></p></li>
+</ul>
+<p>Do not change anything</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad3f80390&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">config</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">task</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: Choice(‘[‘create’, ‘update’]’)</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">task</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">publish_name</span></code>:</p>
+<ul class="simple">
+<li><p>Type: STRING</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">all</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--publish-name</span> <span class="pre">-n</span></code></p></li>
+</ul>
+<p>default: “all”</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="id9">
+<h3>CLI Help<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">publish</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="o">|</span><span class="n">update</span><span class="p">]</span>
+
+  <span class="n">Manage</span> <span class="n">aptly</span> <span class="n">publishs</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="o">--</span><span class="n">info</span> <span class="o">/</span> <span class="o">-</span><span class="n">ni</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">info</span>
+  <span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span> <span class="o">/</span> <span class="o">-</span><span class="n">nd</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span>
+  <span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">pretend</span> <span class="o">/</span> <span class="o">-</span><span class="n">np</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pretend</span>
+                                  <span class="n">Do</span> <span class="ow">not</span> <span class="n">change</span> <span class="n">anything</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">publish</span><span class="o">-</span><span class="n">name</span> <span class="n">TEXT</span>         <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span>
+  <span class="o">--</span><span class="n">help</span>                          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pyaptly-repo">
+<h2>pyaptly repo<a class="headerlink" href="#pyaptly-repo" title="Link to this heading"></a></h2>
+<p>Create aptly repos.</p>
+<section id="id10">
+<h3>Usage<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">repo</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h3>Options<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">info</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--info</span> <span class="pre">-i</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">-d</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pretend</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--pretend</span> <span class="pre">-p</span></code></p></li>
+</ul>
+<p>Do not change anything</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad4126bd0&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">config</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">task</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: Choice(‘[‘create’]’)</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">task</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">repo_name</span></code>:</p>
+<ul class="simple">
+<li><p>Type: STRING</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">all</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--repo-name</span> <span class="pre">-n</span></code></p></li>
+</ul>
+<p>default: “all”</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="id12">
+<h3>CLI Help<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">repo</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="p">]</span>
+
+  <span class="n">Create</span> <span class="n">aptly</span> <span class="n">repos</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="o">--</span><span class="n">info</span> <span class="o">/</span> <span class="o">-</span><span class="n">ni</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">info</span>
+  <span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span> <span class="o">/</span> <span class="o">-</span><span class="n">nd</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span>
+  <span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">pretend</span> <span class="o">/</span> <span class="o">-</span><span class="n">np</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pretend</span>
+                                  <span class="n">Do</span> <span class="ow">not</span> <span class="n">change</span> <span class="n">anything</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">repo</span><span class="o">-</span><span class="n">name</span> <span class="n">TEXT</span>            <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span>
+  <span class="o">--</span><span class="n">help</span>                          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pyaptly-snapshot">
+<h2>pyaptly snapshot<a class="headerlink" href="#pyaptly-snapshot" title="Link to this heading"></a></h2>
+<p>Manage aptly snapshots.</p>
+<section id="id13">
+<h3>Usage<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">snapshot</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="o">|</span><span class="n">update</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h3>Options<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">info</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--info</span> <span class="pre">-i</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">-d</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pretend</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--pretend</span> <span class="pre">-p</span></code></p></li>
+</ul>
+<p>Do not change anything</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad3f6f810&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">config</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">task</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: Choice(‘[‘create’, ‘update’]’)</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">task</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">snapshot_name</span></code>:</p>
+<ul class="simple">
+<li><p>Type: STRING</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">all</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--snapshot-name</span> <span class="pre">-n</span></code></p></li>
+</ul>
+<p>default: “all”</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="id15">
+<h3>CLI Help<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">snapshot</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONFIG</span> <span class="p">[</span><span class="n">create</span><span class="o">|</span><span class="n">update</span><span class="p">]</span>
+
+  <span class="n">Manage</span> <span class="n">aptly</span> <span class="n">snapshots</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="o">--</span><span class="n">info</span> <span class="o">/</span> <span class="o">-</span><span class="n">ni</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">info</span>
+  <span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span> <span class="o">/</span> <span class="o">-</span><span class="n">nd</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span>
+  <span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">pretend</span> <span class="o">/</span> <span class="o">-</span><span class="n">np</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pretend</span>
+                                  <span class="n">Do</span> <span class="ow">not</span> <span class="n">change</span> <span class="n">anything</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">snapshot</span><span class="o">-</span><span class="n">name</span> <span class="n">TEXT</span>        <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span>
+  <span class="o">--</span><span class="n">help</span>                          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pyaptly-toml-to-toml">
+<h2>pyaptly toml-to-toml<a class="headerlink" href="#pyaptly-toml-to-toml" title="Link to this heading"></a></h2>
+<p>Convert pyaptly config files from toml to toml.</p>
+<section id="id16">
+<h3>Usage<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">toml</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">toml</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">IN_PATH</span> <span class="n">TOML_PATH</span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h3>Options<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">-d</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">in_path</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad3f815d0&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">in_path</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">toml_path</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad3f81610&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">toml_path</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_defaults</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">-a</span> <span class="pre">--add-defaults</span></code></p></li>
+</ul>
+<p>Add default values to fields if missing</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="id18">
+<h3>CLI Help<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">toml</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">toml</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">IN_PATH</span> <span class="n">TOML_PATH</span>
+
+  <span class="n">Convert</span> <span class="n">pyaptly</span> <span class="n">config</span> <span class="n">files</span> <span class="kn">from</span> <span class="nn">toml</span> <span class="n">to</span> <span class="n">toml</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span> <span class="o">/</span> <span class="o">-</span><span class="n">nd</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span>
+  <span class="o">-</span><span class="n">a</span><span class="p">,</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">defaults</span> <span class="o">/</span> <span class="o">-</span><span class="n">na</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">add</span><span class="o">-</span><span class="n">defaults</span>
+                                  <span class="n">Add</span> <span class="n">default</span> <span class="n">values</span> <span class="n">to</span> <span class="n">fields</span> <span class="k">if</span> <span class="n">missing</span>
+  <span class="o">--</span><span class="n">help</span>                          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pyaptly-yaml-to-toml">
+<h2>pyaptly yaml-to-toml<a class="headerlink" href="#pyaptly-yaml-to-toml" title="Link to this heading"></a></h2>
+<p>Convert pyaptly config files from yaml to toml.</p>
+<section id="id19">
+<h3>Usage<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">yaml</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">toml</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">YAML_PATH</span> <span class="n">TOML_PATH</span>
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h3>Options<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">-d</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yaml_path</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad3f80ed0&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">yaml_path</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">toml_path</span></code> (REQUIRED):</p>
+<ul class="simple">
+<li><p>Type: &lt;click.types.Path object at 0x7f3ad3f80f10&gt;</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">toml_path</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_defaults</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">-a</span> <span class="pre">--add-defaults</span></code></p></li>
+</ul>
+<p>Add default values to fields if missing</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code>:</p>
+<ul class="simple">
+<li><p>Type: BOOL</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">--help</span></code></p></li>
+</ul>
+<p>Show this message and exit.</p>
+</li>
+</ul>
+</section>
+<section id="id21">
+<h3>CLI Help<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span> <span class="n">pyaptly</span> <span class="n">yaml</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">toml</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">YAML_PATH</span> <span class="n">TOML_PATH</span>
+
+  <span class="n">Convert</span> <span class="n">pyaptly</span> <span class="n">config</span> <span class="n">files</span> <span class="kn">from</span> <span class="nn">yaml</span> <span class="n">to</span> <span class="n">toml</span><span class="o">.</span>
+
+<span class="n">Options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span> <span class="o">/</span> <span class="o">-</span><span class="n">nd</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span>
+  <span class="o">-</span><span class="n">a</span><span class="p">,</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">defaults</span> <span class="o">/</span> <span class="o">-</span><span class="n">na</span><span class="p">,</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">add</span><span class="o">-</span><span class="n">defaults</span>
+                                  <span class="n">Add</span> <span class="n">default</span> <span class="n">values</span> <span class="n">to</span> <span class="n">fields</span> <span class="k">if</span> <span class="n">missing</span>
+  <span class="o">--</span><span class="n">help</span>                          <span class="n">Show</span> <span class="n">this</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Config_Reference.html" class="btn btn-neutral float-left" title="Pyaptly Configuration Schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Code_Reference.html" class="btn btn-neutral float-right" title="Code Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Adfinis AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

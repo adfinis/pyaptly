@@ -1,0 +1,201 @@
+# Pyaptly Configuration Schema
+
+*The schema used for pyaptly configurations. See also https://github.com/adfinis/pyaptly/tree/main/pyaptly/tests for examples using the TOML language.*
+
+## Properties
+
+- **`mirror`** *(object)*: A configuration for a mirror. Cannot contain additional properties.
+  - **`.*`** *(object)*: Cannot contain additional properties.
+    - **`archive`** *(string)*: The aptly 'archive' argument.
+    - **`architectures`** *(array)*: Set '-architectures' for aptly.
+      - **Items** *(string)*
+    - **`components`** *(['array', 'string'])*: The aptly 'component' arguments.
+      - **Items** *(string)*
+    - **`distribution`** *(string)*: The aptly 'distribution' argument.
+    - **`gpg-keys`** *(array)*: List of GPG Key Fingerprints used to sign the packages and metadata.
+      - **Items** *(string)*
+    - **`gpg-urls`** *(array)*: List of URLs to retrieve the GPG keys.
+      - **Items** *(string)*
+    - **`keyserver`** *(string)*: A PGP Key Server to retrieve keys for verification.
+    - **`max-tries`** *(integer)*: Set '-max-tries' for 'aptly repo update'.
+    - **`sources`** *(boolean)*: Set '-with-sources' for aptly.
+    - **`udeb`** *(boolean)*: Set '-with-udebs' for aptly.
+
+  Examples:
+  ```json
+  {
+      "repo1": {
+          "max-tries": 2,
+          "archive": "http://localhost:3123/fakerepo01",
+          "gpg-keys": [
+              "2841988729C7F3FF"
+          ],
+          "components": "main",
+          "distribution": "main"
+      },
+      "repo2": {
+          "archive": "http://localhost:3123/fakerepo02",
+          "gpg-keys": [
+              "2841988729C7F3FF"
+          ],
+          "gpg-urls": [
+              "http://localhost:3123/keys/test02.key"
+          ],
+          "components": "main",
+          "distribution": "main"
+      }
+  }
+  ```
+
+- **`snapshot`** *(object)*: Cannot contain additional properties.
+  - **`.*`** *(object)*: Cannot contain additional properties.
+    - **`filter`** *(object)*: Cannot contain additional properties.
+      - **`query`** *(string)*
+      - **`source`**: Refer to *[#/$defs/snapshot-reference](#%24defs/snapshot-reference)*.
+    - **`merge`** *(array)*
+      - **Items** *(['string', 'object'])*
+        - **`name`** *(string)*
+        - **`timestamp`**
+    - **`mirror`** *(string)*
+    - **`timestamp`** *(object)*: Cannot contain additional properties.
+      - **`time`** *(string)*
+      - **`repeat-weekly`**: Must be one of: `["mon", "tue", "wed", "thu", "fri", "sat", "sun"]`.
+    - **`repo`** *(string)*
+
+  Examples:
+  ```json
+  {
+      "fakerepo01-current": {
+          "mirror": "fakerepo01"
+      },
+      "fakerepo02-%T": {
+          "mirror": "fakrepo02",
+          "timestamp": {
+              "time": "00:00",
+              "repeat-weekly": "sat"
+          }
+      },
+      "fakerepo03-%T": {
+          "timestamp": {
+              "time": "00:00"
+          },
+          "filter": {
+              "query": "libhello_0.1-1_amd64",
+              "source": {
+                  "name": "fakerepo01-%T",
+                  "timestamp": "current"
+              }
+          }
+      }
+  }
+  ```
+
+- **`publish`** *(object)*: Cannot contain additional properties.
+  - **`.*`** *(array)*
+    - **Items** *(object)*: Cannot contain additional properties.
+      - **`architectures`** *(array)*: Set '-architectures' for aptly.
+        - **Items** *(string)*
+      - **`automatic-update`** *(boolean)*: If the publish should be updated when it's not explicitly mentioned as argument to pyaptly.
+      - **`components`** *(['array', 'string'])*: Set '-component' for aptly.
+        - **Items** *(string)*
+      - **`distribution`** *(string)*: Set '-distribution' for aptly.
+      - **`gpg-key`** *(string)*: Set '-gpg-key' for aptly.
+      - **`publish`** *(string)*: Use the snapshots of another named publish. Space separated name and component. E.g. 'fakerepo01 main'.
+      - **`repo`** *(string)*: Use 'publish repo' with this repo name.
+      - **`skip-contents`** *(boolean)*: Set '-skip-contents' for aptly.
+      - **`snapshots`** *(array)*: A list of snapshots to be merged.
+        - **Items** *(['object', 'string'])*: Cannot contain additional properties.
+          - **`name`** *(string)*: Name of the snapshot.
+          - **`timestamp`**: Refer to *[#/$defs/timestamp-reference](#%24defs/timestamp-reference)*.
+          - **`archive-on-update`** *(string)*: Rename the Snapshot to this and replace %T with the current timestamp on update. E.g. 'archive-snap-%T'.
+
+  Examples:
+  ```json
+  {
+      "fakerepo01": [
+          {
+              "gpg-key": "6D79A810B9B7ABAE",
+              "skip-contents": true,
+              "automatic-update": true,
+              "components": "main",
+              "distribution": "main",
+              "snapshots": [
+                  {
+                      "name": "fakerepo01-%T",
+                      "timestamp": "current",
+                      "archive-on-update": "archived-fakerepo01-%T"
+                  }
+              ]
+          }
+      ],
+      "fakerepo01-stable": [
+          {
+              "publish": "fakerepo01 main",
+              "gpg-key": "6D79A810B9B7ABAE",
+              "automatic-update": true,
+              "components": "main",
+              "distribution": "main"
+          }
+      ]
+  }
+  ```
+
+## Definitions
+
+- <a id="%24defs/timestamp-reference"></a>**`timestamp-reference`**: if the 'current' (newest) snapshot should be used or the 'previous'ly created (e.g. from a week ago). Useful to delay a publish for a certain period. Must be one of: `["current", "previous", 0, 1]`.
+- <a id="%24defs/snapshot-reference"></a>**`snapshot-reference`** *(object)*: A pointer to an existing snapshot. Cannot contain additional properties.
+  - **`name`** *(string)*: name of the snapshot.
+  - **`timestamp`**: Refer to *[#/$defs/timestamp-reference](#%24defs/timestamp-reference)*.
+## Examples
+
+  ```json
+  {
+      "mirror": {
+          "fakerepo01": {
+              "max-tries": 2,
+              "archive": "http://localhost:3123/fakerepo01",
+              "gpg-keys": [
+                  "2841988729C7F3FF"
+              ],
+              "components": "main",
+              "distribution": "main"
+          }
+      },
+      "snapshot": {
+          "fakerepo01-%T": {
+              "mirror": "fakerepo01",
+              "timestamp": {
+                  "time": "00:00"
+              }
+          }
+      },
+      "publish": {
+          "fakerepo01": [
+              {
+                  "gpg-key": "6D79A810B9B7ABAE",
+                  "skip-contents": true,
+                  "automatic-update": true,
+                  "components": "main",
+                  "distribution": "main",
+                  "snapshots": [
+                      {
+                          "name": "fakerepo01-%T",
+                          "timestamp": "current",
+                          "archive-on-update": "archived-fakerepo01-%T"
+                      }
+                  ]
+              }
+          ],
+          "fakerepo01-stable": [
+              {
+                  "publish": "fakerepo01 main",
+                  "gpg-key": "6D79A810B9B7ABAE",
+                  "automatic-update": true,
+                  "components": "main",
+                  "distribution": "main"
+              }
+          ]
+      }
+  }
+  ```
+

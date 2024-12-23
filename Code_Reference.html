@@ -1,0 +1,607 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Reference &mdash; Pyaptly</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/adsy.css?v=16061422" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=60dbed4a"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Command Line Reference" href="Command_Line_Reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Pyaptly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Pyaptly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Config_Reference.html">Pyaptly Configuration Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Command_Line_Reference.html">Command Line Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyaptly.main">Main</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.main.prepare"><code class="docutils literal notranslate"><span class="pre">prepare()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.main.setup_logger"><code class="docutils literal notranslate"><span class="pre">setup_logger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyaptly.mirror">Mirror</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.mirror.add_gpg_keys"><code class="docutils literal notranslate"><span class="pre">add_gpg_keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.mirror.cmd_mirror_create"><code class="docutils literal notranslate"><span class="pre">cmd_mirror_create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.mirror.cmd_mirror_update"><code class="docutils literal notranslate"><span class="pre">cmd_mirror_update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.mirror.mirror"><code class="docutils literal notranslate"><span class="pre">mirror()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyaptly.repo">Repo</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.repo.repo"><code class="docutils literal notranslate"><span class="pre">repo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.repo.repo_cmd_create"><code class="docutils literal notranslate"><span class="pre">repo_cmd_create()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyaptly.snapshot">Snapshot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.snapshot.clone_snapshot"><code class="docutils literal notranslate"><span class="pre">clone_snapshot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.snapshot.cmd_snapshot_create"><code class="docutils literal notranslate"><span class="pre">cmd_snapshot_create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.snapshot.cmd_snapshot_update"><code class="docutils literal notranslate"><span class="pre">cmd_snapshot_update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.snapshot.dependents_of_snapshot"><code class="docutils literal notranslate"><span class="pre">dependents_of_snapshot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.snapshot.rotate_snapshot"><code class="docutils literal notranslate"><span class="pre">rotate_snapshot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.snapshot.snapshot"><code class="docutils literal notranslate"><span class="pre">snapshot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.snapshot.snapshot_spec_to_name"><code class="docutils literal notranslate"><span class="pre">snapshot_spec_to_name()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyaptly.publish">Publish</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.publish.publish"><code class="docutils literal notranslate"><span class="pre">publish()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.publish.publish_cmd_create"><code class="docutils literal notranslate"><span class="pre">publish_cmd_create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.publish.publish_cmd_update"><code class="docutils literal notranslate"><span class="pre">publish_cmd_update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyaptly.state_reader">State Reader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader"><code class="docutils literal notranslate"><span class="pre">SystemStateReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.gpg_keys"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.gpg_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.has_dependency"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.has_dependency()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.mirrors"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.mirrors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.publish_map"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.publish_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.publishes"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.publishes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.read_aptly_list"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.read_aptly_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.repos"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.repos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.snapshot_map"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.snapshot_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyaptly.state_reader.SystemStateReader.snapshots"><code class="docutils literal notranslate"><span class="pre">SystemStateReader.snapshots()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyaptly.util">Util</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.util.PyaptlyCliError"><code class="docutils literal notranslate"><span class="pre">PyaptlyCliError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.util.format_run_result"><code class="docutils literal notranslate"><span class="pre">format_run_result()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.util.get_default_keyserver"><code class="docutils literal notranslate"><span class="pre">get_default_keyserver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.util.indent_out"><code class="docutils literal notranslate"><span class="pre">indent_out()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.util.parse_aptly_show_command"><code class="docutils literal notranslate"><span class="pre">parse_aptly_show_command()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.util.run_command"><code class="docutils literal notranslate"><span class="pre">run_command()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyaptly.util.unit_or_list_to_list"><code class="docutils literal notranslate"><span class="pre">unit_or_list_to_list()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pyaptly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Code Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Code_Reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="code-reference">
+<h1>Code Reference<a class="headerlink" href="#code-reference" title="Link to this heading"></a></h1>
+<p>The following code reference is extracted from the source code and mainly used for debugging/development.
+Users of <cite>pyaptly</cite> can ignore this.</p>
+<section id="module-pyaptly.main">
+<span id="main"></span><h2>Main<a class="headerlink" href="#module-pyaptly.main" title="Link to this heading"></a></h2>
+<p>Aptly mirror/snapshot managment automation.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.main.main">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.main.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.main.main" title="Link to this definition"></a></dt>
+<dd><p>Define parsers and executes commands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>argv</strong> (<em>list</em>) – Arguments usually taken from sys.argv</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.main.prepare">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.main.</span></span><span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.main.prepare" title="Link to this definition"></a></dt>
+<dd><p>Set pretend mode, read config and load state.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.main.setup_logger">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.main.</span></span><span class="sig-name descname"><span class="pre">setup_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.main.setup_logger" title="Link to this definition"></a></dt>
+<dd><p>Setup the logger.</p>
+</dd></dl>
+
+</section>
+<section id="module-pyaptly.mirror">
+<span id="mirror"></span><h2>Mirror<a class="headerlink" href="#module-pyaptly.mirror" title="Link to this heading"></a></h2>
+<p>Create and update mirrors in aptly.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.mirror.add_gpg_keys">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.mirror.</span></span><span class="sig-name descname"><span class="pre">add_gpg_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mirror_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.mirror.add_gpg_keys" title="Link to this definition"></a></dt>
+<dd><p>Use the gpg to download and add gpg keys needed to create mirrors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mirror_config</strong> (<em>dict</em>) – The configuration toml as dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.mirror.cmd_mirror_create">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.mirror.</span></span><span class="sig-name descname"><span class="pre">cmd_mirror_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirror_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirror_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.mirror.cmd_mirror_create" title="Link to this definition"></a></dt>
+<dd><p>Create a mirror create command to be ordered and executed later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – The configuration toml as dict</p></li>
+<li><p><strong>mirror_name</strong> (<em>str</em>) – Name of the mirror to create</p></li>
+<li><p><strong>mirror_config</strong> (<em>dict</em>) – Configuration of the snapshot from the toml file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.mirror.cmd_mirror_update">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.mirror.</span></span><span class="sig-name descname"><span class="pre">cmd_mirror_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirror_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mirror_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.mirror.cmd_mirror_update" title="Link to this definition"></a></dt>
+<dd><p>Create a mirror update command to be ordered and executed later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – pyaptly config</p></li>
+<li><p><strong>mirror_name</strong> (<em>str</em>) – Name of the mirror to create</p></li>
+<li><p><strong>mirror_config</strong> (<em>dict</em>) – Configuration of the snapshot from the toml file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.mirror.mirror">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.mirror.</span></span><span class="sig-name descname"><span class="pre">mirror</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.mirror.mirror" title="Link to this definition"></a></dt>
+<dd><p>Create mirror commands, orders and executes them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – The configuration toml as dict</p></li>
+<li><p><strong>args</strong> (<em>namespace</em>) – The command-line arguments read with <code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyaptly.repo">
+<span id="repo"></span><h2>Repo<a class="headerlink" href="#module-pyaptly.repo" title="Link to this heading"></a></h2>
+<p>Create repos in aptly.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.repo.repo">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.repo.</span></span><span class="sig-name descname"><span class="pre">repo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.repo.repo" title="Link to this definition"></a></dt>
+<dd><p>Create repository commands, orders and executes them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – The configuration toml as dict</p></li>
+<li><p><strong>args</strong> (<em>namespace</em>) – The command-line arguments read with <code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.repo.repo_cmd_create">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.repo.</span></span><span class="sig-name descname"><span class="pre">repo_cmd_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.repo.repo_cmd_create" title="Link to this definition"></a></dt>
+<dd><p>Create a repo create command to be ordered and executed later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – pyaptly config</p></li>
+<li><p><strong>repo_name</strong> (<em>str</em>) – Name of the repo to create</p></li>
+<li><p><strong>repo_config</strong> (<em>dict</em>) – Configuration of the repo from the toml file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyaptly.snapshot">
+<span id="snapshot"></span><h2>Snapshot<a class="headerlink" href="#module-pyaptly.snapshot" title="Link to this heading"></a></h2>
+<p>Create and update snapshots in aptly.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.snapshot.clone_snapshot">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.snapshot.</span></span><span class="sig-name descname"><span class="pre">clone_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.snapshot.clone_snapshot" title="Link to this definition"></a></dt>
+<dd><p>Create a clone snapshot command with dependencies.</p>
+<p>To be ordered and executed later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<em>str</em>) – The snapshot to clone</p></li>
+<li><p><strong>destination</strong> (<em>str</em>) – The new name of the snapshot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.snapshot.cmd_snapshot_create">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.snapshot.</span></span><span class="sig-name descname"><span class="pre">cmd_snapshot_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_existing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyaptly.snapshot.cmd_snapshot_create" title="Link to this definition"></a></dt>
+<dd><p>Create a snapshot create command to be ordered and executed later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – pyaptly config</p></li>
+<li><p><strong>snapshot_name</strong> (<em>str</em>) – Name of the snapshot to create</p></li>
+<li><p><strong>snapshot_config</strong> (<em>dict</em>) – Configuration of the snapshot from the toml file.</p></li>
+<li><p><strong>ignore_existing</strong> (<em>dict</em>) – Optional, defaults to False. If set to True, still
+return a command object even if the requested
+snapshot already exists</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>command.Command</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.snapshot.cmd_snapshot_update">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.snapshot.</span></span><span class="sig-name descname"><span class="pre">cmd_snapshot_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyaptly.snapshot.cmd_snapshot_update" title="Link to this definition"></a></dt>
+<dd><p>Create commands to update all rotating snapshots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – pyaptly config</p></li>
+<li><p><strong>snapshot_name</strong> (<em>str</em>) – Name of the snapshot to update/rotate</p></li>
+<li><p><strong>snapshot_config</strong> (<em>dict</em>) – Configuration of the snapshot from the toml file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.snapshot.dependents_of_snapshot">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.snapshot.</span></span><span class="sig-name descname"><span class="pre">dependents_of_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshot_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.snapshot.dependents_of_snapshot" title="Link to this definition"></a></dt>
+<dd><p>Yield a flat list of dependents from the current state_reader.state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>generator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.snapshot.rotate_snapshot">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.snapshot.</span></span><span class="sig-name descname"><span class="pre">rotate_snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.snapshot.rotate_snapshot" title="Link to this definition"></a></dt>
+<dd><p>Create a command to rotate a snapshot.</p>
+<p>In order to be able to update a current publish.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – pyaptly config</p></li>
+<li><p><strong>snapshot_name</strong> (<em>str</em>) – the snapshot to rotate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.snapshot.snapshot">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.snapshot.</span></span><span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.snapshot.snapshot" title="Link to this definition"></a></dt>
+<dd><p>Create snapshot commands, orders and executes them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – The configuration toml as dict</p></li>
+<li><p><strong>args</strong> (<em>namespace</em>) – The command-line arguments read with <code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.snapshot.snapshot_spec_to_name">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.snapshot.</span></span><span class="sig-name descname"><span class="pre">snapshot_spec_to_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.snapshot.snapshot_spec_to_name" title="Link to this definition"></a></dt>
+<dd><p>Convert a given snapshot short spec to a name.</p>
+<p>A short spec is a value that may either be a string or a dict.</p>
+<p>If it’s a string, everything is fine and we just use that as
+a snapshot name.</p>
+<p>However if it’s a dict, we assume it has the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>name: template for the snapshot</p></li>
+<li><p>timestamp: information on how to generate the timestamp.</p></li>
+</ul>
+</div></blockquote>
+<p>For further information regarding the timestamp’s data structure,
+consult the documentation of expand_timestamped_name().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – Complete yaml config</p></li>
+<li><p><strong>snapshot</strong> (<em>dict</em>) – Config of the snapshot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyaptly.publish">
+<span id="publish"></span><h2>Publish<a class="headerlink" href="#module-pyaptly.publish" title="Link to this heading"></a></h2>
+<p>Publish snapshots in aptly.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.publish.publish">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.publish.</span></span><span class="sig-name descname"><span class="pre">publish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.publish.publish" title="Link to this definition"></a></dt>
+<dd><p>Create publish commands, orders and executes them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – The configuration toml as dict</p></li>
+<li><p><strong>args</strong> (<em>namespace</em>) – The command-line arguments read with <code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.publish.publish_cmd_create">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.publish.</span></span><span class="sig-name descname"><span class="pre">publish_cmd_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">publish_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">publish_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.publish.publish_cmd_create" title="Link to this definition"></a></dt>
+<dd><p>Create a publish command with its dependencies.</p>
+<p>To be ordered and executed later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – pyaptly config</p></li>
+<li><p><strong>publish_name</strong> (<em>str</em>) – Name of the publish to create</p></li>
+<li><p><strong>publish_config</strong> (<em>dict</em>) – Configuration of the publish from the toml file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.publish.publish_cmd_update">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.publish.</span></span><span class="sig-name descname"><span class="pre">publish_cmd_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">publish_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">publish_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.publish.publish_cmd_update" title="Link to this definition"></a></dt>
+<dd><p>Create a publish command with its dependencies.</p>
+<p>To be ordered and executed later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – pyaptly config</p></li>
+<li><p><strong>publish_name</strong> (<em>str</em>) – Name of the publish to update</p></li>
+<li><p><strong>publish_config</strong> (<em>dict</em>) – Configuration of the publish from the toml file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyaptly.state_reader">
+<span id="state-reader"></span><h2>State Reader<a class="headerlink" href="#module-pyaptly.state_reader" title="Link to this heading"></a></h2>
+<p>The state reader helps to find the delta between current and target state.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyaptly.state_reader.</span></span><span class="sig-name descname"><span class="pre">SystemStateReader</span></span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader" title="Link to this definition"></a></dt>
+<dd><p>Reads the state from aptly and gpg.</p>
+<p>To find out what operations have to be performed to reach the state defined
+in the toml config-file.
+Functions are cached and execution commands clear the cache of functions which need to be rerun</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.gpg_keys">
+<span class="sig-name descname"><span class="pre">gpg_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.gpg_keys" title="Link to this definition"></a></dt>
+<dd><p>Read all trusted keys in gp and cache in lru_cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.has_dependency">
+<span class="sig-name descname"><span class="pre">has_dependency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.has_dependency" title="Link to this definition"></a></dt>
+<dd><p>Check system state dependencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dependency</strong> (<em>list</em>) – The dependency to check</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.mirrors">
+<span class="sig-name descname"><span class="pre">mirrors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.mirrors" title="Link to this definition"></a></dt>
+<dd><p>Read all available mirror and cache in lru_cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.publish_map">
+<span class="sig-name descname"><span class="pre">publish_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.publish_map" title="Link to this definition"></a></dt>
+<dd><p>Create a publish map. publish -&gt; snapshots.
+Cached in the lru_cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.publishes">
+<span class="sig-name descname"><span class="pre">publishes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.publishes" title="Link to this definition"></a></dt>
+<dd><p>Read all available publishes and cache in lru_cache</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.read_aptly_list">
+<span class="sig-name descname"><span class="pre">read_aptly_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.read_aptly_list" title="Link to this definition"></a></dt>
+<dd><p>Read lists from aptly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>str</em>) – The type of list to read ie. snapshot</p></li>
+<li><p><strong>list</strong> – Read into this list</p></li>
+<li><p><strong>list</strong> – list</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.repos">
+<span class="sig-name descname"><span class="pre">repos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.repos" title="Link to this definition"></a></dt>
+<dd><p>Read all available repo and cache in lru_cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.snapshot_map">
+<span class="sig-name descname"><span class="pre">snapshot_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.snapshot_map" title="Link to this definition"></a></dt>
+<dd><p>Create a snapshot map. snapshot -&gt; snapshots.
+This is also called merge-tree.
+Cached in the lru_cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaptly.state_reader.SystemStateReader.snapshots">
+<span class="sig-name descname"><span class="pre">snapshots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.state_reader.SystemStateReader.snapshots" title="Link to this definition"></a></dt>
+<dd><p>Read all available snapshot and cache in lru_cache.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pyaptly.util">
+<span id="util"></span><h2>Util<a class="headerlink" href="#module-pyaptly.util" title="Link to this heading"></a></h2>
+<p>Basic function like running processes and logging.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pyaptly.util.PyaptlyCliError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyaptly.util.</span></span><span class="sig-name descname"><span class="pre">PyaptlyCliError</span></span><a class="headerlink" href="#pyaptly.util.PyaptlyCliError" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.util.format_run_result">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.util.</span></span><span class="sig-name descname"><span class="pre">format_run_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CompletedProcess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returncode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.util.format_run_result" title="Link to this definition"></a></dt>
+<dd><p>Format a CompletedProcess result log.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.util.get_default_keyserver">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.util.</span></span><span class="sig-name descname"><span class="pre">get_default_keyserver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.util.get_default_keyserver" title="Link to this definition"></a></dt>
+<dd><p>Get default keyseerver.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.util.indent_out">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.util.</span></span><span class="sig-name descname"><span class="pre">indent_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pyaptly.util.indent_out" title="Link to this definition"></a></dt>
+<dd><p>Indent command output for nicer logging-messages.</p>
+<p>It will convert bytes to strings if need or display the result as bytes if
+decoding fails.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.util.parse_aptly_show_command">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.util.</span></span><span class="sig-name descname"><span class="pre">parse_aptly_show_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyaptly.util.parse_aptly_show_command" title="Link to this definition"></a></dt>
+<dd><p>Parse an aptly show command.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.util.run_command">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.util.</span></span><span class="sig-name descname"><span class="pre">run_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hide_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.util.run_command" title="Link to this definition"></a></dt>
+<dd><p>Instrumented subprocess.run for easier debugging.</p>
+<ul class="simple">
+<li><p>By default this run command will add <cite>encoding=”UTF-8”</cite> to kwargs. Disable
+with <cite>decode=False</cite>.</p></li>
+<li><p>Command that often or normally fail can also set <cite>hide_error=True</cite> to only
+show them in if the loglevel is <cite>INFO</cite> (Logging and output in DEVELOPMENT.md)</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaptly.util.unit_or_list_to_list">
+<span class="sig-prename descclassname"><span class="pre">pyaptly.util.</span></span><span class="sig-name descname"><span class="pre">unit_or_list_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thingy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaptly.util.unit_or_list_to_list" title="Link to this definition"></a></dt>
+<dd><p>Ensure that a toml entry is always a list.</p>
+<p>Used to allow lists and single units in the toml file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>thingy</strong> (<em>list</em><em>, </em><em>tuple</em><em> or </em><em>other</em>) – The data to ensure it is a list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Command_Line_Reference.html" class="btn btn-neutral float-left" title="Command Line Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Adfinis AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

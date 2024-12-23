@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; Pyaptly</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/adsy.css?v=16061422" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=60dbed4a"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pyaptly Configuration Schema" href="Config_Reference.html" />
+    <link rel="prev" title="Pyaptly" href="README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Pyaptly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Pyaptly</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aptly-mirror">Aptly Mirror</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#updating-mirrors">updating mirrors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-snapshots">Basic snapshots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#snapshots-with-retention">Snapshots with retention</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#publish">Publish</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Config_Reference.html">Pyaptly Configuration Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Command_Line_Reference.html">Command Line Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Code_Reference.html">Code Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Pyaptly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Getting_Started.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p>Note: This tutorial assumes basic knowledge of <a class="reference external" href="https://www.aptly.info/">Aptly</a>.</p>
+</div></blockquote>
+<p>Pyaptly is capable of managing mirrors, snapshots and publishes.
+Each of those are handled completely separately, so it’s possible to only a subset with pyaptly.
+But for the purpose of this tutorial we assume a clean <a class="reference external" href="https://www.aptly.info/download/">install of Aptly</a> with no content yet.</p>
+<p>TODO: Note to jump to the relevant chapter if only a subset should be managed by aptly.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>TODO (once packages are available)</p>
+</section>
+<section id="aptly-mirror">
+<h2>Aptly Mirror<a class="headerlink" href="#aptly-mirror" title="Link to this heading"></a></h2>
+<p>Pyaptly can create and update mirrors. Since mirrors are nor a very complicated construct, there’s no extra logic not available within aptly.
+Configuring a mirror with pyaptly is pretty much the same as writing a command for aptly - except that it’s declarative.
+Let’s take the following <code class="docutils literal notranslate"><span class="pre">aptly</span></code> commands as an example to creating an aptly mirror:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gpg<span class="w"> </span>--yes<span class="w"> </span>--no-default-keyring<span class="w"> </span>--keyring<span class="w"> </span>trustedkeys.gpg<span class="w"> </span>--keyserver<span class="w"> </span>keyserver.ubuntu.com<span class="w"> </span>--recv-keys<span class="w"> </span>EE727D4449467F0E
+aptly<span class="w"> </span>mirror<span class="w"> </span>create<span class="w"> </span>aptly<span class="w"> </span><span class="s2">&quot;http://repo.aptly.info/&quot;</span><span class="w"> </span>nightly<span class="w"> </span>main
+</pre></div>
+</div>
+<p>After adding the gpg key to our keyring, we add a the official <code class="docutils literal notranslate"><span class="pre">aptly</span></code> repository. A pyaptly configuration would look like this:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[mirror.aptly]</span>
+<span class="n">archive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;http://repo.aptly.info/&quot;</span>
+<span class="n">gpg-keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;EE727D4449467F0E&quot;</span><span class="w"> </span><span class="p">]</span>
+<span class="n">keyserver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;keyserver.ubuntu.com&quot;</span>
+<span class="n">components</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="n">distribution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;nightly&quot;</span>
+</pre></div>
+</div>
+<p>With this configuration the mirror can be created with the following command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyaptly<span class="w"> </span>mirror<span class="w"> </span>./config.toml<span class="w"> </span>create
+</pre></div>
+</div>
+<p>As you can see we more or less just put the command line arguments into the configuration file.
+Pyaptly also takes care of downloading the gpp key if it isn’t availble yet. If you don’t want pyaptly to fetch the gpg key, just omit the variables.</p>
+<blockquote>
+<div><p>For a list of all configuration options of a mirror, check out [the reference](TODO: Reference link).</p>
+</div></blockquote>
+<section id="updating-mirrors">
+<h3>updating mirrors<a class="headerlink" href="#updating-mirrors" title="Link to this heading"></a></h3>
+<p>We can also tell pyaptly to update all defined mirrors:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyaptly<span class="w"> </span>mirror<span class="w"> </span>./config.toml<span class="w"> </span>update
+</pre></div>
+</div>
+<p>This is exactly the same as <code class="docutils literal notranslate"><span class="pre">aptly</span> <span class="pre">mirror</span> <span class="pre">update</span> <span class="pre">aptly</span></code> with the above config.
+But it will update all defined mirrors if more than one is defined, making it a bit more convenient than using <code class="docutils literal notranslate"><span class="pre">aptly</span></code> directly.</p>
+</section>
+</section>
+<section id="snapshots">
+<h2>Snapshots<a class="headerlink" href="#snapshots" title="Link to this heading"></a></h2>
+<section id="basic-snapshots">
+<h3>Basic snapshots<a class="headerlink" href="#basic-snapshots" title="Link to this heading"></a></h3>
+<p>Pyaptly has some extra features for snapshots, but let’s start by creating a very simple snapshot first.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[snapshot.</span><span class="s2">&quot;aptly&quot;</span><span class="k">]</span>
+<span class="n">mirror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;aptly&quot;</span>
+</pre></div>
+</div>
+<p>And create the snapshot:</p>
+<div class="highlight-shell-session notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pyaptly<span class="w"> </span>snapshot<span class="w"> </span>./config.toml<span class="w"> </span>create<span class="w"> </span>
+<span class="gp">$ </span>aptly<span class="w"> </span>snapshot<span class="w"> </span>list
+<span class="go">List of snapshots:</span>
+<span class="go"> * [aptly]: Snapshot from mirror [aptly]: http://repo.aptly.info/ nightly</span>
+</pre></div>
+</div>
+<p>An equal aptly command would be:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aptly<span class="w"> </span>snapshot<span class="w"> </span>create<span class="w"> </span>aptly<span class="w"> </span>from<span class="w"> </span>mirror<span class="w"> </span>aptly
+</pre></div>
+</div>
+<p>This snapshot can now be updated by with pyaptly:</p>
+<div class="highlight-shell-session notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pyaptly<span class="w"> </span>snapshot<span class="w"> </span>./config.toml<span class="w"> </span>update
+<span class="gp">$ </span>aptly<span class="w"> </span>snapshot<span class="w"> </span>list
+<span class="go">List of snapshots:</span>
+<span class="go"> * [aptly]: Snapshot from mirror [aptly]: http://repo.aptly.info/ nightly</span>
+<span class="go"> * [aptly-rotated-20240102T1315Z]: Snapshot from mirror [aptly]: http://repo.aptly.info/ nightly</span>
+</pre></div>
+</div>
+<p>As you see, <code class="docutils literal notranslate"><span class="pre">pyaptly</span></code> first “rotates” the snapshot by just renaming and postfixing it with a date. Afterwards, it creates a new snapshot <code class="docutils literal notranslate"><span class="pre">aptly</span></code> which is now up-to-date.</p>
+<blockquote>
+<div><p>Similar to mirrors, pyaptly allows a variety of configuration options for snapshots. Check out [the reference](TODO: Link to reference).</p>
+</div></blockquote>
+</section>
+<section id="snapshots-with-retention">
+<h3>Snapshots with retention<a class="headerlink" href="#snapshots-with-retention" title="Link to this heading"></a></h3>
+<p>Snapshots with retention are a bit more complicated than simple snapshots.
+The retention time is either 1 day or 1 week. Other types of retention are currently not implemented.
+Another specialty is that the retention is always the “maximum allowed” retention.
+Let’s use a daily snapshot as an example:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[snapshot.</span><span class="s2">&quot;aptly-%T&quot;</span><span class="k">]</span>
+<span class="n">mirror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;aptly&quot;</span>
+
+<span class="k">[snapshot.</span><span class="s2">&quot;aptly-%T&quot;</span><span class="k">.timestamp]</span>
+<span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;00:00&quot;</span>
+<span class="c1"># Uncomment for weekly retention starting on saturday</span>
+<span class="c1">#repeat-weekly = &quot;mon&quot;</span>
+</pre></div>
+</div>
+<p>Now let’s pretend today is January 2 2024 and we don’t have a snapshot yet. This is what happens:</p>
+<div class="highlight-shell-session notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pyaptly<span class="w"> </span>snapshot<span class="w"> </span>config.toml<span class="w"> </span>create
+<span class="gp">$ </span>aptly<span class="w"> </span>snapshot<span class="w"> </span>list<span class="w"> </span>-raw<span class="w"> </span><span class="c1"># list snapshot names</span>
+<span class="go">aptly-20240102T0000Z</span>
+<span class="gp">$ </span>aptly<span class="w"> </span>snapshot<span class="w"> </span>show<span class="w"> </span>aptly-20240101T0000Z
+<span class="go">Name: aptly-20240102T0000Z</span>
+<span class="go">Created At: 2024-01-02 13:55:41 UTC</span>
+<span class="go">Description: Snapshot from mirror [aptly]: http://repo.aptly.info/ nightly</span>
+<span class="go">Number of packages: 173</span>
+<span class="go">Sources:</span>
+<span class="go">  aptly [repo]</span>
+<span class="gp">$</span>
+</pre></div>
+</div>
+<p>You will notice that the timestamp in the name is different than the timestamp after <code class="docutils literal notranslate"><span class="pre">Created</span> <span class="pre">At</span></code>.
+The idea here is simple: We want to create one new Snapshot per <em>day</em>.
+If it’s been already past midnight (our defined <code class="docutils literal notranslate"><span class="pre">time</span></code> of <code class="docutils literal notranslate"><span class="pre">00:00</span></code>), create a snapshot and “backdate” it to this time. If a snapshot with this timestamp already exists, do nothing.
+It’s crucial to understand that we don’t want to create a new snapshot “24 hours later than the previous one”. We truly want one in each 24h window.
+This is matches the typical use case of usual maintenance windows much more.
+For example if Company A patches their servers every day at 20:00, it might makes sense to set <code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">=</span> <span class="pre">19:00</span></code> in the config and run a cronjob at 19:05 to create a new snapshot.
+At the same time it’s much easier to implement in <code class="docutils literal notranslate"><span class="pre">pyaptly</span></code> this way. We can just generate the name a new snapshot would get, check if this snapshot exists and if it does, we do nothing.
+This means if we rerun the same command <code class="docutils literal notranslate"><span class="pre">pyaptly</span> <span class="pre">snapshot</span> <span class="pre">config.toml</span> <span class="pre">create</span></code> a second time 5 minutes later it will do nothing, because the snapshot already exists.</p>
+<p>It’s also important to understand that <code class="docutils literal notranslate"><span class="pre">pyaptly</span> <span class="pre">snapshot</span> <span class="pre">config.toml</span> <span class="pre">update</span></code> will do nothing, as these snapshots with retention are considered “readonly”.</p>
+<p>If we were to patch our systems only once a week, then what we want is to uncomment the line <code class="docutils literal notranslate"><span class="pre">repeat-weekly:</span> <span class="pre">&quot;mon&quot;</span></code>. This way, our snapshot would be backdated a full day to <code class="docutils literal notranslate"><span class="pre">aptly-20240102T0000Z</span></code>.
+This means that pyaptly would only create a new snapshot once a week, no matter how often the command has run.</p>
+</section>
+</section>
+<section id="publish">
+<h2>Publish<a class="headerlink" href="#publish" title="Link to this heading"></a></h2>
+<p>Pyaptly publishes also come with some extra sugar building on the features of the snapshots. But let’s start with a simple publish again:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aptly<span class="w"> </span>publish<span class="w"> </span>snapshot<span class="w"> </span>aptly<span class="w"> </span>aptly
+</pre></div>
+</div>
+<p>This could be achieved with the following toml file in pyaptly:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[publish]</span>
+<span class="k">[[publish.aptly]]</span>
+<span class="n">distribution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;nightly&quot;</span>
+<span class="n">components</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;main&quot;</span>
+<span class="c1">#automatic-update = true</span>
+<span class="k">[[publish.aptly.snapshots]]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;aptly&quot;</span>
+</pre></div>
+</div>
+<p>First we define a publish called <code class="docutils literal notranslate"><span class="pre">aptly</span></code>. Then - as pyaptly currently can’t figure that out itself - we specify the distribution and components.
+The last line says which snapshot we want to use.</p>
+<p>Afterwards we run:</p>
+<div class="highlight-shell-session notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pyaptly<span class="w"> </span>publish<span class="w"> </span>pyaptly/publish.toml<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>aptly
+<span class="gp">$ </span>aptly<span class="w"> </span>publish<span class="w"> </span>show<span class="w"> </span>nightly<span class="w"> </span>aptly
+<span class="go">Prefix: aptly</span>
+<span class="go">Distribution: nightly</span>
+<span class="go">Architectures: amd64</span>
+<span class="go">Sources:</span>
+<span class="go">  main: aptly [snapshot]</span>
+<span class="gp">$</span>
+</pre></div>
+</div>
+<p>It’s important that we specify <code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">aptly</span></code> here. If we want to publish it every time we run the <code class="docutils literal notranslate"><span class="pre">pyaptly</span> <span class="pre">publish</span></code> command, we need to uncomment the line <code class="docutils literal notranslate"><span class="pre">automatic-update</span> <span class="pre">=</span> <span class="pre">true</span></code></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="README.html" class="btn btn-neutral float-left" title="Pyaptly" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Config_Reference.html" class="btn btn-neutral float-right" title="Pyaptly Configuration Schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Adfinis AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

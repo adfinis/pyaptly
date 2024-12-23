@@ -1,0 +1,77 @@
+@import url('theme.css');
+
+@font-face {
+  font-family: 'SourceSans3 Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('SourceSans3 Regular'),
+       url('../fonts/SourceSans3-Regular.woff') format('woff'),
+       url('../fonts/SourceSans3-Regular.ttf') format('truetype');
+}
+
+*, h1, h2, h3, h4, h5, .btn {
+  font-family: 'SourceSans3 Regular', 'OpenSans', sans-serif;
+}
+
+code,
+code *,
+pre,
+pre * {
+  font-family: Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+}
+
+a, a:visited, a:link {
+  color: rgb(91, 142, 219);
+}
+
+a:hover {
+  color: rgb(46, 111, 209);
+}
+
+.wy-side-nav-search input[type="text"] {
+  border: none;
+  box-shadow: none;
+  transition: box-shadow .3s ease;
+}
+
+.wy-side-nav-search input[type="text"]:focus {
+  border: rgb(46, 111, 209);
+  box-shadow: 0 0 1px 1px rgb(91, 142, 219);
+}
+
+.wy-side-nav-search > a:hover,
+.wy-side-nav-search .wy-dropdown > a:hover {
+  background-color: transparent;
+  transition: color .3s ease;
+  color: rgb(91, 142, 219);
+}
+
+.wy-menu-vertical a {
+  transition: background-color .3s ease, color .3s ease;
+}
+
+.wy-menu-vertical a:hover {
+  color: rgb(255, 255, 255);
+}
+
+.wy-menu-vertical a {
+  color: rgb(200, 200, 200);
+}
+
+.wy-side-nav-search {
+  background-color: rgb(25, 25, 25);
+}
+
+.wy-side-nav-search::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 60px;
+  background-image: url('../images/logo.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.wy-nav-content {
+  max-width: none;
+}
