@@ -1,0 +1,20 @@
++++ ./a ./b	2024-11-08 13:56:06.904479048 +0000
+@@ -49,12 +49,12 @@
+         parent = helpdct.get("parent", "") or ''
+         options = {
+             opt.name: {
+-                "usage": '\n'.join(opt.opts),
+-                "prompt": opt.prompt,
+-                "required": opt.required,
+-                "default": opt.default,
+-                "help": opt.help,
+-                "type": str(opt.type)
++                "usage": '\n'.join(opt.opts),
++                "prompt": getattr(opt, "prompt", None),
++                "required": getattr(opt, "required", None),
++                "default": getattr(opt, "default", None),
++                "help": getattr(opt, "help", None),
++                "type": str(getattr(opt, "type", None))
+             }
+             for opt in helpdct.get('params', [])
+         }

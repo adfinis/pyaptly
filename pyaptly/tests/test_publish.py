@@ -199,7 +199,7 @@ def test_publish_update_wrong_snapshots(config, publish_create, freeze):
     freeze.move_to("2012-10-11 10:10:10")
     args = ["-c", config, "snapshot", "create"]
     main.main(args)
-    args = ["-c", config.replace('.toml','-bad.toml'), "publish", "update"]
+    args = ["-c", config.replace(".toml", "-bad.toml"), "publish", "update"]
     main.main(args)
     state = state_reader.SystemStateReader()
     expect = set(

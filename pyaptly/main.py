@@ -4,6 +4,8 @@ import argparse
 import logging
 import sys
 from pathlib import Path
+import json
+from jsonschema import validate
 
 from . import command, custom_logger, mirror, publish, repo, snapshot, util
 
@@ -12,6 +14,14 @@ _logging_setup = False
 
 lg = logging.getLogger(__name__)
 
+with (Path(__file__).parent / "config.schema.json").open('r') as file:
+    jsonschema = json.load(file)
+
+def validate_config(config):
+    try:
+        validate(instance=config, schema=jsonschema)
+    except Exception as e: # pragma: no cover
+        lg.error(f"Error while parsing the configfile!: {e}")
 
 def setup_logger(args):
     """Setup the logger."""
@@ -56,6 +66,8 @@ def prepare(args):
             )
         else:
             util.exit_with_error(f"unknown config file extension: {path.suffix}")
+
+    validate_config(cfg)
     return cfg
 
 

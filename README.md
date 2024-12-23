@@ -8,7 +8,7 @@ input files.
 - For for the old version [switch to the master branch](https://github.com/adfinis/pyaptly/tree/master)
 - Main branch builds contain [alpha packages](https://github.com/adfinis/pyaptly/actions/runs/8147002919), see Artifacts
 
-# Why & How
+## Why & How
 
 [Aptly](https://www.aptly.info/) is great tool for creating Debian repositories.
 But as soon as it's required to maintain repositories for different [environments](https://en.wikipedia.org/wiki/Deployment_environment) it gets very complicated fast.
@@ -21,8 +21,6 @@ Secondly, aptly isn't really layed out to have retention policies. Updating a `s
 That means it's hard to roll back to a previous state if required.
 This problem is fixed by using fix timestamps in snapshot names.
 That behaviour also allows to define a fixed update spacing. It's possible to say for example "only update this snapshot once a week".
-
-[Follow the Tutorial](./docs/TUTORIAL.md)
 
 ## Example commands
 

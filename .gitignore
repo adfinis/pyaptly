@@ -3,3 +3,8 @@ __pycache__
 /.dmypy.json
 /.coverage
 /dist
+docs/cli
+docs/sphinx-template
+docs/_build
+docs/Command_Line_Reference.md
+docs/Config_Reference.md
