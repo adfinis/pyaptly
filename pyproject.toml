@@ -29,8 +29,7 @@ click = "^8.0.0"
 tomli = "^2.0.1"
 colorama = "^0.4.6"
 frozendict = "^2.2.0"
-jsonschema = "^4.23.0"
-types-jsonschema = "^4.23.0"
+jsonschema = ">=4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.2.2"
@@ -48,6 +47,7 @@ types-pyyaml = "^6.0.12.12"
 pytest-coverage = "^0.0"
 pyp2rpm = "3.3.10"
 types-colorama = "^0.4.15.20240311"
+types-jsonschema = ">=4.0.0"
 ruff = "^0.3.2"
 
 [tool.poetry.group.lsp.dependencies]
