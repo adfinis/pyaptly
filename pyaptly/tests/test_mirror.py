@@ -54,7 +54,7 @@ def test_mirror_config_fail(config):
         main.main(args)
 
 
-@pytest.mark.parametrize("config", ["mirror-basic.toml"], indirect=True)
+@pytest.mark.parametrize("config", ["mirror-basic.toml", "mirror-nocomponent.toml"], indirect=True)
 def test_mirror_update(mirror_update):
     """Test if updating mirrors works."""
     pass
