@@ -133,7 +133,8 @@ def cmd_mirror_create(cfg, mirror_name, mirror_config):
     aptly_cmd.append(mirror_name)
     aptly_cmd.append(mirror_config["archive"])
     aptly_cmd.append(mirror_config["distribution"])
-    aptly_cmd.extend(util.unit_or_list_to_list(mirror_config["components"]))
+    if "components" in mirror_config:
+        aptly_cmd.extend(util.unit_or_list_to_list(mirror_config["components"]))
 
     cmd = command.Command(aptly_cmd)
     cmd.provide("mirror", mirror_name)

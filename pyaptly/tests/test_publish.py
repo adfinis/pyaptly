@@ -79,7 +79,7 @@ def test_publish_create_repo(config, repo_create):
     assert {"centrify latest": set([])} == state.publish_map()
 
 
-@pytest.mark.parametrize("config", ["publish.toml"], indirect=True)
+@pytest.mark.parametrize("config", ["publish.toml", "mirror-nocomponent.toml"], indirect=True)
 def test_publish_create_basic(config, publish_create):
     """Test if creating publishes works."""
     pass
