@@ -18,6 +18,7 @@ extensions = [
     'myst_parser',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.autodoc',
+    'adfinis-sphinx-theme',
 ]
 myst_enable_extensions = [
     "linkify",
@@ -33,15 +34,10 @@ sys.path.insert(0, str(Path('..').resolve()))
 autosectionlabel_prefix_document = True
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'sphinx-template']
+#exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
-html_theme = 'adsy'
-html_theme_path = ['sphinx-template/html']
-html_title = project
-html_static_path = ['sphinx-template/html/adsy/static/']
 
 # Output file base name for HTML help builder.
 #htmlhelp_basename = 'test1234'
