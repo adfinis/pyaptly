@@ -18,7 +18,7 @@ extensions = [
     'myst_parser',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.autodoc',
-    'adfinis-sphinx-theme',
+    'adfinis_sphinx_theme',
 ]
 myst_enable_extensions = [
     "linkify",
