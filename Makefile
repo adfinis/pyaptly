@@ -67,7 +67,6 @@ test: pytest mypy lint-code ## run all testing
 .PHONY: docs
 docs: poetry-install ## generate documentation
 	rm -vrf docs/_build/* docs/cli/*
-	[[ -d docs/sphinx-template ]] || git clone https://github.com/adfinis-sygroup/adsy-sphinx-template docs/sphinx-template
 	@docker compose exec testing bash -c "poetry install --only docs"
 	
 	# Currently md-click has a bad dependency on old click. We fix this with the next command
