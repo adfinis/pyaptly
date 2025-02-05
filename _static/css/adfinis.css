@@ -1,5 +1,6 @@
 @import url('theme.css');
 
+/* Include custom fonts */
 @font-face {
   font-family: 'SourceSans3 Regular';
   font-style: normal;
@@ -67,11 +68,16 @@ a:hover {
   display: block;
   width: 100%;
   height: 60px;
-  background-image: url('../images/logo.png');
+  background-image: url('../logo.png');
   background-repeat: no-repeat;
   background-size: contain;
 }
 
 .wy-nav-content {
   max-width: none;
+}
+
+/* the default sphinx yellow bg doesn't work here */
+.highlight {
+  background: #fff;
 }
