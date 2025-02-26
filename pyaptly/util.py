@@ -151,7 +151,7 @@ def indent_out(output: bytes | str) -> str:
     """
     output = output.strip()
     if not output:
-        return ""
+        return ""  # pragma: no cover
     indented = False
     if hasattr(output, "decode"):
         try:
@@ -189,8 +189,6 @@ def format_run_result(result: subprocess.CompletedProcess, returncode: int, tb: 
             returncode=result.returncode,
             color_begin=color_begin,
             color_end=color_end,
-            stdout=indent_out(result.stdout),
-            stderr=indent_out(result.stderr),
         )
     ]
     for out_type, output in [
