@@ -128,12 +128,12 @@ def run_command(
             tb = write_traceback()  # pragma: no cover
         raise
     finally:
-        if result:
+        if result and lg.getEffectiveLevel() <= logging.DEBUG:
             log_msg = format_run_result(result, result.returncode, tb)
             if result.returncode == 0:
                 lg.info(log_msg)
             else:
-                if not hide_error or lg.root.level <= 20:
+                if not hide_error or lg.getEffectiveLevel() <= logging.INFO:
                     lg.error(log_msg)
             # This function should not alter the returned result
             if added_stdout:
