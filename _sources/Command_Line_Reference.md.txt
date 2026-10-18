@@ -130,7 +130,7 @@ Usage: pyaptly mirror [OPTIONS] CONFIG [create|update]
 
 
 * `config` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e474390> 
+  * Type: <click.types.Path object at 0x7fa9cda80750> 
   * Default: `none`
   * Usage: `config`
 
@@ -219,7 +219,7 @@ Usage: pyaptly publish [OPTIONS] CONFIG [create|update]
 
 
 * `config` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e4858d0> 
+  * Type: <click.types.Path object at 0x7fa9cda91890> 
   * Default: `none`
   * Usage: `config`
 
@@ -308,7 +308,7 @@ Usage: pyaptly repo [OPTIONS] CONFIG [create]
 
 
 * `config` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e44ed50> 
+  * Type: <click.types.Path object at 0x7fa9cda5ac90> 
   * Default: `none`
   * Usage: `config`
 
@@ -397,7 +397,7 @@ Usage: pyaptly snapshot [OPTIONS] CONFIG [create|update]
 
 
 * `config` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e484d90> 
+  * Type: <click.types.Path object at 0x7fa9cda90d50> 
   * Default: `none`
   * Usage: `config`
 
@@ -468,7 +468,7 @@ Usage: pyaptly toml-to-toml [OPTIONS] IN_PATH TOML_PATH
 
 
 * `in_path` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e486b10> 
+  * Type: <click.types.Path object at 0x7fa9cda92ad0> 
   * Default: `none`
   * Usage: `in_path`
 
@@ -476,7 +476,7 @@ Usage: pyaptly toml-to-toml [OPTIONS] IN_PATH TOML_PATH
 
 
 * `toml_path` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e486b50> 
+  * Type: <click.types.Path object at 0x7fa9cda92b10> 
   * Default: `none`
   * Usage: `toml_path`
 
@@ -537,7 +537,7 @@ Usage: pyaptly yaml-to-toml [OPTIONS] YAML_PATH TOML_PATH
 
 
 * `yaml_path` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e486410> 
+  * Type: <click.types.Path object at 0x7fa9cda923d0> 
   * Default: `none`
   * Usage: `yaml_path`
 
@@ -545,7 +545,7 @@ Usage: pyaptly yaml-to-toml [OPTIONS] YAML_PATH TOML_PATH
 
 
 * `toml_path` (REQUIRED): 
-  * Type: <click.types.Path object at 0x7fa65e486450> 
+  * Type: <click.types.Path object at 0x7fa9cda92410> 
   * Default: `none`
   * Usage: `toml_path`
 
